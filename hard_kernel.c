@@ -1,3 +1,4 @@
+#include <float.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
@@ -42,39 +43,59 @@ typedef struct _body{
     vec3 r, v;
 }body;
 
-body *particles = NULL;
+body *particle = NULL;
 double *ctimes = NULL;
 int collider1, collider2;
-int N = 500;
+int N = 256;
 double ETA;
 double SIGMA;
 double runtime;
 double pressure;
-double min_collision_time;
+
+double get_min()
+{
+    int i,j;
+    double minimum = DBL_MAX;
+    for(i = 0; i < N; i++)
+        for(j = i+1; j < N; j++)
+            if(ctimes[i*N+j] < minimum){
+                minimum = ctimes[i*N+j];
+                collider1 = i;
+                collider2 = j;
+            }
+    return minimum;
+}
 
 void collide()
 {
     int i, j;
-    vec3 dr,dv;
+    vec3 dr, dv;
+    double dx, dy, dz, rr, rv, vv, delta, collision_time;
     for(i = 0; i < N; i++){
         for(j = i+1; j < N; j++){
-            if(i == collider1 || i == collider2 || j == collider1 || j == collider2){
-                _vec3_sub(dr,particles[j].r,particles[i].r);
-                _vec3_sub(dv,particles[j].v,particles[i].v);
-                double rr = _vec3_dot(dr, dr);
-                double rv = _vec3_dot(dr, dv);
-                double vv = _vec3_dot(dv, dv);
-                double delta = rv*rv-vv*(rr-SIGMA*SIGMA);
+            if(i == collider1 || i == collider2 || j == collider1 || j == collider2 || collider1 == collider2){
+                collision_time = DBL_MAX;
+                for(dx = -1; dx <= 1 ; dx++){
+                    for(dy = -1; dy <= 1; dy++){
+                        for(dz = -1; dz <= 1; dz++){
+                            _vec3_sub(dr,particle[j].r,particle[i].r);
+                            _vec3_sub(dv,particle[j].v,particle[i].v);
+                            dr.x += dx;
+                            dr.y += dy;
+                            dr.z += dz;
+                            rr = _vec3_dot(dr, dr);
+                            rv = _vec3_dot(dr, dv);
+                            vv = _vec3_dot(dv, dv);
+                            delta = rv*rv-vv*(rr-SIGMA*SIGMA);
 
-                if(rv <= 0 && delta >= 0){
-                    double collision_time = min((-rv+sqrt(delta))/vv, (-rv-sqrt(delta))/vv);
-                    ctimes[2*i*N-i-i*i+j-1] = collision_time;
-                    if(collision_time < min_collision_time){
-                        min_collision_time = collision_time;
-                        collider1 = i;
-                        collider2 = j;
+                            if(rv <= 0 && delta >= 0){
+                                if(min((-rv+sqrt(delta))/vv, (-rv-sqrt(delta))/vv) < collision_time)
+                                    collision_time = min((-rv+sqrt(delta))/vv, (-rv-sqrt(delta))/vv);
+                            }
+                        }
                     }
                 }
+                ctimes[i*N+j] = collision_time;
             }
         }
     }
@@ -83,10 +104,10 @@ void collide()
 void init()
 {
     srand(time(NULL));
-    if(particles != NULL) free(particles);
+    if(particle != NULL) free(particle);
     if(ctimes != NULL) free(ctimes);
-    particles = (body*)malloc(N*sizeof(body));
-    ctimes = (double*)malloc(((N*(N-1))/2)*sizeof(body));
+    particle = (body*)malloc(N*sizeof(body));
+    ctimes = (double*)malloc(N*N*sizeof(body));
 
     SIGMA = cbrt(1.909859317*ETA/N);
     pressure = 0;
@@ -98,64 +119,66 @@ void init()
     int k;
     vec3 tmp = {.x = 0, .y = 0, .z = 0};
     for(k = 1; k < N; k++){
-        particles[k].r = VEC3(_rand(), _rand(), _rand());
-        particles[k].v = VEC3(_rand()*2-1, _rand()*2-1, _rand()*2-1);
-        _vec3_add(tmp, tmp, particles[k].v);
+        particle[k].r = VEC3(_rand(), _rand(), _rand());
+        particle[k].v = VEC3(_rand()*2-1, _rand()*2-1, _rand()*2-1);
+        _vec3_add(tmp, tmp, particle[k].v);
     }
-    particles[0].r = VEC3(_rand(), _rand(), _rand());
-    particles[0].v = VEC3(-tmp.x, -tmp.y, -tmp.z);
-    for(k = 0; k < (N*(N-1))/2; k++)
-        ctimes[k] = 1e10;
+    particle[0].r = VEC3(_rand(), _rand(), _rand());
+    particle[0].v = VEC3(-tmp.x, -tmp.y, -tmp.z);
 
     collide();
 }
 
-void update()
+void run()
 {
-    int i = collider1, j = collider2, k;
-    vec3 dr, dv;
-    for(k = 0; k < N; k++){
-        particles[k].r.x += particles[k].v.x * min_collision_time;
-        particles[k].r.y += particles[k].v.y * min_collision_time;
-        particles[k].r.z += particles[k].v.z * min_collision_time;
+    double min_time = get_min();
 
-        while(particles[k].r.x > 1) particles[k].r.x -= 1;
-        while(particles[k].r.y > 1) particles[k].r.y -= 1;
-        while(particles[k].r.z > 1) particles[k].r.z -= 1;
-        while(particles[k].r.x < 0) particles[k].r.x += 1;
-        while(particles[k].r.y < 0) particles[k].r.y += 1;
-        while(particles[k].r.z < 0) particles[k].r.z += 1;
+    int k;
+    for(k = 0; k < N; k++){
+        particle[k].r.x += particle[k].v.x * min_time;
+        particle[k].r.y += particle[k].v.y * min_time;
+        particle[k].r.z += particle[k].v.z * min_time;
+
+        particle[k].r.x = fmod(particle[k].r.x,1);
+        particle[k].r.y = fmod(particle[k].r.y,1);
+        particle[k].r.z = fmod(particle[k].r.z,1);
+
+        if(particle[k].r.x < 0) particle[k].r.x += 1;
+        if(particle[k].r.y < 0) particle[k].r.y += 1;
+        if(particle[k].r.z < 0) particle[k].r.z += 1;
     }
 
-    _vec3_sub(dr, particles[j].r, particles[i].r);
-    _vec3_sub(dv, particles[j].v, particles[i].v);
+    vec3 dr, dv;
+    _vec3_sub(dr, particle[collider2].r, particle[collider1].r);
+    _vec3_sub(dv, particle[collider1].v, particle[collider2].v);
 
-    particles[i].r.x += -_vec3_dot(dv,dr)*dr.x;
-    particles[i].r.y += -_vec3_dot(dv,dr)*dr.y;
-    particles[i].r.z += -_vec3_dot(dv,dr)*dr.z;
+    particle[collider1].r.x -= _vec3_dot(dv,dr)*dr.x;
+    particle[collider1].r.y -= _vec3_dot(dv,dr)*dr.y;
+    particle[collider1].r.z -= _vec3_dot(dv,dr)*dr.z;
 
-    particles[j].r.x = _vec3_dot(dv,dr)*dr.x;
-    particles[j].r.y = _vec3_dot(dv,dr)*dr.y;
-    particles[j].r.z = _vec3_dot(dv,dr)*dr.z;
+    particle[collider2].r.x += _vec3_dot(dv,dr)*dr.x;
+    particle[collider2].r.y += _vec3_dot(dv,dr)*dr.y;
+    particle[collider2].r.z += _vec3_dot(dv,dr)*dr.z;
+
+    collide();
 
     pressure += SIGMA*_vec3_mod(dv)/2;
-    runtime += min_collision_time;
+    runtime += min_time;
 }
 
 int main()
 {
     int k;
     FILE *f = fopen("pressure.dat","w");
-    for(ETA = 0.01; ETA < 0.02; ETA += 0.01){
+    for(ETA = 0.01; ETA < 0.5; ETA += 0.01){
         init();
         for(k = 0; k < 1e4; k++){
-            collide();
-            update(min_collision_time, collider1, collider2);
+            run();
         }
         fprintf(f, "%lf\t%e\n", ETA, 1+pressure/runtime);
     }
     fclose(f);
-    free(particles);
+    free(particle);
     free(ctimes);
     return 0;
 }
