@@ -1,209 +1,139 @@
 #include <float.h>
+#include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
 #include <math.h>
 #include <time.h>
+#include <GL/freeglut.h>
+#include "hard_kernel.h"
 
-#define _vec3_add(a,b,c) \
-    (a).x=(b).x+(c).x; \
-    (a).y=(b).y+(c).y; \
-    (a).z=(b).z+(c).z
+#define BUFSIZE 512
 
-#define _vec3_sub(a,b,c) \
-    (a).x=(b).x-(c).x; \
-    (a).y=(b).y-(c).y; \
-    (a).z=(b).z-(c).z
+#define SPHERE	    1
 
-#define _vec3_dot(a,b) \
-    ((a).x*(b).x+(a).y*(b).y+(a).z*(b).z)
+GLuint selectBuf[BUFSIZE];
 
-#define _rand() \
-    (rand()/(float)RAND_MAX)
-
-typedef struct vec3{
-    double x,y,z;
-}vec3;
-
-vec3 VEC3(double X, double Y, double Z){
-    vec3 tmp = {.x = X, .y = Y, .z = Z};
-    return tmp;
-}
-
-double vec3_mod(vec3 a){
-    return sqrt( a.x * a.x + a.y * a.y + a.z * a.z);
-}
-
-double vec3_dot(vec3 a, vec3 b){
-    return a.x * b.x + a.y * b.y + a.z * b.z;
-}
-
-double min(double a, double b)
+void drawSphere(vec3 p,double r,vec3 c)
 {
-    if(a > b) return b;
-    else return a;
+  glPushMatrix();
+  glLoadName(SPHERE);
+  glPushMatrix();
+  GLfloat COLOR[4] = {c.x, c.y, c.z, 0.5};
+  glPushAttrib(GL_LIGHTING_BIT | GL_CURRENT_BIT);
+  glMaterialfv(GL_FRONT, GL_DIFFUSE, COLOR);
+  glColor3f(c.x, c.y, c.z);
+  glTranslatef(p.x, p.y, p.z);
+  glScalef(r, r, r);
+  glCallList(SPHERE);
+  glPopAttrib();
+  glPopMatrix();
+}
+void reshapeF(int w, int h)
+{
+   glViewport (0, 0, (GLsizei) w, (GLsizei) h); 
+   glMatrixMode (GL_PROJECTION);
+   glLoadIdentity ();
+   glFrustum (-0.5, 0.5, -0.5, 0.5, 0.5, 5.0);
+   glMatrixMode (GL_MODELVIEW);
 }
 
-typedef struct _body{
-    vec3 r, v;
-}body;
-
-body *particle = NULL;
-double *ctimes = NULL;
-int collider1, collider2;
-int N = 256;
-double ETA;
-double SIGMA;
-double runtime;
-double pressure;
-double min_time;
-
-double get_min()
+void displayF()
 {
-    int i,j;
-    double minimum = DBL_MAX;
-    for(i = 0; i < N; i++)
-        for(j = i+1; j < N; j++)
-            if(ctimes[i*N+j] < minimum){
-                minimum = ctimes[i*N+j];
-                collider1 = i;
-                collider2 = j;
-            }
-    return minimum;
-}
-
-void collide()
-{
-    int i, j;
-    vec3 dr, dv;
-    double dx, dy, dz, rr, rv, vv, delta, collision_time;
-    for(i = 0; i < N; i++){
-        for(j = i+1; j < N; j++){
-            if(i == collider1 || j == collider2 || collider1 == collider2){
-                collision_time = DBL_MAX;
-                for(dx = -1; dx <= 1 ; dx++){
-                    for(dy = -1; dy <= 1; dy++){
-                        for(dz = -1; dz <= 1; dz++){
-                            _vec3_sub(dr,particle[j].r,particle[i].r);
-                            _vec3_sub(dv,particle[j].v,particle[i].v);
-                            dr.x += dx;
-                            dr.y += dy;
-                            dr.z += dz;
-                            rr = vec3_dot(dr, dr);
-                            rv = vec3_dot(dr, dv);
-                            vv = vec3_dot(dv, dv);
-                            delta = rv*rv-vv*(rr-SIGMA*SIGMA);
-
-                            if(rv <= 0 && delta >= 0){
-                                if(min((-rv+sqrt(delta))/vv, (-rv-sqrt(delta))/vv) < collision_time)
-                                    collision_time = min((-rv+sqrt(delta))/vv, (-rv-sqrt(delta))/vv);
-                            }
-                        }
-                    }
-                }
-                ctimes[i*N+j] = collision_time;
-            }
-            else ctimes[i*N+j] -= min_time;
-        }
-    }
-}
-
-void init()
-{
-    srand(time(NULL));
-    if(particle != NULL) free(particle);
-    if(ctimes != NULL) free(ctimes);
-    particle = (body*)malloc(N*sizeof(body));
-    ctimes = (double*)malloc(N*N*sizeof(body));
-
-    SIGMA = cbrt(1.909859317*ETA/N);
-    pressure = 0;
-    runtime = 0;
-
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glLoadIdentity();
+    gluLookAt (0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
+    glutWireCube (1.0);
     int k;
-    vec3 tmp = {.x = 0, .y = 0, .z = 0};
-    for(k = 1; k < N; k++){
-        particle[k].r = VEC3(_rand(), _rand(), _rand());
-        particle[k].v = VEC3(_rand()*2-1, _rand()*2-1, _rand()*2-1);
-        _vec3_add(tmp, tmp, particle[k].v);
-    }
-    particle[0].r = VEC3(_rand(), _rand(), _rand());
-    particle[0].v = VEC3(-tmp.x, -tmp.y, -tmp.z);
-
-    collider1 = 0;
-    collider2 = 0;
-
-    collide();
-}
-
-void run()
-{
-    min_time = get_min();
-
-    int k;
+    glTranslatef(-0.5, -0.5, -0.5);
     for(k = 0; k < N; k++){
-        particle[k].r.x += particle[k].v.x * min_time;
-        particle[k].r.y += particle[k].v.y * min_time;
-        particle[k].r.z += particle[k].v.z * min_time;
-
-        particle[k].r.x = fmod(particle[k].r.x,1);
-        particle[k].r.y = fmod(particle[k].r.y,1);
-        particle[k].r.z = fmod(particle[k].r.z,1);
-
-        if(particle[k].r.x < 0) particle[k].r.x += 1;
-        if(particle[k].r.y < 0) particle[k].r.y += 1;
-        if(particle[k].r.z < 0) particle[k].r.z += 1;
+        drawSphere(particle[k].r,SIGMA/2,particle[k].c);
     }
-
-    vec3 dr, dv;
-    dr.x = particle[collider2].r.x - particle[collider1].r.x;
-    dr.y = particle[collider2].r.y - particle[collider1].r.y;
-    dr.z = particle[collider2].r.z - particle[collider1].r.z;
-
-    dv.x = particle[collider1].v.x - particle[collider2].v.x;
-    dv.y = particle[collider1].v.y - particle[collider2].v.y;
-    dv.z = particle[collider1].v.z - particle[collider2].v.z;
-
-    particle[collider1].r.x -= vec3_dot(dv,dr)*dr.x;
-    particle[collider1].r.y -= vec3_dot(dv,dr)*dr.y;
-    particle[collider1].r.z -= vec3_dot(dv,dr)*dr.z;
-
-    particle[collider2].r.x += vec3_dot(dv,dr)*dr.x;
-    particle[collider2].r.y += vec3_dot(dv,dr)*dr.y;
-    particle[collider2].r.z += vec3_dot(dv,dr)*dr.z;
-
-    collide();
-
-    pressure += SIGMA*vec3_mod(dv)/2;
-    runtime += min_time;
+    glutSwapBuffers();
 }
 
-int main()
+void glInit()
 {
-/*
-    vec3 r,v1 = VEC3(3,2,1), v2 = VEC3(1,2,3);
-    printf("\n%e\n",vec3_mod(v1));
-    printf("\n%e\n",vec3_dot(v1,v2));
-    _vec3_add(r,v1,v2);
-    printf("\n%e\n",r.x);
-    printf("\n%e\n",r.y);
-    printf("\n%e\n",r.z);
-    _vec3_sub(r,v1,v2);
-    printf("\n%e\n",r.x);
-    printf("\n%e\n",r.y);
-    printf("\n%e\n",r.z);
-*/
-    int k;
-    FILE *f = fopen("pressure.dat","w");
-    for(ETA = 0.01; ETA < 0.5; ETA += 0.01){
-        init();
-        for(k = 0; k < 1e4; k++){
-            run();
-        }
-        fprintf(f, "%lf\t%e\n", ETA, 1+pressure/runtime);
+    int viewport[4];
+    glGetIntegerv(GL_VIEWPORT, viewport);
+    reshapeF(viewport[2],viewport[3]);
+
+  GLfloat light_ambient[] = {0.2, 0.2, 1.0, 1.0};
+  GLfloat light_diffuse[] = {0.2, 0.2, 0.2, 1.0};
+  GLfloat light_specular[] = {0.2, 0.2, 0.2, 1.0};
+  GLfloat light_position[] = {0.0, 0.0, 5, 0.0};
+
+  glLightfv(GL_LIGHT0, GL_AMBIENT, light_ambient);
+  glLightfv(GL_LIGHT0, GL_DIFFUSE, light_diffuse);
+  glLightfv(GL_LIGHT0, GL_SPECULAR, light_specular);
+  glLightfv(GL_LIGHT0, GL_POSITION, light_position);
+
+  glEnable(GL_LIGHT0);
+  glDepthFunc(GL_LESS);
+  glEnable(GL_DEPTH_TEST);
+  glEnable(GL_LIGHTING);
+  glDepthFunc(GL_LEQUAL);
+  glClearDepth(1.0f);
+
+  glSelectBuffer(BUFSIZE, selectBuf);
+
+  glNewList(SPHERE, GL_COMPILE);
+  glutSolidSphere(1, 100, 100);
+  glEndList();
+}
+
+void idleF(void)
+{
+    glutPostRedisplay();
+}
+
+void keyboardF(unsigned char key, int x, int y)
+{
+    switch(key)
+    {
+        case '+':
+            ETA *= 1.1;
+            init();
+            break;
+        case '-':
+            ETA /= 1.1;
+            init();
+            break;
+        case 'n':
+            N++;
+            init();
+            break;
+        case 'f': case 'F':
+            glutFullScreenToggle();
+            break;
+        case 'r': case 'R':
+            init();
+            break;
+        case 'q': case 'Q': case 27:
+            free(particle);
+            free(ctimes);
+            exit(0);
+            break;
     }
-    fclose(f);
-    free(particle);
-    free(ctimes);
+}
+
+int main(int argc, char *argv[])
+{
+    glutInit(&argc, argv);
+    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
+    glutInitWindowSize(500, 500);
+    glutCreateWindow("scene");
+
+    srand(time(NULL));
+    glInit();
+    init();
+
+    glutDisplayFunc(displayF);
+    glutIdleFunc(idleF);
+    glutKeyboardFunc(keyboardF);
+    glutReshapeFunc(reshapeF);
+
+    glutMainLoop();
     return 0;
 }
+
