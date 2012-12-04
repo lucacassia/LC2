@@ -13,6 +13,7 @@
 #define SPHERE	    1
 
 GLuint selectBuf[BUFSIZE];
+double angle = 0;
 
 void drawSphere(vec3 p,double r,vec3 c)
 {
@@ -34,7 +35,7 @@ void reshapeF(int w, int h)
    glViewport (0, 0, (GLsizei) w, (GLsizei) h); 
    glMatrixMode (GL_PROJECTION);
    glLoadIdentity ();
-   glFrustum (-0.5, 0.5, -0.5, 0.5, 0.5, 5.0);
+   glFrustum (-0.5, 0.5, -0.5, 0.5, 0.5, 2.0);
    glMatrixMode (GL_MODELVIEW);
 }
 
@@ -42,26 +43,28 @@ void displayF()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glLoadIdentity();
-    gluLookAt (0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
+    gluLookAt (0.0, 0.0, 1.1, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
+    glRotatef(angle, 0.0f, 1.0f, 0.0f);
     glutWireCube (1.0);
     int k;
     glTranslatef(-0.5, -0.5, -0.5);
     for(k = 0; k < N; k++){
-        drawSphere(particle[k].r,SIGMA/2,particle[k].c);
+        if((k==collider1)||(k==collider2)) drawSphere(particle[k].r,SIGMA/2,VEC3(1.0,0.2,0.2));
+        else drawSphere(particle[k].r,SIGMA/2,VEC3(0.2,0.2,0.2));
     }
     glutSwapBuffers();
 }
 
 void glInit()
 {
-    int viewport[4];
-    glGetIntegerv(GL_VIEWPORT, viewport);
-    reshapeF(viewport[2],viewport[3]);
-
-  GLfloat light_ambient[] = {0.2, 0.2, 1.0, 1.0};
-  GLfloat light_diffuse[] = {0.2, 0.2, 0.2, 1.0};
-  GLfloat light_specular[] = {0.2, 0.2, 0.2, 1.0};
-  GLfloat light_position[] = {0.0, 0.0, 5, 0.0};
+  GLfloat light_ambient[] =
+  {0.1, 0.1, 0.1, 1.0};
+  GLfloat light_diffuse[] =
+  {0.1, 0.1, 0.1, 1.0};
+  GLfloat light_specular[] =
+  {0.1, 0.1, 0.1, 1.0};
+  GLfloat light_position[] =
+  {0.0, 0.0, 10.0, 0.0};
 
   glLightfv(GL_LIGHT0, GL_AMBIENT, light_ambient);
   glLightfv(GL_LIGHT0, GL_DIFFUSE, light_diffuse);
@@ -91,16 +94,23 @@ void keyboardF(unsigned char key, int x, int y)
 {
     switch(key)
     {
+        case ' ':
+            run();
+            break;
         case '+':
-            ETA *= 1.1;
+            printf("\nETA = %lf\n",ETA *= 1.1);
             init();
             break;
         case '-':
-            ETA /= 1.1;
+            printf("\nETA = %lf\n",ETA /= 1.1);
             init();
             break;
         case 'n':
             N++;
+            init();
+            break;
+        case 'N':
+            if(N > 0) N--;
             init();
             break;
         case 'f': case 'F':
@@ -109,10 +119,33 @@ void keyboardF(unsigned char key, int x, int y)
         case 'r': case 'R':
             init();
             break;
+        case 'p': case 'P':
+            print();
+            break;
         case 'q': case 'Q': case 27:
             free(particle);
             free(ctimes);
             exit(0);
+            break;
+    }
+}
+
+void specialKeyboardF(int key, int x, int y)
+{
+    switch(key)
+    {
+        case GLUT_KEY_F11:
+            glutFullScreenToggle();
+            break;
+        case GLUT_KEY_UP:
+            break;
+        case GLUT_KEY_DOWN:
+            break;
+        case GLUT_KEY_LEFT:
+            angle += 1;
+            break;
+        case GLUT_KEY_RIGHT:
+            angle -= 1;
             break;
     }
 }
@@ -131,6 +164,7 @@ int main(int argc, char *argv[])
     glutDisplayFunc(displayF);
     glutIdleFunc(idleF);
     glutKeyboardFunc(keyboardF);
+    glutSpecialFunc(specialKeyboardF);
     glutReshapeFunc(reshapeF);
 
     glutMainLoop();
