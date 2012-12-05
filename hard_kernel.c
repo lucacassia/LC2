@@ -35,7 +35,7 @@ void reshapeF(int w, int h)
    glViewport (0, 0, (GLsizei) w, (GLsizei) h); 
    glMatrixMode (GL_PROJECTION);
    glLoadIdentity ();
-   glFrustum (-0.5, 0.5, -0.5, 0.5, 0.5, 2.0);
+   glFrustum (-w*0.5/h, w*0.5/h, -0.5, 0.5, 0.5, 2.0);
    glMatrixMode (GL_MODELVIEW);
 }
 
