@@ -13,7 +13,18 @@
 #define SPHERE	    1
 
 GLuint selectBuf[BUFSIZE];
-double angle = 0;
+int h_angle = 0;
+int v_angle = 0;
+
+void output(int x, int y, char *string)
+{
+  int len, i;
+  glRasterPos2f(x, y);
+  len = (int) strlen(string);
+  for (i = 0; i < len; i++) {
+    glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, string[i]);
+  }
+}
 
 void drawSphere(vec3 p,double r,vec3 c)
 {
@@ -44,7 +55,8 @@ void displayF()
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glLoadIdentity();
     gluLookAt (0.0, 0.0, 1.1, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
-    glRotatef(angle, 0.0f, 1.0f, 0.0f);
+    glRotatef(v_angle, 1.0f, 0.0f, 0.0f);
+    glRotatef(h_angle, 0.0f, 1.0f, 0.0f);
     glutWireCube (1.0);
     int k;
     glTranslatef(-0.5, -0.5, -0.5);
@@ -123,8 +135,7 @@ void keyboardF(unsigned char key, int x, int y)
             print();
             break;
         case 'q': case 'Q': case 27:
-            free(particle);
-            free(ctimes);
+            clear();
             exit(0);
             break;
     }
@@ -138,14 +149,16 @@ void specialKeyboardF(int key, int x, int y)
             glutFullScreenToggle();
             break;
         case GLUT_KEY_UP:
+            v_angle++;
             break;
         case GLUT_KEY_DOWN:
+            v_angle--;
             break;
         case GLUT_KEY_LEFT:
-            angle += 1;
+            h_angle++;
             break;
         case GLUT_KEY_RIGHT:
-            angle -= 1;
+            h_angle--;
             break;
     }
 }

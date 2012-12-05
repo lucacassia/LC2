@@ -91,11 +91,18 @@ void collide()
             ctimes[i*N+j] = get_collision_time(i,j);
 }
 
+void clear()
+{
+    if(particle != NULL)
+        free(particle);
+    if(ctimes != NULL)
+        free(ctimes);
+}
+
 void init()
 {
     srand(time(NULL));
-    if(particle != NULL) free(particle);
-    if(ctimes != NULL) free(ctimes);
+    clear();
     particle = (body*)malloc(N*sizeof(body));
     ctimes = (double*)malloc(N*N*sizeof(body));
 
@@ -221,3 +228,4 @@ void print()
     fclose(v);
     fclose(r);
 }
+
