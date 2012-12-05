@@ -226,5 +226,27 @@ void print()
     }
     fclose(v);
     fclose(r);
+
+    binning();
+}
+
+void binning(){
+    int i, count = 0, freq[125];
+    double min = 0.0, max = 3.0;
+    double width = (max-min)/125, tmp1, tmp2, tmp3;
+    for(i = 0; i < 125; i++)
+        freq[i] = 0;
+    FILE* f = fopen("speed.dat","r");
+    while(fscanf(f, "%lf\t%lf\t%lf\n", &tmp1, &tmp2, &tmp3) == 1){
+        count++;
+        for(i = 0; i < 125; i++)
+            if(tmp1*tmp1+tmp2*tmp2+tmp3*tmp3 > min+i*width && tmp1*tmp1+tmp2*tmp2+tmp3*tmp3 <= min+(i+1)*width)
+                freq[i]++;
+    }
+    fclose(f);
+    f = fopen("bin.dat","w");
+    for(i = 0; i < 125; i++)
+        fprintf(f, "%14.10e\t%14.10e\n", min+(i+0.5)*width, freq[i]/width/count);
+    fclose(f);
 }
 
