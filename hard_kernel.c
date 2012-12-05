@@ -15,15 +15,21 @@
 GLuint selectBuf[BUFSIZE];
 int h_angle = 0;
 int v_angle = 0;
+int active = 0;
 
-void output(int x, int y, char *string)
+void print_bitmap_string(double x, double y, double z, char *format,...)
 {
-  int len, i;
-  glRasterPos2f(x, y);
-  len = (int) strlen(string);
-  for (i = 0; i < len; i++) {
-    glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, string[i]);
-  }
+    va_list args;
+    char buffer[512], *s;
+
+    va_start(args, format);
+    vsprintf(buffer, format, args);
+    va_end(args);
+
+    glColor3f(1.0, 1.0, 1.0);
+    glRasterPos3f(x, y, z);
+    for (s = buffer; *s; s++)
+        glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, *s);
 }
 
 void drawSphere(vec3 p,double r,vec3 c)
@@ -64,6 +70,14 @@ void displayF()
         if((k==collider1)||(k==collider2)) drawSphere(particle[k].r,SIGMA/2,VEC3(1.0,0.2,0.2));
         else drawSphere(particle[k].r,SIGMA/2,VEC3(0.2,0.2,0.2));
     }
+    double h = 1.0, dh = 0.05;
+    print_bitmap_string(0.0, h-=dh, 1.0, "Particles: %d", N);
+    print_bitmap_string(0.0, h-=dh, 1.0, "Eta = %lf", ETA);
+    print_bitmap_string(0.0, h-=dh, 1.0, "Sigma = %lf", SIGMA);
+    print_bitmap_string(0.0, h-=dh, 1.0, "Runtime = %lf", runtime);
+    print_bitmap_string(0.0, h-=dh, 1.0, "Temperature = %lf", 2*temperature/(3*N));
+    print_bitmap_string(0.0, h-=dh, 1.0, "Pressure = %lf", 1+SIGMA*pressure/(2*temperature*runtime));
+    print_bitmap_string(0.0, h-=dh, 1.0, "Hits = %d", hits);
     glutSwapBuffers();
 }
 
@@ -76,7 +90,7 @@ void glInit()
   GLfloat light_specular[] =
   {0.1, 0.1, 0.1, 1.0};
   GLfloat light_position[] =
-  {0.0, 0.0, 10.0, 0.0};
+  {0.0, 0.0, 1.0, 0.0};
 
   glLightfv(GL_LIGHT0, GL_AMBIENT, light_ambient);
   glLightfv(GL_LIGHT0, GL_DIFFUSE, light_diffuse);
@@ -99,6 +113,8 @@ void glInit()
 
 void idleF(void)
 {
+    if(active)
+        run();
     glutPostRedisplay();
 }
 
@@ -107,7 +123,10 @@ void keyboardF(unsigned char key, int x, int y)
     switch(key)
     {
         case ' ':
-            run();
+            active = !active;
+            break;
+        case 'z':
+            pressure = runtime = hits = 0;
             break;
         case '+':
             printf("\nETA = %lf\n",ETA *= 1.1);

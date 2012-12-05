@@ -24,6 +24,7 @@ double runtime;
 double pressure;
 double min_time;
 double temperature;
+int hits;
 
 double get_kinetic()
 {
@@ -148,11 +149,11 @@ void init()
     collide();
     runtime = min_time = get_min();
     pressure = 0;
+    hits = 1;
 }
 
 void run()
 {
-    printf("\nmin = %e\n(i,j) = (%d,%d)\n",min_time,collider1,collider2);
     int k;
     for(k = 0; k < N; k++){
         particle[k].r.x += particle[k].v.x * min_time;
@@ -205,14 +206,12 @@ void run()
     particle[collider2].v.y += tmp.y;
     particle[collider2].v.z += tmp.z;
 
-    printf("%e\n", vec3_mod(dr));
-
     collide();
 
+    hits++;
     pressure += vec3_mod(dv);
     runtime += min_time = get_min();
     temperature = get_kinetic();
-    printf("\npressure = %e\ntemperature = %e\n", 1+SIGMA*pressure/(2*temperature*runtime), 2*temperature/(3*N));
 }
 
 void print()
