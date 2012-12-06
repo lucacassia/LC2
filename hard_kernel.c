@@ -75,8 +75,8 @@ void displayF()
     print_bitmap_string(0.0, h-=dh, 1.0, "Particles: %d", N);
     print_bitmap_string(0.0, h-=dh, 1.0, "Eta = %lf", ETA);
     print_bitmap_string(0.0, h-=dh, 1.0, "Sigma = %lf", SIGMA);
-    print_bitmap_string(0.0, h-=dh, 1.0, "Runtime = %lf", runtime);
     print_bitmap_string(0.0, h-=dh, 1.0, "Temperature = %lf", 2*temperature/(3*N));
+    print_bitmap_string(0.0, h-=dh, 1.0, "Runtime = %lf", runtime);
     print_bitmap_string(0.0, h-=dh, 1.0, "Pressure = %lf", 1+SIGMA*pressure/(2*temperature*runtime));
     print_bitmap_string(0.0, h-=dh, 1.0, "Hits = %d", hits);
     glutSwapBuffers();
@@ -129,12 +129,15 @@ void keyboardF(unsigned char key, int x, int y)
         case 'z':
             pressure = runtime = hits = 0;
             break;
+        case 'v':
+            v_angle = h_angle = 0;
+            break;
         case '+':
-            printf("\nETA = %lf\n",ETA *= 1.1);
+            ETA *= 1.1;
             init();
             break;
         case '-':
-            printf("\nETA = %lf\n",ETA /= 1.1);
+            ETA /= 1.1;
             init();
             break;
         case 'n':

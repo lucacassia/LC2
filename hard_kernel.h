@@ -30,9 +30,8 @@ double get_kinetic()
 {
     double tmp = 0;
     int k;
-    for(k = 0; k < N; k++){
+    for(k = 0; k < N; k++)
         tmp += vec3_dot(particle[k].v,particle[k].v);
-    }
     return tmp/2;
 }
 
