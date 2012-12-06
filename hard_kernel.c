@@ -47,6 +47,7 @@ void drawSphere(vec3 p,double r,vec3 c)
   glPopAttrib();
   glPopMatrix();
 }
+
 void reshapeF(int w, int h)
 {
    glViewport (0, 0, (GLsizei) w, (GLsizei) h); 

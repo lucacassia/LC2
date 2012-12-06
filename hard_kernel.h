@@ -17,8 +17,8 @@ typedef struct _body{vec3 r, v, c;}body;
 body *particle = NULL;
 double *ctimes = NULL;
 int collider1, collider2;
-int N = 256;
-double ETA = 0.03;
+int N = 1024;
+double ETA = 0.1;
 double SIGMA;
 double runtime;
 double pressure;
@@ -214,39 +214,33 @@ void run()
     temperature = get_kinetic();
 }
 
+#define BIN 20
 void print()
 {
-    int k;
+    int i,k;
+    int freq[BIN];
+    double min = 0.0, max = 2.0;
+    double width = (max-min)/BIN;
+    for(i = 0; i < BIN; i++)
+        freq[i] = 0;
+    for(k = 0; k < N; k++)
+        for(i = 0; i < BIN; i++)
+            if(vec3_dot(particle[k].v,particle[k].v) > min+i*width && vec3_dot(particle[k].v,particle[k].v) <= min+(i+1)*width)
+                freq[i]++;
+
     FILE *v = fopen("speed.dat","w");
     FILE *r = fopen("position.dat","w");
+    FILE *f = fopen("bin.dat","w");
 
     for(k = 0; k < N; k++){
         fprintf(v, "%e\t%e\t%e\n", particle[k].v.x, particle[k].v.y, particle[k].v.z);
         fprintf(r, "%e\t%e\t%e\n", particle[k].r.x, particle[k].r.y, particle[k].r.z);
     }
+    for(i = 0; i < BIN; i++)
+        fprintf(f, "%14.10e\t%14.10e\n", min+(i+0.5)*width, freq[i]/width/N);
+
     fclose(v);
     fclose(r);
-
-    binning();
-}
-
-void binning(){
-    int i, count = 0, freq[125];
-    double min = 0.0, max = 3.0;
-    double width = (max-min)/125, tmp1, tmp2, tmp3;
-    for(i = 0; i < 125; i++)
-        freq[i] = 0;
-    FILE* f = fopen("speed.dat","r");
-    while(fscanf(f, "%lf\t%lf\t%lf\n", &tmp1, &tmp2, &tmp3) == 1){
-        count++;
-        for(i = 0; i < 125; i++)
-            if(tmp1*tmp1+tmp2*tmp2+tmp3*tmp3 > min+i*width && tmp1*tmp1+tmp2*tmp2+tmp3*tmp3 <= min+(i+1)*width)
-                freq[i]++;
-    }
-    fclose(f);
-    f = fopen("bin.dat","w");
-    for(i = 0; i < 125; i++)
-        fprintf(f, "%14.10e\t%14.10e\n", min+(i+0.5)*width, freq[i]/width/count);
     fclose(f);
 }
 

@@ -19,7 +19,7 @@ all: rmxeq mkdep mkxeq rmpmk
 
 # main programs and required modules 
 
-MAIN = hard_kernel glutfonts
+MAIN = hard_kernel
 
 MODULES = 
 
