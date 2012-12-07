@@ -6,7 +6,12 @@
 
 void drawStuff()
 {
-
+    body *tmp = particles;
+    while(tmp != NULL){
+        drawSphere(tmp->r, SIGMA, tmp->c);
+        tmp = tmp->next;
+        if(tmp == particles) break;
+    }
 }
 
 void keyboardF(unsigned char key, int x, int y)
@@ -17,7 +22,7 @@ void keyboardF(unsigned char key, int x, int y)
             active = !active;
             break;
         case '+':
-
+            run();
             break;
         case '-':
 
@@ -41,10 +46,10 @@ void keyboardF(unsigned char key, int x, int y)
             init();
             break;
         case 'p': case 'P':
-
+            print();
             break;
         case 'q': case 'Q': case 27:
-
+            clear();
             exit(0);
             break;
     }
