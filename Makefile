@@ -19,7 +19,7 @@ all: rmxeq mkdep mkxeq rmpmk
 
 # main programs and required modules 
 
-MAIN = hard_core
+MAIN = hard_core soft_core
 
 MODULES = 
 

@@ -1,18 +1,8 @@
 #include <float.h>
-#include <stdarg.h>
-#include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
-#include <math.h>
-#include <time.h>
 
-#define _rand() (rand()/(float)RAND_MAX)
-
-typedef struct vec3{double x,y,z;}vec3;
-vec3 VEC3(double X, double Y, double Z){vec3 tmp = {.x = X, .y = Y, .z = Z};return tmp;}
-double vec3_dot(vec3 a, vec3 b){return a.x * b.x + a.y * b.y + a.z * b.z;}
-double vec3_mod(vec3 a){return sqrt( vec3_dot(a,a) );}
-typedef struct _body{vec3 r, v, c;}body;
+#include "vec3.h"
 
 body *particle = NULL;
 double *ctimes = NULL;
@@ -111,7 +101,6 @@ void reset()
 
 void init()
 {
-    srand(time(NULL));
     clear();
     particle = (body*)malloc(N*sizeof(body));
     ctimes = (double*)malloc(N*N*sizeof(body));
@@ -137,10 +126,10 @@ void init()
         }
     }
 
-    tmp = VEC3(0,0,0);
+    tmp = vec3_new(0,0,0);
     for(k = 0; k < N; k++){
-        particle[k].c = VEC3(_rand(), _rand(), _rand());
-        particle[k].v = VEC3(_rand()*2-1, _rand()*2-1, _rand()*2-1);
+        particle[k].c = vec3_new(_rand(), _rand(), _rand());
+        particle[k].v = vec3_new(_rand()*2-1, _rand()*2-1, _rand()*2-1);
         tmp.x += particle[k].v.x;
         tmp.y += particle[k].v.y;
         tmp.z += particle[k].v.z;
