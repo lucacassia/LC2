@@ -10,8 +10,8 @@
 
 typedef struct vec3{double x,y,z;}vec3;
 vec3 VEC3(double X, double Y, double Z){vec3 tmp = {.x = X, .y = Y, .z = Z};return tmp;}
-double vec3_mod(vec3 a){return sqrt( a.x * a.x + a.y * a.y + a.z * a.z);}
 double vec3_dot(vec3 a, vec3 b){return a.x * b.x + a.y * b.y + a.z * b.z;}
+double vec3_mod(vec3 a){return sqrt( vec3_dot(a,a) );}
 typedef struct _body{vec3 r, v, c;}body;
 
 body *particle = NULL;
@@ -20,9 +20,11 @@ int collider1, collider2;
 int N = 1024;
 double ETA = 0.1;
 double SIGMA;
+
 double runtime;
 double pressure;
-double min_time;
+double dp;
+double kinetic;
 double temperature;
 int hits;
 
@@ -99,6 +101,14 @@ void clear()
         free(ctimes);
 }
 
+void reset()
+{
+    runtime = 0;
+    dp = 0;
+    pressure = 0;
+    hits = 0;
+}
+
 void init()
 {
     srand(time(NULL));
@@ -145,14 +155,17 @@ void init()
     collider1 = 0;
     collider2 = 0;
 
+    kinetic = get_kinetic();
+    temperature = 2*kinetic/(3*N);
+
     collide();
-    runtime = min_time = get_min();
-    pressure = 0;
-    hits = 1;
+    reset();
 }
 
 void run()
 {
+    double min_time = get_min();
+
     int k;
     for(k = 0; k < N; k++){
         particle[k].r.x += particle[k].v.x * min_time;
@@ -182,7 +195,7 @@ void run()
                 tmp.y = dy + particle[collider2].r.y - particle[collider1].r.y;
                 tmp.z = dz + particle[collider2].r.z - particle[collider1].r.z;
 
-                if(vec3_mod(tmp) < vec3_mod(dr)){
+                if(vec3_dot(tmp,tmp) < vec3_dot(dr,dr)){
                     dr = tmp;
                 }
             }
@@ -208,37 +221,24 @@ void run()
     collide();
 
     hits++;
-    pressure += vec3_mod(dv);
-    runtime += min_time = get_min();
-    temperature = get_kinetic();
+    runtime += min_time;
+    dp += vec3_mod(dv);
+    pressure = 1+SIGMA*dp/(2*kinetic*runtime);
 }
 
-#define BIN 20
 void print()
 {
-    int i,k;
-    int freq[BIN], sum = 0;
-    double min = 0.0, max = 2.0;
-    double width = (max-min)/BIN;
-    for(i = 0; i < BIN; i++)
-        freq[i] = 0;
-    for(k = 0; k < N; k++)
-        for(i = 0; i < BIN; i++)
-            if(vec3_dot(particle[k].v,particle[k].v) > min+i*width && vec3_dot(particle[k].v,particle[k].v) <= min+(i+1)*width){
-                freq[i]++;
-                sum++;
-            }
-
     FILE *v = fopen("speed.dat","w");
     FILE *r = fopen("position.dat","w");
-    FILE *f = fopen("bin.dat","w");
+    FILE *f = fopen("data.dat","a");
 
+    int k;
     for(k = 0; k < N; k++){
         fprintf(v, "%e\t%e\t%e\n", particle[k].v.x, particle[k].v.y, particle[k].v.z);
         fprintf(r, "%e\t%e\t%e\n", particle[k].r.x, particle[k].r.y, particle[k].r.z);
     }
-    for(i = 0; i < BIN; i++)
-        fprintf(f, "%14.10e\t%14.10e\n", min+(i+0.5)*width, freq[i]/width/N);
+
+    fprintf(f, "%d\t%e\t%e\t%e\n", N, ETA, pressure, pressure/N/temperature-1);
 
     fclose(v);
     fclose(r);

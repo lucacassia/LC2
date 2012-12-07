@@ -6,7 +6,7 @@
 #include <math.h>
 #include <time.h>
 #include <GL/freeglut.h>
-#include "hard_kernel.h"
+#include "hard_core.h"
 
 #define BUFSIZE 512
 
@@ -75,9 +75,9 @@ void displayF()
     print_bitmap_string(0.0, h-=dh, 1.0, "Particles: %d", N);
     print_bitmap_string(0.0, h-=dh, 1.0, "Eta = %lf", ETA);
     print_bitmap_string(0.0, h-=dh, 1.0, "Sigma = %lf", SIGMA);
-    print_bitmap_string(0.0, h-=dh, 1.0, "Temperature = %lf", 2*temperature/(3*N));
+    print_bitmap_string(0.0, h-=dh, 1.0, "Temperature = %lf", temperature);
     print_bitmap_string(0.0, h-=dh, 1.0, "Runtime = %lf", runtime);
-    print_bitmap_string(0.0, h-=dh, 1.0, "Pressure = %lf", 1+SIGMA*pressure/(2*temperature*runtime));
+    print_bitmap_string(0.0, h-=dh, 1.0, "Pressure = %lf", pressure);
     print_bitmap_string(0.0, h-=dh, 1.0, "Hits = %d", hits);
     glutSwapBuffers();
 }
@@ -126,12 +126,6 @@ void keyboardF(unsigned char key, int x, int y)
         case ' ':
             active = !active;
             break;
-        case 'z':
-            pressure = runtime = hits = 0;
-            break;
-        case 'v':
-            v_angle = h_angle = 0;
-            break;
         case '+':
             ETA *= 1.1;
             init();
@@ -151,7 +145,13 @@ void keyboardF(unsigned char key, int x, int y)
         case 'f': case 'F':
             glutFullScreenToggle();
             break;
+        case 'v': case 'V':
+            v_angle = h_angle = 0;
+            break;
         case 'r': case 'R':
+            reset();
+            break;
+        case 'i': case 'I':
             init();
             break;
         case 'p': case 'P':
@@ -191,7 +191,7 @@ int main(int argc, char *argv[])
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
     glutInitWindowSize(500, 500);
-    glutCreateWindow("scene");
+    glutCreateWindow("hard core");
 
     srand(time(NULL));
     glInit();
