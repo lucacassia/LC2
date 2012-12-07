@@ -104,13 +104,13 @@ mkdep:  $(addsuffix .d,$(PGMS))
 # clean post-compilation 
 
 rmpmk:
-	@ -rm -rf *.d *.o .tmp
+	@ -rm -rf *.d *.o *.log .tmp
 
 
 # clean directory 
 
 clean:
-	@ -rm -rf *.d *.o .tmp *~ $(MAIN)
+	@ -rm -rf *.d *.o .tmp *.log *~ $(MAIN)
 .PHONY: clean
 
 ################################################################################

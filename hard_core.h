@@ -17,7 +17,7 @@ typedef struct _body{vec3 r, v, c;}body;
 body *particle = NULL;
 double *ctimes = NULL;
 int collider1, collider2;
-int N = 1024;
+int N = 256;
 double ETA = 0.1;
 double SIGMA;
 
