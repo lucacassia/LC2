@@ -217,15 +217,17 @@ void run()
 void print()
 {
     int i,k;
-    int freq[BIN];
+    int freq[BIN], sum = 0;
     double min = 0.0, max = 2.0;
     double width = (max-min)/BIN;
     for(i = 0; i < BIN; i++)
         freq[i] = 0;
     for(k = 0; k < N; k++)
         for(i = 0; i < BIN; i++)
-            if(vec3_dot(particle[k].v,particle[k].v) > min+i*width && vec3_dot(particle[k].v,particle[k].v) <= min+(i+1)*width)
+            if(vec3_dot(particle[k].v,particle[k].v) > min+i*width && vec3_dot(particle[k].v,particle[k].v) <= min+(i+1)*width){
                 freq[i]++;
+                sum++;
+            }
 
     FILE *v = fopen("speed.dat","w");
     FILE *r = fopen("position.dat","w");
