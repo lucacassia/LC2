@@ -1,10 +1,10 @@
 #include <string.h>
 #include "vec3.h"
 
-int N = 512;
-double SIGMA = 0.05;
+int N = 256;
+double SIGMA = 0.1;
 double EPSILON = 1;
-double dt = 1e-5;
+double dt = 1e-10;
 body *particles;
 
 body newBody(const vec3 position, const vec3 velocity){
@@ -132,15 +132,32 @@ void run(){
 void init()
 {
     clear();
-    vec3 sum = vec3_new(0.0,0.0,0.0);
     int k;
+    int start = 0;
+    vec3 sum = vec3_new(0.0,0.0,0.0);
+    vec3 tmp = vec3_new(SIGMA/2, SIGMA/2, SIGMA/2);
     for(k = 0; k < N; k++){
-        body tmp = newBody( vec3_new(_rand(), _rand(), _rand()), vec3_new(2.0*_rand()-1.0, 2.0*_rand()-1.0, 2.0*_rand()-1.0));
-        particles = append(particles, tmp);
-        sum.x += tmp.v.x;
-        sum.y += tmp.v.y;
-        sum.z += tmp.v.z;
+        particles = append(particles, newBody( tmp, vec3_new(2.0*_rand()-1.0, 2.0*_rand()-1.0, 2.0*_rand()-1.0)));
+        sum.x += particles->prev->v.x;
+        sum.y += particles->prev->v.y;
+        sum.z += particles->prev->v.z;
+
+        tmp.x += 2*SIGMA/sqrt(3);
+        if(tmp.x > 1-SIGMA/2){
+            tmp.x = SIGMA/2 + start*SIGMA/sqrt(3);
+            tmp.y += 2*SIGMA/sqrt(3);
+            if(tmp.y > 1-SIGMA/2){
+                start = (start+1)%2;
+                tmp.y = tmp.x = SIGMA/2 + start*SIGMA/sqrt(3);
+                tmp.z += SIGMA/sqrt(3);
+                if(tmp.z > 1-SIGMA/2){
+                    printf("\nWay too packed!\n");
+                    break;
+                }
+            }
+        }
     }
+
     body *i = particles;
     do{
         i->v.x -= sum.x / N;

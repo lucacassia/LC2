@@ -8,7 +8,7 @@ void drawStuff()
 {
     body *tmp = particles;
     while(tmp != NULL){
-        drawSphere(tmp->r, SIGMA, tmp->c);
+        drawSphere(tmp->r, SIGMA/2, tmp->c);
         tmp = tmp->next;
         if(tmp == particles) break;
     }

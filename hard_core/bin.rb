@@ -6,7 +6,7 @@ ARGV.each do|file|
 
     min = 0.0
     max = 5.0
-    num = 100
+    num = 40
     width = (max-min)/num
     freq = Array.new num, 0
     size = 0

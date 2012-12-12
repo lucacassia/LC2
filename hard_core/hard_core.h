@@ -7,11 +7,12 @@
 body *particle = NULL;
 double *ctimes = NULL;
 int collider1, collider2;
-int N = 512;
+int N = 1024;
 double ETA = 0.1;
 double SIGMA;
 
 double runtime;
+double min_time;
 double pressure;
 double dp;
 double kinetic;
@@ -80,7 +81,10 @@ void collide()
     int i, j;
     for(i = 0; i < N; i++)
         for(j = i+1; j < N; j++)
-            ctimes[i*N+j] = get_collision_time(i,j);
+            if(i == collider1 || j == collider1 || i == collider2 || j == collider2 || collider1 == collider2)
+                ctimes[i*N+j] = get_collision_time(i,j);
+            else
+                ctimes[i*N+j] -= min_time;
 }
 
 void clear()
@@ -108,16 +112,18 @@ void init()
     SIGMA = cbrt(1.909859317*ETA/N);
 
     int k;
-    vec3 tmp = {.x = SIGMA/2, .y = SIGMA/2, .z = SIGMA/2};
+    int start = 0;
+    vec3 tmp = vec3_new(SIGMA/2, SIGMA/2, SIGMA/2);
     for(k = 0; k < N; k++){
         particle[k].r = tmp;
-        tmp.x += SIGMA;
+        tmp.x += 2*SIGMA/sqrt(3);
         if(tmp.x > 1-SIGMA/2){
-            tmp.x = SIGMA/2;
-            tmp.y += SIGMA;
+            tmp.x = SIGMA/2 + start*SIGMA/sqrt(3);
+            tmp.y += 2*SIGMA/sqrt(3);
             if(tmp.y > 1-SIGMA/2){
-                tmp.y = SIGMA/2;
-                tmp.z += SIGMA;
+                start = (start+1)%2;
+                tmp.y = tmp.x = SIGMA/2 + start*SIGMA/sqrt(3);
+                tmp.z += SIGMA/sqrt(3);
                 if(tmp.z > 1-SIGMA/2){
                     printf("\nWay too packed!\n");
                     break;
@@ -153,7 +159,7 @@ void init()
 
 void run()
 {
-    double min_time = get_min();
+    min_time = get_min();
 
     int k;
     for(k = 0; k < N; k++){
