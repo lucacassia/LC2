@@ -7,8 +7,9 @@
 body *particle = NULL;
 double *ctimes = NULL;
 int collider1, collider2;
-int N = 1024;
-double ETA = 0.1;
+int n = 6;
+int N;
+double ETA = 0.431;
 double SIGMA;
 
 double runtime;
@@ -105,34 +106,23 @@ void reset()
 
 void init()
 {
+    N = n*n*n+(n-1)*(n-1)*(n-1);
+    SIGMA = cbrt(ETA*1.909859317/N);
+
     clear();
     particle = (body*)malloc(N*sizeof(body));
     ctimes = (double*)malloc(N*N*sizeof(body));
 
-    SIGMA = cbrt(1.909859317*ETA/N);
-
-    int k;
-    int start = 0;
-    vec3 tmp = vec3_new(SIGMA/2, SIGMA/2, SIGMA/2);
-    for(k = 0; k < N; k++){
-        particle[k].r = tmp;
-        tmp.x += 2*SIGMA/sqrt(3);
-        if(tmp.x > 1-SIGMA/2){
-            tmp.x = SIGMA/2 + start*SIGMA/sqrt(3);
-            tmp.y += 2*SIGMA/sqrt(3);
-            if(tmp.y > 1-SIGMA/2){
-                start = (start+1)%2;
-                tmp.y = tmp.x = SIGMA/2 + start*SIGMA/sqrt(3);
-                tmp.z += SIGMA/sqrt(3);
-                if(tmp.z > 1-SIGMA/2){
-                    printf("\nWay too packed!\n");
-                    break;
-                }
+    int i,j,k;
+    for(i = 0; i < n; i++)
+        for(j = 0; j < n; j++)
+            for(k = 0; k < n; k++){
+                particle[(i*n+j)*n+k].r.x = i/n;
+                particle[(i*n+j)*n+k].r.y = j/n;
+                particle[(i*n+j)*n+k].r.z = k/n;
             }
-        }
-    }
 
-    tmp = vec3_new(0,0,0);
+    vec3 tmp = vec3_new(0.0, 0.0, 0.0);
     for(k = 0; k < N; k++){
         particle[k].c = vec3_new(_rand(), _rand(), _rand());
         particle[k].v = vec3_new(_rand()*2-1, _rand()*2-1, _rand()*2-1);
@@ -145,6 +135,16 @@ void init()
         particle[k].v.x -= tmp.x/N;
         particle[k].v.y -= tmp.y/N;
         particle[k].v.z -= tmp.z/N;
+    }
+    double norm = 0;
+    for(k = 0; k < N; k++)
+        norm += vec3_dot(particle[k].v, particle[k].v);
+    norm = norm / (3 * N);
+    norm = sqrt(norm);
+    for(k = 0; k < N; k++){
+        particle[k].v.x /= norm;
+        particle[k].v.y /= norm;
+        particle[k].v.z /= norm;
     }
 
     collider1 = 0;

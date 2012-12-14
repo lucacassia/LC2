@@ -39,11 +39,11 @@ void keyboardF(unsigned char key, int x, int y)
             init();
             break;
         case 'n':
-            N++;
+            n++;
             init();
             break;
         case 'N':
-            if(N > 0) N--;
+            if(n > 0) n--;
             init();
             break;
         case 'f': case 'F':
