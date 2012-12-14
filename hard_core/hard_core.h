@@ -9,7 +9,7 @@ double *ctimes = NULL;
 int collider1, collider2;
 int n = 6;
 int N;
-double ETA = 0.431;
+double ETA = 0.68;
 double SIGMA;
 
 double runtime;
@@ -106,20 +106,24 @@ void reset()
 
 void init()
 {
-    N = n*n*n+(n-1)*(n-1)*(n-1);
+    N = 2*n*n*n;
     SIGMA = cbrt(ETA*1.909859317/N);
 
     clear();
     particle = (body*)malloc(N*sizeof(body));
     ctimes = (double*)malloc(N*N*sizeof(body));
 
-    int i,j,k;
-    for(i = 0; i < n; i++)
+    int i,j,k,l;
+    for(l = i = 0; i < n; i++)
         for(j = 0; j < n; j++)
             for(k = 0; k < n; k++){
-                particle[(i*n+j)*n+k].r.x = i/n;
-                particle[(i*n+j)*n+k].r.y = j/n;
-                particle[(i*n+j)*n+k].r.z = k/n;
+                particle[l].r.x = i*1.0/n;
+                particle[l].r.y = j*1.0/n;
+                particle[l].r.z = k*1.0/n;
+                particle[N/2+l].r.x = 1.0/n/2.0 + i*1.0/n;
+                particle[N/2+l].r.y = 1.0/n/2.0 + j*1.0/n;
+                particle[N/2+l].r.z = 1.0/n/2.0 + k*1.0/n;
+                l++;
             }
 
     vec3 tmp = vec3_new(0.0, 0.0, 0.0);
