@@ -7,7 +7,7 @@
 body *particle = NULL;
 double *ctimes = NULL;
 int collider1, collider2;
-int n = 6;
+int n = 5;
 int N;
 double ETA = 0.68;
 double SIGMA;
