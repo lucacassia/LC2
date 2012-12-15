@@ -143,7 +143,7 @@ void init()
     double norm = 0;
     for(k = 0; k < N; k++)
         norm += vec3_dot(particle[k].v, particle[k].v);
-    norm = norm / (3 * N);
+    norm = 2 * norm / (3 * N);
     norm = sqrt(norm);
     for(k = 0; k < N; k++){
         particle[k].v.x /= norm;
@@ -237,7 +237,7 @@ void print()
         fprintf(r, "%e\t%e\t%e\n", particle[k].r.x, particle[k].r.y, particle[k].r.z);
     }
 
-    fprintf(f, "%d\t%e\t%e\t%e\n", N, ETA, pressure, pressure/N/temperature-1);
+    fprintf(f, "%d\t%lf\t%lf\t%lf\n", N, ETA, pressure, pressure/N/temperature-1);
 
     fclose(v);
     fclose(r);
