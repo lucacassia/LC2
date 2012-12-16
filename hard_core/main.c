@@ -2,7 +2,7 @@
 
 int main(){
     int i;
-    for(ETA = 0.595; ETA < 0.68; ETA += 0.001){
+    for(ETA = 0.46; ETA < 0.53; ETA += 0.0001){
         init();
         for(i = 0; i < 10000; i++)
             run();
