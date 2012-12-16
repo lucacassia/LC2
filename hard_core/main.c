@@ -2,7 +2,7 @@
 
 int main(){
     int i;
-    for(ETA = 0.46; ETA < 0.53; ETA += 0.0001){
+    for(n = 1; n < 10; n++){
         init();
         for(i = 0; i < 10000; i++)
             run();
@@ -10,7 +10,7 @@ int main(){
         for(i = 0; i < 10000; i++)
             run();
         print();
-        printf("ETA = %lf\truntime = %lf\n",ETA,runtime);
+        printf("N = %d\truntime = %lf\n",N,runtime);
     }
     return 0;
 }

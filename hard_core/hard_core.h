@@ -7,9 +7,9 @@
 body *particle = NULL;
 double *ctimes = NULL;
 int collider1, collider2;
-int n = 5;
-int N;
-double ETA = 0.68;
+int n;
+int N = 54;
+double ETA = 0.3;
 double SIGMA;
 
 double runtime;
@@ -108,7 +108,9 @@ void reset()
 
 void init()
 {
-    N = 2*n*n*n;
+    n = 0;
+    while(2*n*n*n < N) n++;
+    printf("\nN = %d\tn = %d\n",N,n);
     SIGMA = cbrt(ETA*1.909859317/N);
 
     clear();
@@ -116,9 +118,9 @@ void init()
     ctimes = (double*)malloc(N*N*sizeof(body));
 
     int i,j,k,l;
-    for(l = i = 0; i < n; i++)
-        for(j = 0; j < n; j++)
-            for(k = 0; k < n; k++){
+    for(l = i = 0; i < n && l < N/2; i++)
+        for(j = 0; j < n && l < N/2; j++)
+            for(k = 0; k < n && l < N/2; k++){
                 particle[l].r.x = i*1.0/n;
                 particle[l].r.y = j*1.0/n;
                 particle[l].r.z = k*1.0/n;
@@ -241,7 +243,7 @@ void print()
         fprintf(r, "%e\t%e\t%e\n", particle[k].r.x, particle[k].r.y, particle[k].r.z);
     }
 
-    fprintf(f, "%d\t%lf\t%lf\t%lf\t%e\n", N, ETA, pressure, temperature, dr2/N/runtime);
+    fprintf(f, "%d\t%lf\t%lf\t%lf\t%e\t%e\n", N, ETA, pressure, temperature, dr2/N/runtime, pressure/N/temperature-1);
 
     fclose(v);
     fclose(r);
