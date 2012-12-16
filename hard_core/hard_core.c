@@ -20,6 +20,7 @@ void drawStuff()
     print_bitmap_string(0.0, h-=dh, 1.0, "Temperature = %lf", temperature);
     print_bitmap_string(0.0, h-=dh, 1.0, "Runtime = %lf", runtime);
     print_bitmap_string(0.0, h-=dh, 1.0, "Pressure = %lf", pressure);
+    print_bitmap_string(0.0, h-=dh, 1.0, "dr2 = %lf", dr2/N/runtime);
     print_bitmap_string(0.0, h-=dh, 1.0, "Hits = %d", hits);
 }
 

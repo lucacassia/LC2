@@ -18,6 +18,7 @@ double pressure;
 double dp;
 double kinetic;
 double temperature = 0.25;
+double dr2;
 int hits;
 
 double get_kinetic()
@@ -100,6 +101,7 @@ void reset()
 {
     runtime = 0;
     dp = 0;
+    dr2 = 0;
     pressure = 0;
     hits = 0;
 }
@@ -165,8 +167,12 @@ void run()
 {
     min_time = get_min();
 
+    vec3 dr, dv, tmp;
+
     int k;
     for(k = 0; k < N; k++){
+        dr2 += min_time * min_time * vec3_dot(particle[k].v, particle[k].v);
+
         particle[k].r.x += particle[k].v.x * min_time;
         particle[k].r.y += particle[k].v.y * min_time;
         particle[k].r.z += particle[k].v.z * min_time;
@@ -179,8 +185,6 @@ void run()
         if(particle[k].r.y < 0) particle[k].r.y += 1;
         if(particle[k].r.z < 0) particle[k].r.z += 1;
     }
-
-    vec3 dr, dv, tmp;
 
     dr.x = particle[collider2].r.x - particle[collider1].r.x;
     dr.y = particle[collider2].r.y - particle[collider1].r.y;
@@ -237,7 +241,7 @@ void print()
         fprintf(r, "%e\t%e\t%e\n", particle[k].r.x, particle[k].r.y, particle[k].r.z);
     }
 
-    fprintf(f, "%d\t%lf\t%lf\t%lf\n", N, ETA, pressure, temperature);
+    fprintf(f, "%d\t%lf\t%lf\t%lf\t%e\n", N, ETA, pressure, temperature, dr2/N/runtime);
 
     fclose(v);
     fclose(r);
