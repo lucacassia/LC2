@@ -9,7 +9,7 @@ double *ctimes = NULL;
 int collider1, collider2;
 int n;
 int N = 54;
-double ETA = 0.3;
+double ETA = 0.02;
 double SIGMA;
 
 double runtime;
@@ -110,7 +110,6 @@ void init()
 {
     n = 0;
     while(2*n*n*n < N) n++;
-    printf("\nN = %d\tn = %d\n",N,n);
     SIGMA = cbrt(ETA*1.909859317/N);
 
     clear();
@@ -133,7 +132,7 @@ void init()
     vec3 tmp = vec3_new(0.0, 0.0, 0.0);
     for(k = 0; k < N; k++){
         particle[k].c = vec3_new(_rand(), _rand(), _rand());
-        particle[k].v = vec3_new(_rand()*2-1, _rand()*2-1, _rand()*2-1);
+        particle[k].v = vec3_new(_rand()*2-1, _rand()*2-1, 0);
         tmp.x += particle[k].v.x;
         tmp.y += particle[k].v.y;
         tmp.z += particle[k].v.z;
