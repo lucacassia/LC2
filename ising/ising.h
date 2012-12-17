@@ -10,8 +10,8 @@
 #define SPIN_UP     255
 #define SPIN_DOWN   0
 
-int width = 300;
-int height = 300;
+int width = 1000;
+int height = 500;
 char *pixels = NULL;
 
 void clear()
@@ -45,7 +45,7 @@ int hamiltonian(int i, int j)
     else H--;
     if(pixels[((height+i-1)%height)*width+j]) H++;
     else H--;
-    return H;
+    return H/2.0;
 }
 
 void run()
