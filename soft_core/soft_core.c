@@ -12,6 +12,12 @@ void drawStuff()
         tmp = tmp->next;
         if(tmp == particles) break;
     }
+
+    double h = 1.0, dh = 0.05;
+    print_bitmap_string(0.0, h-=dh, 1.0, "Particles: %d", N);
+    print_bitmap_string(0.0, h-=dh, 1.0, "Sigma = %lf", SIGMA);
+    print_bitmap_string(0.0, h-=dh, 1.0, "dt = %lf", dt);
+    print_bitmap_string(0.0, h-=dh, 1.0, "H = %lf", ham);
 }
 
 void keyboardF(unsigned char key, int x, int y)
@@ -20,6 +26,9 @@ void keyboardF(unsigned char key, int x, int y)
     {
         case ' ':
             active = !active;
+            break;
+        case 'h':
+            ham = get_hamilton();
             break;
         case '+':
             dt *= 2;

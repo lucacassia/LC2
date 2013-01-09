@@ -6,6 +6,7 @@
 
 body *particle = NULL;
 double *ctimes = NULL;
+vec3 *data = NULL;
 int collider1, collider2;
 int N = 250;
 double ETA = 0.2;
@@ -17,7 +18,7 @@ double pressure;
 double dp;
 double kinetic;
 double temperature = 1.0;
-double dr2;
+double mfp;
 int hits;
 
 double get_kinetic()
@@ -94,13 +95,15 @@ void clear()
         free(particle);
     if(ctimes != NULL)
         free(ctimes);
+    if(data != NULL)
+        free(data);
 }
 
 void reset()
 {
     runtime = 0;
     dp = 0;
-    dr2 = 0;
+    mfp = 0;
     pressure = 0;
     hits = 0;
 }
@@ -113,7 +116,8 @@ void init()
 
     clear();
     particle = (body*)malloc(N*sizeof(body));
-    ctimes = (double*)malloc(N*N*sizeof(body));
+    ctimes = (double*)malloc(N*N*sizeof(double));
+    data = (vec3*)malloc(N*10000*sizeof(vec3));
 
     int i,j,k,l;
     for(l = i = 0; i < n && l < N/2; i++)
@@ -171,7 +175,7 @@ void run()
 
     int k;
     for(k = 0; k < N; k++){
-        dr2 += min_time * min_time * vec3_dot(particle[k].v, particle[k].v);
+        mfp += min_time * min_time * vec3_dot(particle[k].v, particle[k].v);
 
         particle[k].r.x += particle[k].v.x * min_time;
         particle[k].r.y += particle[k].v.y * min_time;
@@ -232,19 +236,16 @@ void run()
 void print()
 {
     FILE *v = fopen("speed.dat","a");
-    FILE *r = fopen("position.dat","w");
     FILE *f = fopen("data.dat","a");
 
     int k;
     for(k = 0; k < N; k++){
         fprintf(v, "%e\t%e\t%e\n", particle[k].v.x, particle[k].v.y, particle[k].v.z);
-        fprintf(r, "%e\t%e\t%e\n", particle[k].r.x, particle[k].r.y, particle[k].r.z);
     }
 
-    fprintf(f, "%d\t%lf\t%lf\t%lf\t%e\t%e\n", N, ETA, pressure, temperature, dr2/N/runtime, SIGMA*dp/(2*kinetic*runtime) );
+    fprintf(f, "%d\t%lf\t%lf\t%lf\t%e\t%e\n", N, ETA, pressure, temperature, mfp/N/runtime, SIGMA*dp/(2*kinetic*runtime) );
 
     fclose(v);
-    fclose(r);
     fclose(f);
 }
 

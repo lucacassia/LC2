@@ -6,6 +6,8 @@ double SIGMA = 0.1;
 double dt = 1e-10;
 body *particles;
 
+double ham;
+
 body newBody(const vec3 position, const vec3 velocity){
     body tmp = {.r = position,
                 .v = velocity,
@@ -126,6 +128,8 @@ void run(){
                         }
         }while((i = i->next) != particles);
     }
+
+    ham = get_hamilton();
 }
 
 void init()
@@ -172,17 +176,18 @@ void init()
         ptr->v.y /= norm;
         ptr->v.z /= norm;
     }while((ptr = ptr->next) != particles);
+
+    ham = get_hamilton();
 }
 
 void print()
 {
-    FILE *v = fopen("speed.dat","w");
+    FILE *v = fopen("speed.dat","a");
     FILE *r = fopen("position.dat","w");
 
     body *i = particles;
     do{
         fprintf(v, "%e\t%e\t%e\n", i->v.x, i->v.y, i->v.z);
-        fprintf(r, "%e\t%e\t%e\n", i->r.x, i->r.y, i->r.z);
     }while((i = i->next) != particles);
 
     fclose(v);
