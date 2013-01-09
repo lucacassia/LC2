@@ -102,13 +102,9 @@ void run(){
             i->r.y += i->v.y * dt;
             i->r.z += i->v.z * dt;
 
-            i->r.x = fmod(i->r.x,1);
-            i->r.y = fmod(i->r.y,1);
-            i->r.z = fmod(i->r.z,1);
-
-            if(i->r.x < 0) i->r.x += 1;
-            if(i->r.y < 0) i->r.y += 1;
-            if(i->r.z < 0) i->r.z += 1;
+            i->r.x -= floor(i->r.x);
+            i->r.y -= floor(i->r.y);
+            i->r.z -= floor(i->r.z);
         }while((i = i->next) != particles);
 
         do{

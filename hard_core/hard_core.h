@@ -7,6 +7,8 @@
 body *particle = NULL;
 double *ctimes = NULL;
 vec3 *data = NULL;
+double *dr2 = NULL;
+
 int ptr;
 int collider1, collider2;
 int N = 250;
@@ -99,6 +101,8 @@ void clear()
         free(ctimes);
     if(data != NULL)
         free(data);
+    if(dr2 != NULL)
+        free(dr2);
 }
 
 void reset()
@@ -119,8 +123,8 @@ void init()
     clear();
     particle = (body*)malloc(N*sizeof(body));
     ctimes = (double*)malloc(N*N*sizeof(double));
-    data = (vec3*)malloc(N*10000*sizeof(vec3));
-    ptr = 0;
+    data = (vec3*)malloc(N*NSIM*sizeof(vec3));
+    dr2 = (double*)malloc(NSIM*sizeof(double));
 
     int i,j,k,l;
     for(l = i = 0; i < n && l < N/2; i++)
@@ -158,8 +162,9 @@ void init()
         particle[k].v.x /= norm;
         particle[k].v.y /= norm;
         particle[k].v.z /= norm;
-        data[ptr*N+k] = particle[k].r;
     }
+
+    ptr = 0;
 
     collider1 = 0;
     collider2 = 0;
@@ -185,13 +190,9 @@ void run()
         particle[k].r.y += particle[k].v.y * min_time;
         particle[k].r.z += particle[k].v.z * min_time;
 
-        particle[k].r.x = fmod(particle[k].r.x,1);
-        particle[k].r.y = fmod(particle[k].r.y,1);
-        particle[k].r.z = fmod(particle[k].r.z,1);
-
-        if(particle[k].r.x < 0) particle[k].r.x += 1;
-        if(particle[k].r.y < 0) particle[k].r.y += 1;
-        if(particle[k].r.z < 0) particle[k].r.z += 1;
+        particle[k].r.x -= floor(particle[k].r.x);
+        particle[k].r.y -= floor(particle[k].r.y);
+        particle[k].r.z -= floor(particle[k].r.z);
     }
 
     dr.x = particle[collider2].r.x - particle[collider1].r.x;
@@ -242,9 +243,16 @@ void run()
     pressure = N*temperature*(1+SIGMA*dp/(2*kinetic*runtime));
 }
 
-void dr2()
+void get_dr2()
 {
-    
+    int i,j,k;
+    for(i = 0; i < NSIM; i++){
+        for(j = 0; j < NSIM-i; j++){
+            for(k = 0; k < N; k++){
+                dr2[i] += vec3_dot(data[ptr+1],data[ptr+1]);
+            }
+        }
+    }
 }
 
 void print()
