@@ -28,11 +28,11 @@ void keyboardF(unsigned char key, int x, int y)
             dt /= 2;
             break;
         case 'n':
-            N++;
+            N += 2;
             init();
             break;
         case 'N':
-            if(N > 0) N--;
+            if(N > 1) N -=2;
             init();
             break;
         case 'f': case 'F':

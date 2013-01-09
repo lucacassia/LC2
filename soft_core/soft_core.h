@@ -1,9 +1,8 @@
 #include <string.h>
 #include "vec3.h"
 
-int N = 256;
+int N = 16;
 double SIGMA = 0.1;
-double EPSILON = 1;
 double dt = 1e-10;
 body *particles;
 
@@ -131,39 +130,48 @@ void run(){
 
 void init()
 {
+    int n = 0;
+    while(2*n*n*n < N) n++;
+
     clear();
-    int k;
-    int start = 0;
-    vec3 sum = vec3_new(0.0,0.0,0.0);
-    vec3 tmp = vec3_new(SIGMA/2, SIGMA/2, SIGMA/2);
-    for(k = 0; k < N; k++){
-        particles = append(particles, newBody( tmp, vec3_new(2.0*_rand()-1.0, 2.0*_rand()-1.0, 2.0*_rand()-1.0)));
-        sum.x += particles->prev->v.x;
-        sum.y += particles->prev->v.y;
-        sum.z += particles->prev->v.z;
-
-        tmp.x += 2*SIGMA/sqrt(3);
-        if(tmp.x > 1-SIGMA/2){
-            tmp.x = SIGMA/2 + start*SIGMA/sqrt(3);
-            tmp.y += 2*SIGMA/sqrt(3);
-            if(tmp.y > 1-SIGMA/2){
-                start = (start+1)%2;
-                tmp.y = tmp.x = SIGMA/2 + start*SIGMA/sqrt(3);
-                tmp.z += SIGMA/sqrt(3);
-                if(tmp.z > 1-SIGMA/2){
-                    printf("\nWay too packed!\n");
-                    break;
-                }
+    int i,j,k,l;
+    vec3 tmp, sum = vec3_new(0.0,0.0,0.0);
+    for(l = i = 0; i < n && l < N/2; i++)
+        for(j = 0; j < n && l < N/2; j++)
+            for(k = 0; k < n && l < N/2; k++){
+                tmp.x = i*1.0/n;
+                tmp.y = j*1.0/n;
+                tmp.z = k*1.0/n;
+                particles = append(particles, newBody( tmp, vec3_new(2.0*_rand()-1.0, 2.0*_rand()-1.0, 2.0*_rand()-1.0)));
+                tmp.x += 1.0/n/2.0;
+                tmp.y += 1.0/n/2.0;
+                tmp.z += 1.0/n/2.0;
+                particles = append(particles, newBody( tmp, vec3_new(2.0*_rand()-1.0, 2.0*_rand()-1.0, 2.0*_rand()-1.0)));
+                sum.x += particles->prev->v.x + particles->prev->prev->v.x;
+                sum.y += particles->prev->v.y + particles->prev->prev->v.y;
+                sum.z += particles->prev->v.z + particles->prev->prev->v.z;
+                l++;
             }
-        }
-    }
 
-    body *i = particles;
+    body *ptr = particles;
     do{
-        i->v.x -= sum.x / N;
-        i->v.y -= sum.y / N;
-        i->v.z -= sum.z / N;
-    }while((i = i->next) != particles);
+        ptr->v.x -= sum.x / N;
+        ptr->v.y -= sum.y / N;
+        ptr->v.z -= sum.z / N;
+    }while((ptr = ptr->next) != particles);
+
+    double norm = 0;
+    do{
+        norm += vec3_dot(ptr->v, ptr->v);
+    }while((ptr = ptr->next) != particles);
+
+    norm = norm / (3 * N);
+    norm = sqrt(norm);
+    do{
+        ptr->v.x /= norm;
+        ptr->v.y /= norm;
+        ptr->v.z /= norm;
+    }while((ptr = ptr->next) != particles);
 }
 
 void print()

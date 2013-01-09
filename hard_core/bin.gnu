@@ -9,7 +9,8 @@ set xlabel "v"
 set ylabel "PDF"
 set term postscript enhanced color landscape lw 1 "Verdana,10"
 set output 'Maxwell-Boltzmann.eps'
-f(x) = sqrt(2/3.1415/T/T/T)*x*x*exp(-x*x/2/T)
+f(x) = N*sqrt(2/3.1415/T/T/T)*x*x*exp(-x*x/2/T)
 T=0.2
-fit f(x) 'bin.dat' using 1:2 via T
-plot 'bin.dat' ls 2 title 'PDF', f(x) ls 1 title 'fit'
+N=5
+fit f(x) 'bin.dat' using 1:2 via T,N
+plot 'bin.dat' using 1:2:3 w errorbars ls 2 title 'PDF', f(x) ls 1 title 'fit'

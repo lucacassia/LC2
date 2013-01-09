@@ -5,6 +5,20 @@
 
 int active = 0;
 
+void savePPM(char *frame)
+{
+    FILE *f = fopen("ising.ppm", "wb");
+    fprintf(f, "P6\n%d %d\n255\n", width, height);
+    int i,j;
+    for(i = height-1; i >= 0; i--)
+        for(j = 0; j < width; j++){
+            fwrite(&frame[(i*width+j)], sizeof(char), 1, f);
+            fwrite(&frame[(i*width+j)], sizeof(char), 1, f);
+            fwrite(&frame[(i*width+j)], sizeof(char), 1, f);
+        }
+    fclose(f);
+}
+
 void GLInit()
 {
     glDisable(GL_DEPTH_TEST);
@@ -37,6 +51,9 @@ void keyboardF(unsigned char key, int mouseX, int mouseY)
             exit(EXIT_SUCCESS);
         case ' ':
             active =! active;
+            break;
+        case 'p': case 'P':
+            savePPM(pixels);
             break;
     }
 }

@@ -2,15 +2,15 @@
 
 int main(){
     int i;
-    for(N = 2; N <= 100; N += 2){
+    for(ETA = 0.01; ETA < 0.68; ETA += 0.01){
         init();
-        for(i = 0; i < 30000; i++)
+        for(i = 0; i < 10000; i++)
             run();
         reset();
-        for(i = 0; i < 30000; i++)
+        for(i = 0; i < 10000; i++)
             run();
         print();
-        printf("N = %d\truntime = %lf\n",N,runtime);
+        printf("ETA = %lf\truntime = %lf\n", ETA, runtime);
     }
     return 0;
 }

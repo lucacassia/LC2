@@ -10,8 +10,8 @@
 #define SPIN_UP     255
 #define SPIN_DOWN   0
 
-int width = 1000;
-int height = 500;
+int width = 300;
+int height = 300;
 char *pixels = NULL;
 
 void clear()

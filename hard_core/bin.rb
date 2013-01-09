@@ -24,7 +24,8 @@ ARGV.each do|file|
 
     sum = 0.0
     for i in 0..num-1
-        bin.write( "#{min+(i+0.5)*width}\t%.10e\n" %(freq[i]*1.0/size/width) )
+        bin.write( "#{min+(i+0.5)*width}\t%.10e" %(freq[i]))
+        bin.write( "\t%.10e\n" %(Math.sqrt(freq[i])) )
     end
 
     raw.close
