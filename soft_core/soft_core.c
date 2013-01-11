@@ -5,21 +5,23 @@
 #include "soft_core.h"
 
 void drawStat()
-{/*
-    glViewport (0, 0, (GLsizei) width / 4, (GLsizei) height / 4); 
-    glClear(GL_COLOR_BUFFER_BIT);
-    gluOrtho2D(-1,1,-dmax,dmax);
+{
+    glEnable(GL_SCISSOR_TEST);
+    glViewport(0, 0, (GLsizei) width , (GLsizei) height / 4); 
+    glScissor(0, 0, (GLsizei) width , (GLsizei) height / 4); 
     glLoadIdentity();
-    glClearColor(1,1,1,1);
-	glColor3d(1,0,0);
+    gluOrtho2D(0, 1, -dmax, dmax);
+//    glClearColor(1,1,1,1);
+	glColor3d(1,1,1);
 	glBegin(GL_LINE_STRIP);
     int i;
     for(i = 0; i < NDATA; i++) {
-    	glVertex2d(2.0 * ( i / (float) (NDATA-1) ) - 1.0, data[(ptr+i)%NDATA] / dmax);
+    	glVertex2d( i / (float) (NDATA-1) , data[(ptr+i)%NDATA] / dmax);
     }
 	glEnd();
-    glutSwapBuffers();
-*/}
+    glDisable(GL_SCISSOR_TEST);
+
+}
 
 void showInfo()
 {

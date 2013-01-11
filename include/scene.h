@@ -27,14 +27,13 @@ void drawString(int x, int y, char *format,...)
     vsprintf(buffer, format, args);
     va_end(args);
 
-    glPushAttrib(GL_LIGHTING_BIT | GL_CURRENT_BIT); // lighting and color mask
-    glDisable(GL_LIGHTING);     // need to disable lighting for proper text color
+    glPushAttrib(GL_LIGHTING_BIT | GL_CURRENT_BIT);
+    glDisable(GL_LIGHTING);
     glDisable(GL_TEXTURE_2D);
 
     glColor3f(1.0, 1.0, 1.0);
-    glRasterPos2i(x, y);        // place text position
+    glRasterPos2i(x, y);
 
-    // loop all characters in the string
     for (str = buffer; *str; str++)
         glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, *str);
 
@@ -61,19 +60,18 @@ void drawSphere(vec3 p,double r,vec3 c)
 
 void reshapeF(int w, int h)
 {
-    width = w;
-    height = h;
-    glViewport (0, 0, (GLsizei) w, (GLsizei) h); 
-    glMatrixMode (GL_PROJECTION);
-    glLoadIdentity ();
-    glFrustum (-w*0.5/h, w*0.5/h, -0.5, 0.5, 0.5, 2.0);
-    glMatrixMode (GL_MODELVIEW);
+    glViewport(0, 0, width = w, height = h); 
 }
 
 void displayF()
 {
-    reshapeF(width, height);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    /*main window*/
+    glViewport (0, 0, (GLsizei) width, (GLsizei) height);
+    glMatrixMode (GL_PROJECTION);
+    glLoadIdentity ();
+    glFrustum (-width * 0.5 / height, width * 0.5 / height, -0.5, 0.5, 0.5, 2.0);
+    glMatrixMode (GL_MODELVIEW);
     glLoadIdentity();
     gluLookAt (0.0, 0.0, 1.1, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
     glRotatef(v_angle, 1.0f, 0.0f, 0.0f);
@@ -81,8 +79,10 @@ void displayF()
     glutWireCube (1.0);
     glTranslatef(-0.5, -0.5, -0.5);
     drawStuff();
-    glutSwapBuffers();
+    /*stat window*/
     drawStat();
+    glFlush();
+    glutSwapBuffers();
 }
 
 void glInit()
