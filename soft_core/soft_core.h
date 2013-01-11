@@ -3,10 +3,15 @@
 
 int N = 16;
 double SIGMA = 0.1;
-double dt = 1e-10;
+double dt = 1e-3;
 body *particles;
 
-double ham;
+double temperature = 1.0;
+
+int NDATA = 1000;
+double *data = NULL;
+double dmax = 0;
+int ptr = 0;
 
 body newBody(const vec3 position, const vec3 velocity){
     body tmp = {.r = position,
@@ -76,6 +81,34 @@ double get_hamilton(){
     return tmp;
 }
 
+double get_temperature(){
+    double tmp = 0;
+    body *i = particles;
+    do{
+        tmp += vec3_dot(i->v, i->v);
+    }while((i = i->next) != particles);
+    return tmp / (3 * N);
+}
+
+double get_u(){
+    double tmp = 0;
+    body *j, *i = particles;
+    do{
+        double dx,dy,dz;
+        for(j = i->next; j != i; j = j->next)
+            for(dx = -1; dx <= 1; dx++)
+                for(dy = -1; dy <= 1; dy++)
+                    for(dz = -1; dz <= 1; dz++){
+                        vec3 dr;
+                        dr.x = dx + j->r.x - i->r.x;
+                        dr.y = dy + j->r.y - i->r.y;
+                        dr.z = dz + j->r.z - i->r.z;
+                        tmp += 4 * (pow(1 / vec3_mod(dr), 12) - pow(1 / vec3_mod(dr), 6));
+                    }
+    }while((i = i->next) != particles);
+    return tmp / N;
+}
+
 void run(){
     if(particles != NULL){
         body *j, *i = particles;
@@ -123,13 +156,16 @@ void run(){
                             i->v.z += dr.z * dv;
                         }
         }while((i = i->next) != particles);
-    }
 
-    ham = get_hamilton();
+        data[ptr = (ptr + 1) % NDATA] = get_temperature();
+        if(abs(data[ptr]) > dmax) dmax = abs(data[ptr]); 
+    }
 }
 
 void init()
 {
+    if(data != NULL) free(data);
+    data = (double*)malloc(NDATA*sizeof(double));
     int n = 0;
     while(2*n*n*n < N) n++;
 
@@ -165,15 +201,13 @@ void init()
         norm += vec3_dot(ptr->v, ptr->v);
     }while((ptr = ptr->next) != particles);
 
-    norm = norm / (3 * N);
+    norm = norm / (3 * N) / temperature;
     norm = sqrt(norm);
     do{
         ptr->v.x /= norm;
         ptr->v.y /= norm;
         ptr->v.z /= norm;
     }while((ptr = ptr->next) != particles);
-
-    ham = get_hamilton();
 }
 
 void print()

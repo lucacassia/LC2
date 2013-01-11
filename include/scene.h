@@ -7,6 +7,7 @@
 
 #define SPHERE	    1
 
+void drawStat();
 void drawStuff();
 void run();
 
@@ -14,20 +15,32 @@ GLuint selectBuf[BUFSIZE];
 int h_angle = 0;
 int v_angle = 0;
 int active = 0;
+int width = 500;
+int height = 500;
 
-void print_bitmap_string(double x, double y, double z, char *format,...)
+void drawString(int x, int y, char *format,...)
 {
     va_list args;
-    char buffer[512], *s;
+    char buffer[512], *str;
 
     va_start(args, format);
     vsprintf(buffer, format, args);
     va_end(args);
 
+    glPushAttrib(GL_LIGHTING_BIT | GL_CURRENT_BIT); // lighting and color mask
+    glDisable(GL_LIGHTING);     // need to disable lighting for proper text color
+    glDisable(GL_TEXTURE_2D);
+
     glColor3f(1.0, 1.0, 1.0);
-    glRasterPos3f(x, y, z);
-    for (s = buffer; *s; s++)
-        glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, *s);
+    glRasterPos2i(x, y);        // place text position
+
+    // loop all characters in the string
+    for (str = buffer; *str; str++)
+        glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, *str);
+
+    glEnable(GL_TEXTURE_2D);
+    glEnable(GL_LIGHTING);
+    glPopAttrib();
 }
 
 void drawSphere(vec3 p,double r,vec3 c)
@@ -48,15 +61,18 @@ void drawSphere(vec3 p,double r,vec3 c)
 
 void reshapeF(int w, int h)
 {
-   glViewport (0, 0, (GLsizei) w, (GLsizei) h); 
-   glMatrixMode (GL_PROJECTION);
-   glLoadIdentity ();
-   glFrustum (-w*0.5/h, w*0.5/h, -0.5, 0.5, 0.5, 2.0);
-   glMatrixMode (GL_MODELVIEW);
+    width = w;
+    height = h;
+    glViewport (0, 0, (GLsizei) w, (GLsizei) h); 
+    glMatrixMode (GL_PROJECTION);
+    glLoadIdentity ();
+    glFrustum (-w*0.5/h, w*0.5/h, -0.5, 0.5, 0.5, 2.0);
+    glMatrixMode (GL_MODELVIEW);
 }
 
 void displayF()
 {
+    reshapeF(width, height);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glLoadIdentity();
     gluLookAt (0.0, 0.0, 1.1, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
@@ -66,6 +82,7 @@ void displayF()
     glTranslatef(-0.5, -0.5, -0.5);
     drawStuff();
     glutSwapBuffers();
+    drawStat();
 }
 
 void glInit()

@@ -4,6 +4,38 @@
 #include "scene.h"
 #include "hard_core.h"
 
+void drawStat(){}
+
+void showInfo()
+{
+    // backup current model-view matrix
+    glPushMatrix();                     // save current modelview matrix
+    glLoadIdentity();                   // reset modelview matrix
+
+    // set to 2D orthogonal projection
+    glMatrixMode(GL_PROJECTION);     // switch to projection matrix
+    glPushMatrix();                  // save current projection matrix
+    glLoadIdentity();                // reset projection matrix
+    gluOrtho2D(0, width, 0, height);  // set to orthogonal projection
+
+    int h = height, dh = 18;
+    drawString(1, h-=dh, "Particles: %d", N);
+    drawString(1, h-=dh, "Eta = %lf", ETA);
+    drawString(1, h-=dh, "Sigma = %lf", SIGMA);
+    drawString(1, h-=dh, "Temperature = %lf", temperature);
+    drawString(1, h-=dh, "Runtime = %lf", runtime);
+    drawString(1, h-=dh, "Pressure = %lf", pressure);
+    drawString(1, h-=dh, "mfp = %lf", mfp/N/runtime);
+    drawString(1, h-=dh, "Hits = %d", hits);
+
+    // restore projection matrix
+    glPopMatrix();                   // restore to previous projection matrix
+
+    // restore modelview matrix
+    glMatrixMode(GL_MODELVIEW);      // switch to modelview matrix
+    glPopMatrix();                   // restore to previous modelview matrix
+}
+
 void drawStuff()
 {
     int k;
@@ -13,15 +45,7 @@ void drawStuff()
         else
             drawSphere(particle[k].r, SIGMA/2, vec3_new(0.2,0.2,0.2));
     }
-    double h = 1.0, dh = 0.05;
-    print_bitmap_string(0.0, h-=dh, 1.0, "Particles: %d", N);
-    print_bitmap_string(0.0, h-=dh, 1.0, "Eta = %lf", ETA);
-    print_bitmap_string(0.0, h-=dh, 1.0, "Sigma = %lf", SIGMA);
-    print_bitmap_string(0.0, h-=dh, 1.0, "Temperature = %lf", temperature);
-    print_bitmap_string(0.0, h-=dh, 1.0, "Runtime = %lf", runtime);
-    print_bitmap_string(0.0, h-=dh, 1.0, "Pressure = %lf", pressure);
-    print_bitmap_string(0.0, h-=dh, 1.0, "mfp = %lf", mfp/N/runtime);
-    print_bitmap_string(0.0, h-=dh, 1.0, "Hits = %d", hits);
+    showInfo();
 }
 
 void keyboardF(unsigned char key, int x, int y)

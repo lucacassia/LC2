@@ -4,6 +4,51 @@
 #include "scene.h"
 #include "soft_core.h"
 
+void drawStat()
+{/*
+    glViewport (0, 0, (GLsizei) width / 4, (GLsizei) height / 4); 
+    glClear(GL_COLOR_BUFFER_BIT);
+    gluOrtho2D(-1,1,-dmax,dmax);
+    glLoadIdentity();
+    glClearColor(1,1,1,1);
+	glColor3d(1,0,0);
+	glBegin(GL_LINE_STRIP);
+    int i;
+    for(i = 0; i < NDATA; i++) {
+    	glVertex2d(2.0 * ( i / (float) (NDATA-1) ) - 1.0, data[(ptr+i)%NDATA] / dmax);
+    }
+	glEnd();
+    glutSwapBuffers();
+*/}
+
+void showInfo()
+{
+    // backup current model-view matrix
+    glPushMatrix();                     // save current modelview matrix
+    glLoadIdentity();                   // reset modelview matrix
+
+    // set to 2D orthogonal projection
+    glMatrixMode(GL_PROJECTION);     // switch to projection matrix
+    glPushMatrix();                  // save current projection matrix
+    glLoadIdentity();                // reset projection matrix
+    gluOrtho2D(0, width, 0, height);  // set to orthogonal projection
+
+    int h = height, dh = 18;
+    drawString(1, h-=dh, "Particles: %d", N);
+    drawString(1, h-=dh, "Sigma = %lf", SIGMA);
+    drawString(1, h-=dh, "dt = %lf", dt);
+    drawString(1, h-=dh, "H = %lf", get_hamilton());
+    drawString(1, h-=dh, "U = %lf", get_u());
+    drawString(1, h-=dh, "T = %lf", get_temperature());
+
+    // restore projection matrix
+    glPopMatrix();                   // restore to previous projection matrix
+
+    // restore modelview matrix
+    glMatrixMode(GL_MODELVIEW);      // switch to modelview matrix
+    glPopMatrix();                   // restore to previous modelview matrix
+}
+
 void drawStuff()
 {
     body *tmp = particles;
@@ -12,12 +57,7 @@ void drawStuff()
         tmp = tmp->next;
         if(tmp == particles) break;
     }
-
-    double h = 1.0, dh = 0.05;
-    print_bitmap_string(0.0, h-=dh, 1.0, "Particles: %d", N);
-    print_bitmap_string(0.0, h-=dh, 1.0, "Sigma = %lf", SIGMA);
-    print_bitmap_string(0.0, h-=dh, 1.0, "dt = %lf", dt);
-    print_bitmap_string(0.0, h-=dh, 1.0, "H = %lf", ham);
+    showInfo();
 }
 
 void keyboardF(unsigned char key, int x, int y)
@@ -26,9 +66,6 @@ void keyboardF(unsigned char key, int x, int y)
     {
         case ' ':
             active = !active;
-            break;
-        case 'h':
-            ham = get_hamilton();
             break;
         case '+':
             dt *= 2;
@@ -70,7 +107,7 @@ int main(int argc, char *argv[])
 {
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
-    glutInitWindowSize(500, 500);
+    glutInitWindowSize(width, height);
     glutCreateWindow("soft core");
 
     srand(time(NULL));

@@ -245,14 +245,7 @@ void run()
 
 void get_dr2()
 {
-    int i,j,k;
-    for(i = 0; i < NSIM; i++){
-        for(j = 0; j < NSIM-i; j++){
-            for(k = 0; k < N; k++){
-                dr2[i] += vec3_dot(data[ptr+1],data[ptr+1]);
-            }
-        }
-    }
+
 }
 
 void print()
@@ -260,8 +253,9 @@ void print()
     FILE *v = fopen("speed.dat","a");
     FILE *f = fopen("data.dat","a");
     FILE *p = fopen("path.dat","w");
+    FILE *d = fopen("dr2.dat","w");
 
-    int k;
+    int i,j,k;
     for(k = 0; k < NSIM; k++){
         fprintf(p, "%e\t%e\t%e\n", data[N*k].x, data[N*k].y, data[N*k].z);
     }
@@ -271,6 +265,21 @@ void print()
 
     fprintf(f, "%d\t%lf\t%lf\t%lf\t%e\t%e\n", N, ETA, pressure, temperature, mfp/N/runtime, SIGMA*dp/(2*kinetic*runtime) );
 
+    vec3 tmp;
+    for(i = 0; i < NSIM; i++){
+        for(j = 0; j < NSIM-i; j++){
+            for(k = 0; k < N; k++){
+                tmp.x = data[ptr+N*(j+i)+k].x-data[ptr+N*j+k].x;
+                dr2[i] += vec3_dot(tmp,tmp);
+            }
+        }
+    }
+    for(i = 0; i < NSIM; i++){
+        fprintf(d, "%e\t", dr2[i] /= N*(NSIM-i) );
+    }
+    fprintf(d, "\n");
+
+    fclose(d);
     fclose(p);
     fclose(v);
     fclose(f);
