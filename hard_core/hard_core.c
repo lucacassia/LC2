@@ -25,7 +25,7 @@ void showInfo()
     drawString(1, h-=dh, "Temperature = %lf", temperature);
     drawString(1, h-=dh, "Runtime = %lf", runtime);
     drawString(1, h-=dh, "Pressure = %lf", pressure);
-    drawString(1, h-=dh, "mfp = %lf", mfp/N/runtime);
+    drawString(1, h-=dh, "mfp = %lf pm %lf", mfp, dmfp);
     drawString(1, h-=dh, "Hits = %d", hits);
 
     // restore projection matrix
@@ -82,6 +82,9 @@ void keyboardF(unsigned char key, int x, int y)
             break;
         case 'i': case 'I':
             init();
+            break;
+        case 'l': case 'L':
+            get_mfp();
             break;
         case 'p': case 'P':
             print();

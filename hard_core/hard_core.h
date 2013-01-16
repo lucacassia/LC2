@@ -7,9 +7,9 @@
 body *particle = NULL;
 double *ctimes = NULL;
 vec3 *data = NULL;
-double *dr2 = NULL;
+double *dtimes = NULL;
+int *ptr = NULL;
 
-int ptr;
 int collider1, collider2;
 int N = 250;
 int NSIM = 10000;
@@ -23,6 +23,7 @@ double dp;
 double kinetic;
 double temperature = 1.0;
 double mfp;
+double dmfp;
 int hits;
 
 double get_kinetic()
@@ -101,16 +102,16 @@ void clear()
         free(ctimes);
     if(data != NULL)
         free(data);
-    if(dr2 != NULL)
-        free(dr2);
+    if(dtimes != NULL)
+        free(dtimes);
+    if(ptr != NULL)
+        free(ptr);
 }
 
 void reset()
 {
     runtime = 0;
     dp = 0;
-    mfp = 0;
-    pressure = 0;
     hits = 0;
 }
 
@@ -124,7 +125,8 @@ void init()
     particle = (body*)malloc(N*sizeof(body));
     ctimes = (double*)malloc(N*N*sizeof(double));
     data = (vec3*)malloc(N*NSIM*sizeof(vec3));
-    dr2 = (double*)malloc(NSIM*sizeof(double));
+    dtimes = (double*)malloc(N*NSIM*sizeof(double));
+    ptr = (int*)malloc(N*sizeof(int));
 
     int i,j,k,l;
     for(l = i = 0; i < n && l < N/2; i++)
@@ -162,9 +164,8 @@ void init()
         particle[k].v.x /= norm;
         particle[k].v.y /= norm;
         particle[k].v.z /= norm;
+        ptr[k] = 0;
     }
-
-    ptr = 0;
 
     collider1 = 0;
     collider2 = 0;
@@ -184,8 +185,6 @@ void run()
 
     int k;
     for(k = 0; k < N; k++){
-        mfp += min_time * min_time * vec3_dot(particle[k].v, particle[k].v);
-
         particle[k].r.x += particle[k].v.x * min_time;
         particle[k].r.y += particle[k].v.y * min_time;
         particle[k].r.z += particle[k].v.z * min_time;
@@ -232,10 +231,12 @@ void run()
 
     collide();
 
-    for(k = 0; k < N; k++){
-        data[ptr*N+k] = particle[k].r;
-    }
-    ptr = (ptr+1)%NSIM;
+    data[ptr[collider1]*N+collider1] = particle[collider1].r;
+    data[ptr[collider2]*N+collider2] = particle[collider2].r;
+    dtimes[ptr[collider1]*N+collider1] = runtime;
+    dtimes[ptr[collider2]*N+collider2] = runtime;
+    ptr[collider1] = (ptr[collider1]+1)%NSIM;
+    ptr[collider2] = (ptr[collider2]+1)%NSIM;
 
     hits++;
     runtime += min_time;
@@ -243,44 +244,51 @@ void run()
     pressure = N*temperature*(1+SIGMA*dp/(2*kinetic*runtime));
 }
 
-void get_dr2()
+void get_mfp()
 {
-
+    int i,j;
+    double tmp[N];
+    vec3 dr;
+    for(j = 0; j < N; j++){
+        for(tmp[j] = i = 0; i < NSIM-1; i++){
+            dr.x = data[(ptr[j]+i+1)*N+j].x - data[(ptr[j]+i)*N+j].x;
+            dr.y = data[(ptr[j]+i+1)*N+j].y - data[(ptr[j]+i)*N+j].y;
+            dr.z = data[(ptr[j]+i+1)*N+j].z - data[(ptr[j]+i)*N+j].z;
+            tmp[j] += vec3_mod(dr);
+        }
+        tmp[j] /= NSIM;
+    }
+    mfp = dmfp = 0;
+    for(j = 0; j < N; j++){
+        mfp += tmp[j];
+    }
+    mfp /= N;
+    for(j = 0; j < N; j++){
+        dmfp += (tmp[j]-mfp)*(tmp[j]-mfp);
+    }
+    dmfp = sqrt(dmfp/(N*N));
 }
 
 void print()
 {
     FILE *v = fopen("speed.dat","a");
     FILE *f = fopen("data.dat","a");
-    FILE *p = fopen("path.dat","w");
-    FILE *d = fopen("dr2.dat","w");
+    FILE *t = fopen("times.dat","w");
 
-    int i,j,k;
-    for(k = 0; k < NSIM; k++){
-        fprintf(p, "%e\t%e\t%e\n", data[N*k].x, data[N*k].y, data[N*k].z);
+    int i,k;
+    for(k = 0; k < N; k++){
+        for(i = 0; i < NSIM-1; i++){
+            fprintf(t, "%e\n", dtimes[(ptr[k]+i+1)*N+k] - dtimes[(ptr[k]+i)*N+k]);
+        }
     }
+
     for(k = 0; k < N; k++){
         fprintf(v, "%e\t%e\t%e\n", particle[k].v.x, particle[k].v.y, particle[k].v.z);
     }
 
-    fprintf(f, "%d\t%lf\t%lf\t%lf\t%e\t%e\n", N, ETA, pressure, temperature, mfp/N/runtime, SIGMA*dp/(2*kinetic*runtime) );
+    fprintf(f, "%d\t%lf\t%lf\t%lf\t%e\n", N, ETA, pressure, temperature, SIGMA*dp/(2*kinetic*runtime) );
 
-    vec3 tmp;
-    for(i = 0; i < NSIM; i++){
-        for(j = 0; j < NSIM-i; j++){
-            for(k = 0; k < N; k++){
-                tmp.x = data[ptr+N*(j+i)+k].x-data[ptr+N*j+k].x;
-                dr2[i] += vec3_dot(tmp,tmp);
-            }
-        }
-    }
-    for(i = 0; i < NSIM; i++){
-        fprintf(d, "%e\t", dr2[i] /= N*(NSIM-i) );
-    }
-    fprintf(d, "\n");
-
-    fclose(d);
-    fclose(p);
+    fclose(t);
     fclose(v);
     fclose(f);
 }
