@@ -2,212 +2,177 @@
 #include "vec3.h"
 
 int N = 16;
-double SIGMA = 0.1;
+double L = 10.0f;
 double dt = 1e-3;
-body *particles;
+body *particle = NULL;
 
 double temperature = 1.0;
+double runtime;
 
 int NDATA = 1000;
 double *data = NULL;
 double dmax = 0;
 int ptr = 0;
 
-body newBody(const vec3 position, const vec3 velocity){
-    body tmp = {.r = position,
-                .v = velocity,
-                .c = vec3_new(_rand(), _rand(), _rand()),
-                .prev = &tmp,
-                .next = &tmp
-                };
-    return tmp;
+void clear()
+{
+    if(particle != NULL)
+        free(particle);
+    if(data != NULL)
+        free(data);
 }
 
-body *append(body *head, const body obj){
-    body *tmp = (body *)malloc(sizeof(body));
-    memcpy(tmp, &obj, sizeof(body));
-    if(head == NULL)
-        head = tmp;
-    tmp->next = head;
-    tmp->prev = head->prev;
-    tmp->next->prev = tmp;
-    tmp->prev->next = tmp;
-    return head;
-}
-
-body *erase(body *head, body *obj){
-    if(head != NULL){
-        if(head == obj){
-            head = head->next;
-            if(head == head->next && head == head->prev)
-                head = NULL;
-        }
-        obj->next->prev = obj->prev;
-        obj->prev->next = obj->next;
-        free(obj);
-    }
-    return head;
-}
-
-void clear(){
-    if(particles != NULL){
-        body *tmp = particles->next;
-        while(tmp != particles){
-            tmp = tmp->next;
-            free(tmp->prev);
-        }
-        free(tmp);
-    }
-    particles = NULL;
+void reset()
+{
+    runtime = 0;
 }
 
 double get_hamilton(){
     double tmp = 0;
-    body *j, *i = particles;
-    do{
-        tmp += vec3_dot(i->v, i->v)/2;
-            double dx,dy,dz;
-            for(j = i->next; j != i; j = j->next)
-                for(dx = -1; dx <= 1; dx++)
-                    for(dy = -1; dy <= 1; dy++)
-                        for(dz = -1; dz <= 1; dz++){
-                            vec3 dr;
-                            dr.x = dx + j->r.x - i->r.x;
-                            dr.y = dy + j->r.y - i->r.y;
-                            dr.z = dz + j->r.z - i->r.z;
-                            tmp += 4 * (pow(1 / vec3_mod(dr), 12) - pow(1 / vec3_mod(dr), 6));
-                        }
-    }while((i = i->next) != particles);
+    int i,j;
+    for(i = 0; i < N; i++){
+        tmp += vec3_dot(particle[i].v, particle[i].v) / 2;
+        double dx,dy,dz;
+        for(j = i+1; j < N; j++)
+            for(dx = -1; dx <= 1; dx++)
+                for(dy = -1; dy <= 1; dy++)
+                    for(dz = -1; dz <= 1; dz++){
+                        vec3 dr;
+                        dr.x = dx + particle[j].r.x - particle[i].r.x;
+                        dr.y = dy + particle[j].r.y - particle[i].r.y;
+                        dr.z = dz + particle[j].r.z - particle[i].r.z;
+                        tmp += 4 * (pow(1 / vec3_mod(dr), 12) - pow(1 / vec3_mod(dr), 6));
+                    }
+    }
     return tmp;
 }
 
 double get_temperature(){
     double tmp = 0;
-    body *i = particles;
-    do{
-        tmp += vec3_dot(i->v, i->v);
-    }while((i = i->next) != particles);
+    int i;
+    for(i = 0; i < N; i++)
+        tmp += vec3_dot(particle[i].v, particle[i].v);
     return tmp / (3 * N);
 }
 
 double get_u(){
     double tmp = 0;
-    body *j, *i = particles;
-    do{
+    int i,j;
+    for(i = 0; i < N; i++){
         double dx,dy,dz;
-        for(j = i->next; j != i; j = j->next)
+        for(j = i+1; j < N; j++)
             for(dx = -1; dx <= 1; dx++)
                 for(dy = -1; dy <= 1; dy++)
                     for(dz = -1; dz <= 1; dz++){
                         vec3 dr;
-                        dr.x = dx + j->r.x - i->r.x;
-                        dr.y = dy + j->r.y - i->r.y;
-                        dr.z = dz + j->r.z - i->r.z;
+                        dr.x = dx + particle[j].r.x - particle[i].r.x;
+                        dr.y = dy + particle[j].r.y - particle[i].r.y;
+                        dr.z = dz + particle[j].r.z - particle[i].r.z;
                         tmp += 4 * (pow(1 / vec3_mod(dr), 12) - pow(1 / vec3_mod(dr), 6));
                     }
-    }while((i = i->next) != particles);
+    }
     return tmp / N;
 }
 
 void run(){
-    if(particles != NULL){
-        body *j, *i = particles;
-
-        do{
-            double dx,dy,dz;
-            for(j = i->next; j != i; j = j->next)
-                for(dx = -1; dx <= 1; dx++)
-                    for(dy = -1; dy <= 1; dy++)
-                        for(dz = -1; dz <= 1; dz++){
-                            vec3 dr;
-                            dr.x = dx + j->r.x - i->r.x;
-                            dr.y = dy + j->r.y - i->r.y;
-                            dr.z = dz + j->r.z - i->r.z;
-                            double dv = -2 * (2 * pow(1 / vec3_mod(dr), 13) - pow(1 / vec3_mod(dr), 7)) * dt / vec3_mod(dr);
-                            i->v.x += dr.x * dv;
-                            i->v.y += dr.y * dv;
-                            i->v.z += dr.z * dv;
-                        }
-        }while((i = i->next) != particles);
-
-        do{
-            i->r.x += i->v.x * dt;
-            i->r.y += i->v.y * dt;
-            i->r.z += i->v.z * dt;
-
-            i->r.x -= floor(i->r.x);
-            i->r.y -= floor(i->r.y);
-            i->r.z -= floor(i->r.z);
-        }while((i = i->next) != particles);
-
-        do{
-            double dx,dy,dz;
-            for(j = i->next; j != i; j = j->next)
-                for(dx = -1; dx <= 1; dx++)
-                    for(dy = -1; dy <= 1; dy++)
-                        for(dz = -1; dz <= 1; dz++){
-                            vec3 dr;
-                            dr.x = dx + j->r.x - i->r.x;
-                            dr.y = dy + j->r.y - i->r.y;
-                            dr.z = dz + j->r.z - i->r.z;
-                            double dv = -2 * (2 * pow(1 / vec3_mod(dr), 13) - pow(1 / vec3_mod(dr), 7)) * dt / vec3_mod(dr);
-                            i->v.x += dr.x * dv;
-                            i->v.y += dr.y * dv;
-                            i->v.z += dr.z * dv;
-                        }
-        }while((i = i->next) != particles);
-
-        data[ptr = (ptr + 1) % NDATA] = get_temperature();
-        if(abs(data[ptr]) > dmax) dmax = abs(data[ptr]); 
+    int i,j;
+    for(i = 0; i < N; i++){
+        double dx,dy,dz;
+        for(j = i+1; j < N; j++)
+            for(dx = -1; dx <= 1; dx++)
+                for(dy = -1; dy <= 1; dy++)
+                    for(dz = -1; dz <= 1; dz++){
+                        vec3 dr;
+                        dr.x = dx + particle[j].r.x - particle[i].r.x;
+                        dr.y = dy + particle[j].r.y - particle[i].r.y;
+                        dr.z = dz + particle[j].r.z - particle[i].r.z;
+                        double dv = -2 * (2 * pow(1 / vec3_mod(dr), 13) - pow(1 / vec3_mod(dr), 7)) * dt / vec3_mod(dr);
+                        particle[i].v.x += dr.x * dv;
+                        particle[i].v.y += dr.y * dv;
+                        particle[i].v.z += dr.z * dv;
+                    }
     }
+
+    for(i = 0; i < N; i++){
+        particle[i].r.x += particle[i].v.x * dt;
+        particle[i].r.y += particle[i].v.y * dt;
+        particle[i].r.z += particle[i].v.z * dt;
+
+        particle[i].r.x -= floor(particle[i].r.x);
+        particle[i].r.y -= floor(particle[i].r.y);
+        particle[i].r.z -= floor(particle[i].r.z);
+    }
+
+    for(i = 0; i < N; i++){
+        double dx,dy,dz;
+        for(j = i+1; j < N; j++)
+            for(dx = -1; dx <= 1; dx++)
+                for(dy = -1; dy <= 1; dy++)
+                    for(dz = -1; dz <= 1; dz++){
+                        vec3 dr;
+                        dr.x = dx + particle[j].r.x - particle[i].r.x;
+                        dr.y = dy + particle[j].r.y - particle[i].r.y;
+                        dr.z = dz + particle[j].r.z - particle[i].r.z;
+                        double dv = -2 * (2 * pow(1 / vec3_mod(dr), 13) - pow(1 / vec3_mod(dr), 7)) * dt / vec3_mod(dr);
+                        particle[i].v.x += dr.x * dv;
+                        particle[i].v.y += dr.y * dv;
+                        particle[i].v.z += dr.z * dv;
+                    }
+    }
+
+    runtime += dt;
+
+    data[ptr = (ptr + 1) % NDATA] = get_temperature();
+    if(abs(data[ptr]) > dmax) dmax = abs(data[ptr]); 
 }
 
 void init()
 {
-    if(data != NULL) free(data);
-    data = (double*)malloc(NDATA*sizeof(double));
     int n = 0;
     while(2*n*n*n < N) n++;
 
     clear();
+    particle = (body*)malloc(N*sizeof(body));
+    data = (double*)malloc(NDATA*sizeof(double));
+
     int i,j,k,l;
-    vec3 tmp, sum = vec3_new(0.0,0.0,0.0);
     for(l = i = 0; i < n && l < N/2; i++)
         for(j = 0; j < n && l < N/2; j++)
             for(k = 0; k < n && l < N/2; k++){
-                tmp.x = i*1.0/n;
-                tmp.y = j*1.0/n;
-                tmp.z = k*1.0/n;
-                particles = append(particles, newBody( tmp, vec3_new(2.0*_rand()-1.0, 2.0*_rand()-1.0, 2.0*_rand()-1.0)));
-                tmp.x += 1.0/n/2.0;
-                tmp.y += 1.0/n/2.0;
-                tmp.z += 1.0/n/2.0;
-                particles = append(particles, newBody( tmp, vec3_new(2.0*_rand()-1.0, 2.0*_rand()-1.0, 2.0*_rand()-1.0)));
-                sum.x += particles->prev->v.x + particles->prev->prev->v.x;
-                sum.y += particles->prev->v.y + particles->prev->prev->v.y;
-                sum.z += particles->prev->v.z + particles->prev->prev->v.z;
+                particle[l].r.x = i*L/n;
+                particle[l].r.y = j*L/n;
+                particle[l].r.z = k*L/n;
+                particle[N/2+l].r.x = particle[l].r.x + L/(2*n);
+                particle[N/2+l].r.y = particle[l].r.y + L/(2*n);
+                particle[N/2+l].r.z = particle[l].r.z + L/(2*n);
                 l++;
             }
 
-    body *ptr = particles;
-    do{
-        ptr->v.x -= sum.x / N;
-        ptr->v.y -= sum.y / N;
-        ptr->v.z -= sum.z / N;
-    }while((ptr = ptr->next) != particles);
+    vec3 tmp = vec3_new(0.0, 0.0, 0.0);
+    for(k = 0; k < N; k++){
+        particle[k].c = vec3_new(_rand(), _rand(), _rand());
+        particle[k].v = vec3_new(_rand()*2-1, _rand()*2-1, _rand()*2-1);
+        tmp.x += particle[k].v.x;
+        tmp.y += particle[k].v.y;
+        tmp.z += particle[k].v.z;
+    }
 
+    for(k = 0; k < N; k++){
+        particle[k].v.x -= tmp.x/N;
+        particle[k].v.y -= tmp.y/N;
+        particle[k].v.z -= tmp.z/N;
+    }
     double norm = 0;
-    do{
-        norm += vec3_dot(ptr->v, ptr->v);
-    }while((ptr = ptr->next) != particles);
+    for(k = 0; k < N; k++)
+        norm += vec3_dot(particle[k].v, particle[k].v);
+    norm = sqrt( norm / (3 * N * temperature) );
+    for(k = 0; k < N; k++){
+        particle[k].v.x /= norm;
+        particle[k].v.y /= norm;
+        particle[k].v.z /= norm;
+    }
 
-    norm = norm / (3 * N) / temperature;
-    norm = sqrt(norm);
-    do{
-        ptr->v.x /= norm;
-        ptr->v.y /= norm;
-        ptr->v.z /= norm;
-    }while((ptr = ptr->next) != particles);
+    reset();
 }
 
 void print()
@@ -215,10 +180,10 @@ void print()
     FILE *v = fopen("speed.dat","a");
     FILE *r = fopen("position.dat","w");
 
-    body *i = particles;
-    do{
-        fprintf(v, "%e\t%e\t%e\n", i->v.x, i->v.y, i->v.z);
-    }while((i = i->next) != particles);
+    int k;
+    for(k = 0; k < N; k++){
+        fprintf(v, "%e\t%e\t%e\n", particle[k].v.x, particle[k].v.y, particle[k].v.z);
+    }
 
     fclose(v);
     fclose(r);

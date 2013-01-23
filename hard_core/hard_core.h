@@ -158,8 +158,7 @@ void init()
     double norm = 0;
     for(k = 0; k < N; k++)
         norm += vec3_dot(particle[k].v, particle[k].v);
-    norm = norm / (3 * N) / temperature;
-    norm = sqrt(norm);
+    norm = sqrt( norm / (3 * N * temperature) );
     for(k = 0; k < N; k++){
         particle[k].v.x /= norm;
         particle[k].v.y /= norm;

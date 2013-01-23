@@ -37,7 +37,7 @@ void showInfo()
 
     int h = height, dh = 18;
     drawString(1, h-=dh, "Particles: %d", N);
-    drawString(1, h-=dh, "Sigma = %lf", SIGMA);
+    drawString(1, h-=dh, "L = %lf", L);
     drawString(1, h-=dh, "dt = %lf", dt);
     drawString(1, h-=dh, "H = %lf", get_hamilton());
     drawString(1, h-=dh, "U = %lf", get_u());
@@ -53,11 +53,9 @@ void showInfo()
 
 void drawStuff()
 {
-    body *tmp = particles;
-    while(tmp != NULL){
-        drawSphere(tmp->r, SIGMA/2, tmp->c);
-        tmp = tmp->next;
-        if(tmp == particles) break;
+    int k;
+    for(k = 0; k < N; k++){
+        drawSphere(vec3_new(particle[k].r.x/L, particle[k].r.y/L, particle[k].r.z/L), 1.0/L, particle[k].c);
     }
     showInfo();
 }
@@ -70,10 +68,18 @@ void keyboardF(unsigned char key, int x, int y)
             active = !active;
             break;
         case '+':
-            dt *= 2;
+            L *= 1.1;
+            init();
             break;
         case '-':
-            dt /= 2;
+            L /= 1.1;
+            init();
+            break;
+        case 't':
+            dt /= 1.5;
+            break;
+        case 'T':
+            dt *= 1.5;
             break;
         case 'n':
             N += 2;
@@ -90,7 +96,7 @@ void keyboardF(unsigned char key, int x, int y)
             v_angle = h_angle = 0;
             break;
         case 'r': case 'R':
-
+            reset();
             break;
         case 'i': case 'I':
             init();
