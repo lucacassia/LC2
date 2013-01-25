@@ -7,61 +7,75 @@
 #include <string.h>
 #include <math.h>
 
-#define SPIN_UP     255
+#define SPIN_UP     1
 #define SPIN_DOWN   0
 
+double J = 1;
+double beta = 1e-3;
 int width = 300;
 int height = 300;
-char *pixels = NULL;
+int *spin = NULL;
+float *pixels = NULL;
+
+double Z,E;
 
 void clear()
 {
     if(pixels != NULL)
         free(pixels);
+    if(spin != NULL)
+        free(spin);
 }
 
 void init()
 {
     clear();
     srand(time(NULL));
-    pixels = (char*)malloc(width * height * sizeof(char));
+    pixels = (float*)malloc(width * height * sizeof(float));
+    spin = (int*)malloc(width * height * sizeof(int));
     int k;
     for(k = 0; k < width * height; k++)
-        if(rand()%2)
+        if(rand()%2){
+            spin[k] = 1;
             pixels[k] = SPIN_UP;
-        else
+        }
+        else{
+            spin[k] = -1;
             pixels[k] = SPIN_DOWN;
-    k = 0;
+        }
+    Z = E = 0;
 }
 
-int hamiltonian(int i, int j)
+double hamiltonian(int i, int j)
 {
     int H = 0;
-    if(pixels[i*width+(j+1)%width]) H++;
-    else H--;
-    if(pixels[i*width+(width+j-1)%width]) H++;
-    else H--;
-    if(pixels[((i+1)%height)*width+j]) H++;
-    else H--;
-    if(pixels[((height+i-1)%height)*width+j]) H++;
-    else H--;
-    return H/2.0;
+    H += spin[i*width+(j+1)%width];
+    H += spin[i*width+(width+j-1)%width];
+    H += spin[((i+1)%height)*width+j];
+    H += spin[((height+i-1)%height)*width+j];
+    return -J*H;
 }
 
 void run()
 {
-    int k, old, tmp;
+    int k,new_spin;
+    double deltaE;
     for(k = 0; k < width*height; k++){
-        old = -2*pixels[k]-1;
-        tmp = 2*(rand()%2)-1;
-        int deltaE = -hamiltonian(k/width, k%width) * (tmp - old);
-        if(rand()*1.0/RAND_MAX < exp(-deltaE)){
-            if(tmp == 1)
+        new_spin = 2*(rand()%2)-1;
+        deltaE = hamiltonian(k/width, k%width) * (new_spin - spin[k]);
+        if(rand()/(float)RAND_MAX < exp(-deltaE)){
+            spin[k] = new_spin;
+            if(spin[k] == 1)
                 pixels[k] = SPIN_UP;
             else
                 pixels[k] = SPIN_DOWN;
         }
     }
-
+    double tmp = 0;
+    for(k = 0; k < width*height; k++)
+        tmp += hamiltonian(k/width, k%width);
+    Z += exp(-beta*tmp);
+    E += tmp*exp(-beta*tmp);
 }
+
 #endif

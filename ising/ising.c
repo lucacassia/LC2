@@ -5,20 +5,6 @@
 
 int active = 0;
 
-void savePPM(char *frame)
-{
-    FILE *f = fopen("ising.ppm", "wb");
-    fprintf(f, "P6\n%d %d\n255\n", width, height);
-    int i,j;
-    for(i = height-1; i >= 0; i--)
-        for(j = 0; j < width; j++){
-            fwrite(&frame[(i*width+j)], sizeof(char), 1, f);
-            fwrite(&frame[(i*width+j)], sizeof(char), 1, f);
-            fwrite(&frame[(i*width+j)], sizeof(char), 1, f);
-        }
-    fclose(f);
-}
-
 void GLInit()
 {
     glDisable(GL_DEPTH_TEST);
@@ -31,7 +17,7 @@ void GLInit()
 void displayF()
 {
     glRasterPos2i(0,0);
-    glDrawPixels(width, height, GL_LUMINANCE, GL_UNSIGNED_BYTE, pixels);
+    glDrawPixels(width, height, GL_LUMINANCE, GL_FLOAT, pixels);
     glutSwapBuffers();
 }
 
@@ -53,7 +39,10 @@ void keyboardF(unsigned char key, int mouseX, int mouseY)
             active =! active;
             break;
         case 'p': case 'P':
-            savePPM(pixels);
+            printf("\nE = %.10e\tZ = %.10e\n",E/(Z*width*height),Z);
+            break;
+        case 'r': case 'R':
+            Z = E = 0;
             break;
     }
 }

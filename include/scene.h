@@ -111,7 +111,7 @@ void glInit()
   glSelectBuffer(BUFSIZE, selectBuf);
 
   glNewList(SPHERE, GL_COMPILE);
-  glutSolidSphere(1, 100, 100);
+  glutSolidSphere(1, 50, 50);
   glEndList();
 }
 

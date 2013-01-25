@@ -8,7 +8,7 @@ void drawStat()
 {
     glEnable(GL_SCISSOR_TEST);
     glViewport(0, 0, (GLsizei) width , (GLsizei) height / 4); 
-    glScissor(0, 0, (GLsizei) width , (GLsizei) height / 4); 
+    glScissor (0, 0, (GLsizei) width , (GLsizei) height / 4); 
     glLoadIdentity();
     gluOrtho2D(0, 1, -dmax, dmax);
 //    glClearColor(1,1,1,1);
@@ -38,7 +38,8 @@ void showInfo()
     int h = height, dh = 18;
     drawString(1, h-=dh, "Particles: %d", N);
     drawString(1, h-=dh, "L = %lf", L);
-    drawString(1, h-=dh, "dt = %lf", dt);
+    drawString(1, h-=dh, "dt = %.10e", dt);
+    drawString(1, h-=dh, "Runtime = %e", runtime);
     drawString(1, h-=dh, "H = %lf", get_hamilton());
     drawString(1, h-=dh, "U = %lf", get_u());
     drawString(1, h-=dh, "T = %lf", get_temperature());
@@ -55,7 +56,7 @@ void drawStuff()
 {
     int k;
     for(k = 0; k < N; k++){
-        drawSphere(vec3_new(particle[k].r.x/L, particle[k].r.y/L, particle[k].r.z/L), 1.0/L, particle[k].c);
+        drawSphere(vec3_new(particle[k].r.x/L, particle[k].r.y/L, particle[k].r.z/L), 0.1/L, particle[k].c);
     }
     showInfo();
 }
