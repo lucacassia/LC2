@@ -1,7 +1,7 @@
 #include <string.h>
 #include "vec3.h"
 
-int N = 54;
+int N = 70;
 double L = 1.0f;
 double dt = 1e-6;
 body *particle = NULL;

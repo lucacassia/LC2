@@ -7,14 +7,17 @@
 void drawStat()
 {
     int i;
-    double dmax = 0;
+    double dmax, dmin;
+    dmax = dmin = data[0];
     for(i = 0; i < NDATA; i++) {
-    	if(abs(data[i]) > dmax)
-            dmax = abs(data[i]);
+    	if(data[i] > dmax)
+            dmax = data[i];
+    	if(data[i] < dmin)
+            dmin = data[i];
     }
 
-    glViewport( (GLsizei) width/20, height/20, (GLsizei) width*9/10, (GLsizei) height/4);
-    glScissor ( (GLsizei) width/20, height/20, (GLsizei) width*9/10, (GLsizei) height/4);
+    glViewport( (GLsizei) width/20, (GLsizei) height/20, (GLsizei) width*9/10, (GLsizei) height/6);
+    glScissor ( (GLsizei) width/20, (GLsizei) height/20, (GLsizei) width*9/10, (GLsizei) height/6);
     glEnable(GL_SCISSOR_TEST);
     glClearColor(1,1,1,1);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -25,13 +28,11 @@ void drawStat()
     // set to 2D orthogonal projection
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    gluOrtho2D(0, 1, -1, 1);
+    gluOrtho2D(0, 1, dmin * 0.9, dmax * 1.1);
 
-//    glLineWidth(2);
-//	  glColor3d(1,0,0);
 	glBegin(GL_LINE_STRIP);
     for(i = 1; i <= NDATA; i++) {
-    	glVertex2d( i / (float) (NDATA-1) , data[(ptr+i)%NDATA] / (1.1*dmax));
+    	glVertex2d( i / (float) (NDATA-1) , data[(ptr+i)%NDATA]);
     }
 	glEnd();
 
