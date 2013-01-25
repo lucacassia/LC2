@@ -7,6 +7,7 @@
 
 #define SPHERE	    1
 
+void showInfo();
 void drawStat();
 void drawStuff();
 void run();
@@ -17,6 +18,7 @@ int v_angle = 0;
 int active = 0;
 int width = 500;
 int height = 500;
+int MODE = 0;
 
 void drawString(int x, int y, char *format,...)
 {
@@ -65,8 +67,8 @@ void reshapeF(int w, int h)
 
 void displayF()
 {
+    glClearColor(0,0,0,0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    /*main window*/
     glViewport (0, 0, (GLsizei) width, (GLsizei) height);
     glMatrixMode (GL_PROJECTION);
     glLoadIdentity ();
@@ -79,8 +81,9 @@ void displayF()
     glutWireCube (1.0);
     glTranslatef(-0.5, -0.5, -0.5);
     drawStuff();
-    /*stat window*/
-    drawStat();
+    showInfo();
+    if(MODE)
+        drawStat();
     glFlush();
     glutSwapBuffers();
 }

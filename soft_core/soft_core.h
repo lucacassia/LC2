@@ -11,7 +11,6 @@ double runtime;
 
 int NDATA = 1000;
 double *data = NULL;
-double dmax = 0;
 int ptr = 0;
 
 void clear(){
@@ -166,7 +165,6 @@ void run(){
     runtime += dt;
 
     data[ptr = (ptr + 1) % NDATA] = get_temperature();
-    if(abs(data[ptr]) > dmax) dmax = abs(data[ptr]); 
 }
 
 void print(){

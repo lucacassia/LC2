@@ -6,21 +6,44 @@
 
 void drawStat()
 {
-    glEnable(GL_SCISSOR_TEST);
-    glViewport(0, 0, (GLsizei) width , (GLsizei) height / 4); 
-    glScissor (0, 0, (GLsizei) width , (GLsizei) height / 4); 
-    glLoadIdentity();
-    gluOrtho2D(0, 1, -dmax, dmax);
-//    glClearColor(1,1,1,1);
-	glColor3d(1,1,1);
-	glBegin(GL_LINE_STRIP);
     int i;
+    double dmax = 0;
     for(i = 0; i < NDATA; i++) {
-    	glVertex2d( i / (float) (NDATA-1) , data[(ptr+i)%NDATA] / dmax);
+    	if(abs(data[i]) > dmax)
+            dmax = abs(data[i]);
+    }
+
+    glViewport( (GLsizei) width/20, height/20, (GLsizei) width*9/10, (GLsizei) height/4);
+    glScissor ( (GLsizei) width/20, height/20, (GLsizei) width*9/10, (GLsizei) height/4);
+    glEnable(GL_SCISSOR_TEST);
+    glClearColor(1,1,1,1);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    glMatrixMode (GL_MODELVIEW);
+    glLoadIdentity();
+
+    // set to 2D orthogonal projection
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    gluOrtho2D(0, 1, -1, 1);
+
+//    glLineWidth(2);
+//	  glColor3d(1,0,0);
+	glBegin(GL_LINE_STRIP);
+    for(i = 1; i <= NDATA; i++) {
+    	glVertex2d( i / (float) (NDATA-1) , data[(ptr+i)%NDATA] / (1.1*dmax));
     }
 	glEnd();
-    glDisable(GL_SCISSOR_TEST);
 
+    glDisable(GL_SCISSOR_TEST);
+}
+
+void drawStuff()
+{
+    int k;
+    for(k = 0; k < N; k++){
+        drawSphere(vec3_new(particle[k].r.x/L, particle[k].r.y/L, particle[k].r.z/L), 0.1/L, particle[k].c);
+    }
 }
 
 void showInfo()
@@ -50,15 +73,6 @@ void showInfo()
     // restore modelview matrix
     glMatrixMode(GL_MODELVIEW);      // switch to modelview matrix
     glPopMatrix();                   // restore to previous modelview matrix
-}
-
-void drawStuff()
-{
-    int k;
-    for(k = 0; k < N; k++){
-        drawSphere(vec3_new(particle[k].r.x/L, particle[k].r.y/L, particle[k].r.z/L), 0.1/L, particle[k].c);
-    }
-    showInfo();
 }
 
 void keyboardF(unsigned char key, int x, int y)
@@ -104,6 +118,9 @@ void keyboardF(unsigned char key, int x, int y)
             break;
         case 'p': case 'P':
             print();
+            break;
+        case 'm': case 'M':
+            MODE = !MODE;
             break;
         case 'q': case 'Q': case 27:
             clear();
