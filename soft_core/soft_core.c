@@ -112,6 +112,7 @@ void keyboardF(unsigned char key, int x, int y)
             v_angle = h_angle = 0;
             break;
         case 'r': case 'R':
+            normalize();
             reset();
             break;
         case 'i': case 'I':

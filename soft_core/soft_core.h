@@ -44,14 +44,6 @@ double get_hamilton(){
     return tmp;
 }
 
-double get_temperature(){
-    double tmp = 0;
-    int i;
-    for(i = 0; i < N; i++)
-        tmp += vec3_dot(particle[i].v, particle[i].v);
-    return tmp / (3 * N);
-}
-
 double get_u(){
     double tmp = 0;
     int i,j;
@@ -68,6 +60,37 @@ double get_u(){
                         tmp += 4 * (pow(1 / vec3_mod(dr), 12) - pow(1 / vec3_mod(dr), 6));
                     }
     return tmp / N;
+}
+
+double get_temperature(){
+    double tmp = 0;
+    int i;
+    for(i = 0; i < N; i++)
+        tmp += vec3_dot(particle[i].v, particle[i].v);
+    return tmp / (3 * N);
+}
+
+void normalize(){
+    int k;
+    vec3 tmp = vec3_new(0.0, 0.0, 0.0);
+    for(k = 0; k < N; k++){
+        tmp.x += particle[k].v.x;
+        tmp.y += particle[k].v.y;
+        tmp.z += particle[k].v.z;
+    }
+
+    for(k = 0; k < N; k++){
+        particle[k].v.x -= tmp.x/N;
+        particle[k].v.y -= tmp.y/N;
+        particle[k].v.z -= tmp.z/N;
+    }
+    double norm = get_temperature();
+    norm = sqrt( norm / temperature );
+    for(k = 0; k < N; k++){
+        particle[k].v.x /= norm;
+        particle[k].v.y /= norm;
+        particle[k].v.z /= norm;
+    }
 }
 
 void init(){
@@ -91,30 +114,12 @@ void init(){
                 l++;
             }
 
-    vec3 tmp = vec3_new(0.0, 0.0, 0.0);
     for(k = 0; k < N; k++){
         particle[k].c = vec3_new(_rand(), _rand(), _rand());
         particle[k].v = vec3_new(_rand()*2-1, _rand()*2-1, _rand()*2-1);
-        tmp.x += particle[k].v.x;
-        tmp.y += particle[k].v.y;
-        tmp.z += particle[k].v.z;
     }
 
-    for(k = 0; k < N; k++){
-        particle[k].v.x -= tmp.x/N;
-        particle[k].v.y -= tmp.y/N;
-        particle[k].v.z -= tmp.z/N;
-    }
-    double norm = 0;
-    for(k = 0; k < N; k++)
-        norm += vec3_dot(particle[k].v, particle[k].v);
-    norm = sqrt( norm / (3 * N * temperature) );
-    for(k = 0; k < N; k++){
-        particle[k].v.x /= norm;
-        particle[k].v.y /= norm;
-        particle[k].v.z /= norm;
-    }
-
+    normalize();
     reset();
 }
 
@@ -131,10 +136,12 @@ void run(){
                         dr.x = dx*L + particle[j].r.x - particle[i].r.x;
                         dr.y = dy*L + particle[j].r.y - particle[i].r.y;
                         dr.z = dz*L + particle[j].r.z - particle[i].r.z;
-                        dv = -2 * (2 * pow(1 / vec3_mod(dr), 13) - pow(1 / vec3_mod(dr), 7)) * dt / vec3_mod(dr);
-                        particle[i].v.x += dr.x * dv;
-                        particle[i].v.y += dr.y * dv;
-                        particle[i].v.z += dr.z * dv;
+                        if(vec3_mod(dr) < L){
+                            dv = -2 * (2 * pow(1 / vec3_mod(dr), 13) - pow(1 / vec3_mod(dr), 7)) * dt / vec3_mod(dr);
+                            particle[i].v.x += dr.x * dv;
+                            particle[i].v.y += dr.y * dv;
+                            particle[i].v.z += dr.z * dv;
+                        }
                     }
 
     for(i = 0; i < N; i++){
@@ -147,7 +154,7 @@ void run(){
         particle[i].r.z -= L * floor(particle[i].r.z / L);
     }
 
-    for(i = 0; i < N; i++){
+    for(i = 0; i < N; i++)
         for(j = i+1; j != i; j = (j+1)%N)
             for(dx = -1; dx <= 1; dx++)
                 for(dy = -1; dy <= 1; dy++)
@@ -155,12 +162,13 @@ void run(){
                         dr.x = dx*L + particle[j].r.x - particle[i].r.x;
                         dr.y = dy*L + particle[j].r.y - particle[i].r.y;
                         dr.z = dz*L + particle[j].r.z - particle[i].r.z;
-                        dv = -2 * (2 * pow(1 / vec3_mod(dr), 13) - pow(1 / vec3_mod(dr), 7)) * dt / vec3_mod(dr);
-                        particle[i].v.x += dr.x * dv;
-                        particle[i].v.y += dr.y * dv;
-                        particle[i].v.z += dr.z * dv;
+                        if(vec3_mod(dr) < L){
+                            dv = -2 * (2 * pow(1 / vec3_mod(dr), 13) - pow(1 / vec3_mod(dr), 7)) * dt / vec3_mod(dr);
+                            particle[i].v.x += dr.x * dv;
+                            particle[i].v.y += dr.y * dv;
+                            particle[i].v.z += dr.z * dv;
+                        }
                     }
-    }
 
     runtime += dt;
 
