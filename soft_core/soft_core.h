@@ -2,12 +2,13 @@
 #include "vec3.h"
 
 int N = 70;
-double L = 1.0f;
+double L = 10;
 double dt = 1e-6;
 body *particle = NULL;
+int *list = NULL;
 
-double temperature = 1.0;
-double runtime;
+double temperature = 0;
+int runtime;
 
 int NDATA = 1000;
 double *data = NULL;
@@ -16,6 +17,8 @@ int ptr = 0;
 void clear(){
     if(particle != NULL)
         free(particle);
+    if(list != NULL)
+        free(list);
     if(data != NULL)
         free(data);
 }
@@ -24,49 +27,36 @@ void reset(){
     runtime = 0;
 }
 
-double get_hamilton(){
-    double tmp = 0;
-    int i,j;
-    double dx,dy,dz;
-    for(i = 0; i < N; i++){
-        tmp += vec3_dot(particle[i].v, particle[i].v) / 2;
-        for(j = i+1; j < N; j++)
-            for(dx = -L; dx <= L; dx += L)
-                for(dy = -L; dy <= L; dy += L)
-                    for(dz = -L; dz <= L; dz += L){
-                        vec3 dr;
-                        dr.x = dx + particle[j].r.x - particle[i].r.x;
-                        dr.y = dy + particle[j].r.y - particle[i].r.y;
-                        dr.z = dz + particle[j].r.z - particle[i].r.z;
-                        tmp += 4 * (pow(1 / vec3_mod(dr), 12) - pow(1 / vec3_mod(dr), 6));
-                    }
-    }
-    return tmp;
-}
-
-double get_u(){
-    double tmp = 0;
-    int i,j;
-    double dx,dy,dz;
-    for(i = 0; i < N; i++)
-        for(j = i+1; j < N; j++)
-            for(dx = -L; dx <= L; dx += L)
-                for(dy = -L; dy <= L; dy += L)
-                    for(dz = -L; dz <= L; dz += L){
-                        vec3 dr;
-                        dr.x = dx + particle[j].r.x - particle[i].r.x;
-                        dr.y = dy + particle[j].r.y - particle[i].r.y;
-                        dr.z = dz + particle[j].r.z - particle[i].r.z;
-                        tmp += 4 * (pow(1 / vec3_mod(dr), 12) - pow(1 / vec3_mod(dr), 6));
-                    }
-    return tmp / N;
-}
-
 double get_temperature(){
     double tmp = 0;
     int i;
     for(i = 0; i < N; i++)
         tmp += vec3_dot(particle[i].v, particle[i].v);
+    return tmp / (3 * N);
+}
+
+double get_energy(){
+    double tmp = 0;
+    int i,j,k;
+    double dx,dy,dz,dv;
+    vec3 dr;
+    for(i = 0; i < N; i++){
+        tmp += vec3_dot(particle[i].v, particle[i].v);
+        for(j = 0; j < list[i*N]; j++)
+            for(dx = -L; dx <= L; dx += L)
+                for(dy = -L; dy <= L; dy += L)
+                    for(dz = -L; dz <= L; dz += L){
+                        dr.x = dx + particle[list[i*N+j+1]].r.x - particle[i].r.x;
+                        dr.y = dy + particle[list[i*N+j+1]].r.y - particle[i].r.y;
+                        dr.z = dz + particle[list[i*N+j+1]].r.z - particle[i].r.z;
+                        if(vec3_mod(dr) < 2.5){
+                            dv = -2 * (2 * pow(1 / vec3_mod(dr), 13) - pow(1 / vec3_mod(dr), 7)) * dt / vec3_mod(dr);
+                            particle[i].v.x += dr.x * dv;
+                            particle[i].v.y += dr.y * dv;
+                            particle[i].v.z += dr.z * dv;
+                        }
+                    }
+    }
     return tmp / (3 * N);
 }
 
@@ -84,12 +74,11 @@ void normalize(){
         particle[k].v.y -= tmp.y/N;
         particle[k].v.z -= tmp.z/N;
     }
-    double norm = get_temperature();
-    norm = sqrt( norm / temperature );
+    double norm = sqrt( temperature / get_temperature() );
     for(k = 0; k < N; k++){
-        particle[k].v.x /= norm;
-        particle[k].v.y /= norm;
-        particle[k].v.z /= norm;
+        particle[k].v.x *= norm;
+        particle[k].v.y *= norm;
+        particle[k].v.z *= norm;
     }
 }
 
@@ -99,6 +88,7 @@ void init(){
 
     clear();
     particle = (body*)malloc(N*sizeof(body));
+    list = (int*)malloc(N*N*sizeof(int));
     data = (double*)malloc(NDATA*sizeof(double));
 
     int i,j,k,l;
@@ -124,19 +114,37 @@ void init(){
 }
 
 void run(){
-    int i,j;
-    int dx,dy,dz;
-    double dv;
+    int i,j,k;
+    double dx,dy,dz,dv;
     vec3 dr;
+
+    /* fill neighbors list*/
+    if(!runtime%10)
+        for(i = 0; i < N; i++){
+            k = 0;
+            for(j = i+1; j != i; j = (j+1)%N)
+                for(dx = -L; dx <= L; dx += L)if(list[i*N+k] != j)
+                    for(dy = -L; dy <= L && list[i*N+k] != j; dy += L)if(list[i*N+k] != j)
+                        for(dz = -L; dz <= L && list[i*N+k] != j; dz += L)if(list[i*N+k] != j){
+                            dr.x = dx + particle[j].r.x - particle[i].r.x;
+                            dr.y = dy + particle[j].r.y - particle[i].r.y;
+                            dr.z = dz + particle[j].r.z - particle[i].r.z;
+                            if(vec3_mod(dr) < 2.8)
+                                list[i*N+(++k)] = j;
+                        }
+            list[i*N] = k;
+        }
+
+    /* verlet */
     for(i = 0; i < N; i++)
-        for(j = i+1; j != i; j = (j+1)%N)
-            for(dx = -1; dx <= 1; dx++)
-                for(dy = -1; dy <= 1; dy++)
-                    for(dz = -1; dz <= 1; dz++){
-                        dr.x = dx*L + particle[j].r.x - particle[i].r.x;
-                        dr.y = dy*L + particle[j].r.y - particle[i].r.y;
-                        dr.z = dz*L + particle[j].r.z - particle[i].r.z;
-                        if(vec3_mod(dr) < L){
+        for(j = 0; j < list[i*N]; j++)
+            for(dx = -L; dx <= L; dx += L)
+                for(dy = -L; dy <= L; dy += L)
+                    for(dz = -L; dz <= L; dz += L){
+                        dr.x = dx + particle[list[i*N+j+1]].r.x - particle[i].r.x;
+                        dr.y = dy + particle[list[i*N+j+1]].r.y - particle[i].r.y;
+                        dr.z = dz + particle[list[i*N+j+1]].r.z - particle[i].r.z;
+                        if(vec3_mod(dr) < 2.5){
                             dv = -2 * (2 * pow(1 / vec3_mod(dr), 13) - pow(1 / vec3_mod(dr), 7)) * dt / vec3_mod(dr);
                             particle[i].v.x += dr.x * dv;
                             particle[i].v.y += dr.y * dv;
@@ -155,14 +163,14 @@ void run(){
     }
 
     for(i = 0; i < N; i++)
-        for(j = i+1; j != i; j = (j+1)%N)
-            for(dx = -1; dx <= 1; dx++)
-                for(dy = -1; dy <= 1; dy++)
-                    for(dz = -1; dz <= 1; dz++){
-                        dr.x = dx*L + particle[j].r.x - particle[i].r.x;
-                        dr.y = dy*L + particle[j].r.y - particle[i].r.y;
-                        dr.z = dz*L + particle[j].r.z - particle[i].r.z;
-                        if(vec3_mod(dr) < L){
+        for(j = 0; j < list[i*N]; j++)
+            for(dx = -L; dx <= L; dx += L)
+                for(dy = -L; dy <= L; dy += L)
+                    for(dz = -L; dz <= L; dz += L){
+                        dr.x = dx + particle[list[i*N+j+1]].r.x - particle[i].r.x;
+                        dr.y = dy + particle[list[i*N+j+1]].r.y - particle[i].r.y;
+                        dr.z = dz + particle[list[i*N+j+1]].r.z - particle[i].r.z;
+                        if(vec3_mod(dr) < 2.5){
                             dv = -2 * (2 * pow(1 / vec3_mod(dr), 13) - pow(1 / vec3_mod(dr), 7)) * dt / vec3_mod(dr);
                             particle[i].v.x += dr.x * dv;
                             particle[i].v.y += dr.y * dv;
@@ -170,7 +178,7 @@ void run(){
                         }
                     }
 
-    runtime += dt;
+    runtime++;
 
     data[ptr = (ptr + 1) % NDATA] = get_temperature();
 }

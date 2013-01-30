@@ -63,9 +63,9 @@ void showInfo()
     drawString(1, h-=dh, "Particles: %d", N);
     drawString(1, h-=dh, "L = %lf", L);
     drawString(1, h-=dh, "dt = %.10e", dt);
-    drawString(1, h-=dh, "Runtime = %e", runtime);
-    drawString(1, h-=dh, "H = %lf", get_hamilton());
-    drawString(1, h-=dh, "U = %lf", get_u());
+    drawString(1, h-=dh, "Runtime = %e", runtime*dt);
+//    drawString(1, h-=dh, "H = %lf", get_energy());
+    drawString(1, h-=dh, "Density = %lf", N/(L*L*L));
     drawString(1, h-=dh, "T = %lf", get_temperature());
 
     // restore projection matrix
