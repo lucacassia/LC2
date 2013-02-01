@@ -10,14 +10,15 @@
 #define SPIN_UP     1
 #define SPIN_DOWN   0
 
-double J = 1;
+double J = 0.5;
 double beta = 1e-3;
-int width = 300;
-int height = 300;
+unsigned int width = 300;
+unsigned int height = 300;
 int *spin = NULL;
 float *pixels = NULL;
+unsigned int step;
 
-double Z,E;
+double Z,mM,mE;
 
 void clear()
 {
@@ -43,7 +44,7 @@ void init()
             spin[k] = -1;
             pixels[k] = SPIN_DOWN;
         }
-    Z = E = 0;
+    step = Z = mM = mE = 0;
 }
 
 double hamiltonian(int i, int j)
@@ -56,7 +57,7 @@ double hamiltonian(int i, int j)
     return -J*H;
 }
 
-void run()
+void metropolis()
 {
     int k,new_spin;
     double deltaE;
@@ -71,11 +72,29 @@ void run()
                 pixels[k] = SPIN_DOWN;
         }
     }
-    double tmp = 0;
-    for(k = 0; k < width*height; k++)
-        tmp += hamiltonian(k/width, k%width);
-    Z += exp(-beta*tmp);
-    E += tmp*exp(-beta*tmp);
+}
+
+void SW()
+{
+
+}
+
+void run()
+{
+    metropolis();
+    if(step%10 == 0){
+        int k;
+        double E, M;
+        for(M = E = k = 0; k < width*height; k++){
+            E += hamiltonian(k/width, k%width);
+            M += spin[k];
+        }
+        Z += exp(-beta*E);
+        mM += M*exp(-beta*E);
+        mE += E*exp(-beta*E);
+        printf("\n<e> = %.10e\t<M> = %.10e\n",mE/(Z*width*height),mM/(Z*width*height));
+    }
+    step++;
 }
 
 #endif

@@ -38,11 +38,11 @@ void keyboardF(unsigned char key, int mouseX, int mouseY)
         case ' ':
             active =! active;
             break;
-        case 'p': case 'P':
-            printf("\nE = %.10e\tZ = %.10e\n",E/(Z*width*height),Z);
-            break;
         case 'r': case 'R':
-            Z = E = 0;
+            Z = mE = mM = 0;
+            break;
+        case 'i': case 'I':
+            init();
             break;
     }
 }
