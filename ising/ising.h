@@ -17,10 +17,7 @@
 typedef struct _spin{
     int s;
     unsigned int done;
-    struct _spin *u;
-    struct _spin *d;
-    struct _spin *l;
-    struct _spin *r;
+    unsigned int flip;
 }spin;
 
 int mode = 1;
@@ -64,77 +61,33 @@ void metropolis()
     }
 }
 
-void flip_cluster(spin *local, int flip)
-{
-    local->done = 1;
-    if(flip) local->s = !local->s;
-
-    if(local->u != NULL){
-        local->u->d = NULL;
-        flip_cluster(local->u,flip);
-    }
-    if(local->d != NULL){
-        local->d->u = NULL;
-        flip_cluster(local->d,flip);
-    }
-    if(local->l != NULL){
-        local->l->r = NULL;
-        flip_cluster(local->l,flip);
-    }
-    if(local->r != NULL){
-        local->r->l = NULL;
-        flip_cluster(local->r,flip);
-    }
-}
-
 void SW()
 {
     int i,j,k;
     for(k = 0; k < width*height; k++){
         ising[k].done = 0;
-        ising[k].r = ising[k].l = ising[k].u = ising[k].d = NULL;
+        ising[k].flip = (mersenne() < 0.5);
     }
 
     for(i = 0; i < height; i++) for(j = 0; j < width; j++) {
         ising[CENTER].done = 1;
 
         if( !ising[RIGHT].done ) {
-            if( ising[RIGHT].s == ising[CENTER].s ){
-                ising[CENTER].r = &ising[RIGHT];
-                ising[RIGHT].l = &ising[CENTER];
-            }
-        }
-
-        if( !ising[LEFT].done ) {
-            if( ising[LEFT].s == ising[CENTER].s ){
-                ising[CENTER].l = &ising[LEFT];
-                ising[LEFT].r = &ising[CENTER];
+            if( ising[RIGHT].s == ising[CENTER].s && mersenne() < 1-exp(-beta*J) ){
+                ising[RIGHT].flip = ising[CENTER].flip;
             }
         }
 
         if( !ising[DOWN].done ) {
-            if( ising[DOWN].s == ising[CENTER].s ){
-                ising[CENTER].d = &ising[DOWN];
-                ising[DOWN].u = &ising[CENTER];
-            }
-        }
-
-        if( !ising[UP].done ) {
-            if( ising[UP].s == ising[CENTER].s ){
-                ising[CENTER].u = &ising[UP];
-                ising[UP].d = &ising[CENTER];
+            if( ising[DOWN].s == ising[CENTER].s && mersenne() < 1-exp(-beta*J) ){
+                ising[DOWN].flip = ising[CENTER].flip;
             }
         }
     }
 
-/*    for(k = 0; k < width*height; k++)
-        ising[k].done = 0;
+    for(k = 0; k < width*height; k++) if(ising[k].flip)
+        ising[k].s = -ising[k].s;
 
-    for(k = 0; k < width*height; k++) if(!ising[k].done)
-        flip_cluster(&ising[k], 1 );
-*/
-
-    flip_cluster(&ising[width*height/2],1);
 }
 
 void run()
