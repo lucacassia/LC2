@@ -3,11 +3,10 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include "mersenne.h"
 #include <time.h>
 #include <string.h>
 #include <math.h>
-
-#define _rand() (rand()/(float)RAND_MAX)
 
 typedef struct _spin{
     int s;
@@ -20,13 +19,13 @@ typedef struct _spin{
 
 int mode = 1;
 
-double J = 0.5;
-double beta = 1e-3;
-unsigned int width = 300;
-unsigned int height = 300;
+unsigned int width = 500;
+unsigned int height = 500;
 spin *ising = NULL;
 unsigned int step;
 
+double J = 0.5;
+double beta = 1e-8;
 double Z,mM,mE;
 
 void clear()
@@ -37,18 +36,14 @@ void clear()
 
 void init()
 {
-    clear();
-    srand(time(NULL));
-
-    ising = (spin*)malloc(width * height * sizeof(spin));
     int k;
+    seed_mersenne( (long)time(NULL) );
+    for(k = 0; k < 543210; k++) mersenne();
+
+    clear();
+    ising = (spin*)malloc(width * height * sizeof(spin));
     for(k = 0; k < width * height; k++)
-        if(0){
-            ising[k].s = 1;
-        }
-        else{
-            ising[k].s = -1;
-        }
+        if(mersenne() < 0.5) ising[k].s = 1; else ising[k].s = -1;
     step = Z = mM = mE = 0;
 }
 
@@ -67,11 +62,9 @@ void metropolis()
     int k,new_spin;
     double deltaE;
     for(k = 0; k < width*height; k++){
-        new_spin = 2*(rand()%2)-1;
+        if( mersenne() < 0.5 ) new_spin = 1; else new_spin = -1;
         deltaE = hamiltonian(k/width, k%width) * (new_spin - ising[k].s);
-        if(rand()/(float)RAND_MAX < exp(-deltaE)){
-            ising[k].s = new_spin;
-        }
+        if( mersenne() < exp(-deltaE) ) ising[k].s = new_spin;
     }
 }
 
@@ -109,7 +102,7 @@ void SW()
 
         k = i*width+(j+1)%width;
         if( !ising[k].done ) {
-            if( ising[k].s == ising[i*width+j].s && _rand() < 1-exp(beta*J) ){
+            if( ising[k].s == ising[i*width+j].s && mersenne() < 1-exp(beta*J) ){
                 ising[i*width+j].r = &ising[k];
                 ising[k].l = &ising[i*width+j];
             }
@@ -118,7 +111,7 @@ void SW()
 
         k = i*width+(width+j-1)%width;
         if( !ising[k].done ) {
-            if( ising[k].s == ising[i*width+j].s && _rand() < 1-exp(beta*J) ){
+            if( ising[k].s == ising[i*width+j].s && mersenne() < 1-exp(beta*J) ){
                 ising[i*width+j].l = &ising[k];
                 ising[k].r = &ising[i*width+j];
             }
@@ -127,7 +120,7 @@ void SW()
 
         k = ((i+1)%height)*width+j;
         if( !ising[k].done ) {
-            if( ising[k].s == ising[i*width+j].s && _rand() < 1-exp(beta*J) ){
+            if( ising[k].s == ising[i*width+j].s && mersenne() < 1-exp(beta*J) ){
                 ising[i*width+j].d = &ising[k];
                 ising[k].u = &ising[i*width+j];
             }
@@ -136,7 +129,7 @@ void SW()
 
         k = ((height+i-1)%height)*width+j;
         if( !ising[k].done ) {
-            if( ising[k].s == ising[i*width+j].s && _rand() < 1-exp(beta*J) ){
+            if( ising[k].s == ising[i*width+j].s && mersenne() < 1-exp(beta*J) ){
                 ising[i*width+j].u = &ising[k];
                 ising[k].d = &ising[i*width+j];
             }
@@ -147,9 +140,8 @@ void SW()
     for(k = 0; k < width*height; k++)
         ising[k].done = 0;
 
-    for(k = 0; k < width*height; k++) if(!ising[k].done) {
-        flip_cluster(&ising[k], rand()%2);
-    }
+    for(k = 0; k < width*height; k++) if(!ising[k].done)
+        flip_cluster(&ising[k], (mersenne() < 0.5) );
 
 }
 
@@ -161,7 +153,8 @@ void run()
         SW();
 
     if(step%10 == 0){
-        double E, M; int k;
+        double E, M;
+        int k;
         for(M = E = k = 0; k < width*height; k++){
             E += hamiltonian(k/width, k%width);
             M += ising[k].s;

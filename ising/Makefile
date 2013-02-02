@@ -21,14 +21,20 @@ all: rmxeq mkdep mkxeq rmpmk
 
 MAIN = ising
 
-MODULES = 
+RANDOM = ranlxs ranlxd gauss
+
+START = start utils
+
+EXTRAS = mersenne
+
+MODULES = $(RANDOM) $(START) $(EXTRAS)
 
 
 # search path for modules
 
-MDIR = 
+MDIR = ../modules
 
-VPATH = 
+VPATH = $(MDIR)/random:$(MDIR)/start:$(MDIR)/extras
 
 
 # additional include directories
