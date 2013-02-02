@@ -8,6 +8,12 @@
 #include <string.h>
 #include <math.h>
 
+#define RIGHT  ( i*width+(j+1)%width )
+#define LEFT   ( i*width+(width+j-1)%width )
+#define UP     ( ((height+i-1)%height)*width+j )
+#define DOWN   ( ((i+1)%height)*width+j )
+#define CENTER ( i*width+j )
+
 typedef struct _spin{
     int s;
     unsigned int done;
@@ -49,22 +55,18 @@ void init()
 
 double hamiltonian(int i, int j)
 {
-    int H = 0;
-    H += ising[i*width+(j+1)%width].s;
-    H += ising[i*width+(width+j-1)%width].s;
-    H += ising[((i+1)%height)*width+j].s;
-    H += ising[((height+i-1)%height)*width+j].s;
-    return -J*H;
+    return -J * ( ising[UP].s + ising[DOWN].s + ising[LEFT].s + ising[RIGHT].s );
 }
 
 void metropolis()
 {
-    int k,new_spin;
+    int i,j,new_spin;
     double deltaE;
-    for(k = 0; k < width*height; k++){
+    for(i = 0; i < height; i++) for(j = 0; j < width; j++) {
+        deltaE = -J * ( ising[UP].s + ising[DOWN].s + ising[LEFT].s + ising[RIGHT].s );
         if( mersenne() < 0.5 ) new_spin = 1; else new_spin = -1;
-        deltaE = hamiltonian(k/width, k%width) * (new_spin - ising[k].s);
-        if( mersenne() < exp(-deltaE) ) ising[k].s = new_spin;
+        deltaE *= new_spin - ising[CENTER].s;
+        if( mersenne() < exp(-deltaE) ) ising[CENTER].s = new_spin;
     }
 }
 
@@ -98,42 +100,38 @@ void SW()
         ising[k].done = 0;
 
     for(i = 0; i < height; i++) for(j = 0; j < width; j++) {
-        ising[i*width+j].done = 1;
+        ising[CENTER].done = 1;
 
-        k = i*width+(j+1)%width;
-        if( !ising[k].done ) {
-            if( ising[k].s == ising[i*width+j].s && mersenne() < 1-exp(beta*J) ){
-                ising[i*width+j].r = &ising[k];
-                ising[k].l = &ising[i*width+j];
+        if( !ising[RIGHT].done ) {
+            if( ising[RIGHT].s == ising[CENTER].s && mersenne() < 1-exp(beta*J) ){
+                ising[CENTER].r = &ising[RIGHT];
+                ising[RIGHT].l = &ising[CENTER];
             }
-            else ising[k].l = ising[i*width+j].r = NULL;
+            else ising[RIGHT].l = ising[CENTER].r = NULL;
         }
 
-        k = i*width+(width+j-1)%width;
-        if( !ising[k].done ) {
-            if( ising[k].s == ising[i*width+j].s && mersenne() < 1-exp(beta*J) ){
-                ising[i*width+j].l = &ising[k];
-                ising[k].r = &ising[i*width+j];
+        if( !ising[LEFT].done ) {
+            if( ising[LEFT].s == ising[CENTER].s && mersenne() < 1-exp(beta*J) ){
+                ising[CENTER].l = &ising[LEFT];
+                ising[LEFT].r = &ising[CENTER];
             }
-            else ising[k].r = ising[i*width+j].l = NULL;
+            else ising[LEFT].r = ising[CENTER].l = NULL;
         }
 
-        k = ((i+1)%height)*width+j;
-        if( !ising[k].done ) {
-            if( ising[k].s == ising[i*width+j].s && mersenne() < 1-exp(beta*J) ){
-                ising[i*width+j].d = &ising[k];
-                ising[k].u = &ising[i*width+j];
+        if( !ising[DOWN].done ) {
+            if( ising[DOWN].s == ising[CENTER].s && mersenne() < 1-exp(beta*J) ){
+                ising[CENTER].d = &ising[DOWN];
+                ising[DOWN].u = &ising[CENTER];
             }
-            else ising[k].u = ising[i*width+j].d = NULL;
+            else ising[DOWN].u = ising[CENTER].d = NULL;
         }
 
-        k = ((height+i-1)%height)*width+j;
-        if( !ising[k].done ) {
-            if( ising[k].s == ising[i*width+j].s && mersenne() < 1-exp(beta*J) ){
-                ising[i*width+j].u = &ising[k];
-                ising[k].d = &ising[i*width+j];
+        if( !ising[UP].done ) {
+            if( ising[UP].s == ising[CENTER].s && mersenne() < 1-exp(beta*J) ){
+                ising[CENTER].u = &ising[UP];
+                ising[UP].d = &ising[CENTER];
             }
-            else ising[k].d = ising[i*width+j].u = NULL;
+            else ising[UP].d = ising[CENTER].u = NULL;
         }
     }
 
@@ -147,10 +145,8 @@ void SW()
 
 void run()
 {
-    if(mode)
-        metropolis();
-    else
-        SW();
+    if(mode) metropolis();
+    else     SW();
 
     if(step%10 == 0){
         double E, M;
@@ -162,7 +158,7 @@ void run()
         Z += exp(-beta*E);
         mM += M*exp(-beta*E);
         mE += E*exp(-beta*E);
-        printf("\n<e> = %.10e\t<M> = %.10e\n",mE/(Z*width*height),mM/(Z*width*height));
+//        printf("\n<e> = %.10e\t<M> = %.10e\n",mE/(Z*width*height),mM/(Z*width*height));
     }
     step++;
 }
