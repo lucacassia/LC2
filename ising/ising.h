@@ -18,6 +18,7 @@ typedef struct _spin{
     int s;
     unsigned int done;
     unsigned int flip;
+    unsigned int r, l, u, d;
 }spin;
 
 int mode = 1;
@@ -63,37 +64,58 @@ void metropolis()
 
 void SW()
 {
-    int i,j,k;
-    for(k = 0; k < width*height; k++){
-        ising[k].done = 0;
-        ising[k].flip = (mersenne() < 0.5);
+    int i,j;
+    double prob = 0.99;
+
+    for(i = 0; i < height; i++) for(j = 0; j < width; j++) {
+        if( ising[RIGHT].s == ising[CENTER].s && mersenne() < prob ){
+            ising[RIGHT].l = ising[CENTER].r = 1;
+        }else ising[RIGHT].l = ising[CENTER].r = 0;
+
+        if( ising[LEFT].s == ising[CENTER].s && mersenne() < prob ){
+            ising[LEFT].r = ising[CENTER].l = 1;
+        }else ising[LEFT].r = ising[CENTER].l = 0;
+
+        if( ising[UP].s == ising[CENTER].s && mersenne() < prob ){
+            ising[UP].d = ising[CENTER].u = 1;
+        }else ising[UP].d = ising[CENTER].u = 0;
+
+        if( ising[DOWN].s == ising[CENTER].s && mersenne() < prob ){
+            ising[DOWN].u = ising[CENTER].d = 1;
+        }else ising[DOWN].u = ising[CENTER].d = 0;
     }
 
     for(i = 0; i < height; i++) for(j = 0; j < width; j++) {
-        ising[CENTER].done = 1;
-
-        if( !ising[RIGHT].done ) {
-            if( ising[RIGHT].s == ising[CENTER].s && mersenne() < 1-exp(-beta*J) ){
-                ising[RIGHT].flip = ising[CENTER].flip;
-            }
+        ising[CENTER].done = 0;
+        if(!ising[CENTER].done && ising[CENTER].l && ising[RIGHT].done){
+            ising[CENTER].flip = ising[RIGHT].flip;
+            ising[CENTER].done = 1;
         }
-
-        if( !ising[DOWN].done ) {
-            if( ising[DOWN].s == ising[CENTER].s && mersenne() < 1-exp(-beta*J) ){
-                ising[DOWN].flip = ising[CENTER].flip;
-            }
+        if(!ising[CENTER].done && ising[CENTER].r && ising[LEFT].done){
+            ising[CENTER].flip = ising[LEFT].flip;
+            ising[CENTER].done = 1;
         }
+        if(!ising[CENTER].done && ising[CENTER].u && ising[UP].done){
+            ising[CENTER].flip = ising[UP].flip;
+            ising[CENTER].done = 1;
+        }
+        if(!ising[CENTER].done && ising[CENTER].d && ising[DOWN].done){
+            ising[CENTER].flip = ising[DOWN].flip;
+            ising[CENTER].done = 1;
+        }
+        if(!ising[CENTER].done){
+            ising[CENTER].flip = mersenne() < 0.5;
+            ising[CENTER].done = 1;
+        }
+        if(ising[CENTER].flip) ising[CENTER].s = -ising[CENTER].s;
     }
-
-    for(k = 0; k < width*height; k++) if(ising[k].flip)
-        ising[k].s = -ising[k].s;
 
 }
 
 void run()
 {
     if(mode) metropolis();
-    else     SW();
+    else SW();
 
     if(step%10 == 0){
         long double E;
@@ -104,11 +126,9 @@ void run()
             E += -J * ( ising[UP].s + ising[DOWN].s + ising[LEFT].s + ising[RIGHT].s ) * ising[CENTER].s;
             M += ising[CENTER].s;
         }
-        printf("M = %Ld\tB = %Le\n",M,E);
-        Z += expl(-beta*E);
-        mM += M*expl(-beta*E);
-        mE += E*expl(-beta*E);
-        //printf("\n<e> = %.10Le\t<M> = %.10Le\tZ = %.10Le\n",mE/(step*width*height),mM/(step*width*height),Z);
+        mM += M;
+        mE += E/(width*height);
+        printf("\n<e> = %.10Le\t<M> = %.10Le\n",mE,10*mM/(width*height*step));
     }
     step++;
 }

@@ -2,16 +2,17 @@
 #include "vec3.h"
 
 int N = 70;
-double L = 10;
-double dt = 1e-6;
+double L = 3;
+double dt = 1e-4;
 body *particle = NULL;
 int *list = NULL;
 
 double temperature = 0;
 int runtime;
 
-int NDATA = 1000;
+int NDATA = 10000;
 double *data = NULL;
+vec3 *position = NULL;
 int ptr = 0;
 
 void clear(){
@@ -21,6 +22,8 @@ void clear(){
         free(list);
     if(data != NULL)
         free(data);
+    if(position != NULL)
+        free(position);
 }
 
 void reset(){
@@ -37,7 +40,7 @@ double get_temperature(){
 
 double get_energy(){
     double tmp = 0;
-    int i,j,k;
+    int i,j;
     double dx,dy,dz,dv;
     vec3 dr;
     for(i = 0; i < N; i++){
@@ -90,6 +93,7 @@ void init(){
     particle = (body*)malloc(N*sizeof(body));
     list = (int*)malloc(N*N*sizeof(int));
     data = (double*)malloc(NDATA*sizeof(double));
+    position = (vec3*)malloc(NDATA*N*sizeof(vec3));
 
     int i,j,k,l;
     for(l = i = 0; i < n && l < N/2; i++)
@@ -107,6 +111,7 @@ void init(){
     for(k = 0; k < N; k++){
         particle[k].c = vec3_new(_rand(), _rand(), _rand());
         particle[k].v = vec3_new(_rand()*2-1, _rand()*2-1, _rand()*2-1);
+        position[k] = particle[k].r;
     }
 
     normalize();
@@ -117,6 +122,8 @@ void run(){
     int i,j,k;
     double dx,dy,dz,dv;
     vec3 dr;
+
+    ptr = (ptr + 1) % NDATA;
 
     /* fill neighbors list*/
     if(!runtime%10)
@@ -134,6 +141,8 @@ void run(){
                         }
             list[i*N] = k;
         }
+
+    runtime++;
 
     /* verlet */
     for(i = 0; i < N; i++)
@@ -157,6 +166,10 @@ void run(){
         particle[i].r.y += particle[i].v.y * dt;
         particle[i].r.z += particle[i].v.z * dt;
 
+        position[ptr*N+i].x = position[((NDATA+ptr-1)%NDATA)*N+i].x + particle[i].v.x * dt;
+        position[ptr*N+i].y = position[((NDATA+ptr-1)%NDATA)*N+i].y + particle[i].v.y * dt;
+        position[ptr*N+i].z = position[((NDATA+ptr-1)%NDATA)*N+i].z + particle[i].v.z * dt;
+
         particle[i].r.x -= L * floor(particle[i].r.x / L);
         particle[i].r.y -= L * floor(particle[i].r.y / L);
         particle[i].r.z -= L * floor(particle[i].r.z / L);
@@ -178,14 +191,34 @@ void run(){
                         }
                     }
 
-    runtime++;
+    data[ptr] = get_temperature();
+}
 
-    data[ptr = (ptr + 1) % NDATA] = get_temperature();
+void get_dr2(){
+    int i,j,k;
+    double dr2[NDATA];
+    vec3 dr;
+    for(k = 1; k < NDATA; k++){
+        dr2[k] = 0;
+        for(i = ptr+1; i != ptr; i = (i+k)%NDATA){
+            for(j = 0; j < N; j++){
+                dr.x = position[((i+k)%NDATA)*N+j].x - position[i*N+j].x;
+                dr.y = position[((i+k)%NDATA)*N+j].y - position[i*N+j].y;
+                dr.z = position[((i+k)%NDATA)*N+j].z - position[i*N+j].z;
+                dr2[k] += vec3_dot(dr,dr);
+            }
+        }
+    }
+    FILE *f = fopen("dr2.dat","w");
+    for(k = 1; k < NDATA; k++)
+        fprintf(f, "%d\t%e\n", k, dr2[k]/(N*(NDATA/k)) );
+    fclose(f);
 }
 
 void print(){
     FILE *v = fopen("speed.dat","a");
     FILE *d = fopen("data.dat","w");
+    FILE *p = fopen("pos.dat","w");
 
     int k;
     for(k = 0; k < N; k++){
@@ -195,7 +228,14 @@ void print(){
         fprintf(d, "%e\n", data[k]);
     }
 
+    for(k = ptr+1; k != ptr; k = (k+1)%NDATA){
+        fprintf(p, "%e\t%e\t%e\n", position[k*N].x, position[k*N].y, position[k*N].z);
+    }
+
     fclose(v);
     fclose(d);
+    fclose(p);
+
+    get_dr2();    
 }
 
