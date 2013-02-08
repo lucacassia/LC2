@@ -10,7 +10,7 @@ int *list = NULL;
 double temperature = 0;
 int runtime;
 
-int NDATA = 10000;
+int NDATA = 5000;
 double *data = NULL;
 vec3 *position = NULL;
 int ptr = 0;
@@ -200,7 +200,7 @@ void get_dr2(){
     vec3 dr;
     for(k = 1; k < NDATA; k++){
         dr2[k] = 0;
-        for(i = ptr+1; i != ptr; i = (i+k)%NDATA){
+        for(i = ptr+1; i != (NDATA+ptr-k)%NDATA; i = (i+1)%NDATA){
             for(j = 0; j < N; j++){
                 dr.x = position[((i+k)%NDATA)*N+j].x - position[i*N+j].x;
                 dr.y = position[((i+k)%NDATA)*N+j].y - position[i*N+j].y;

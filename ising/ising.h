@@ -29,7 +29,7 @@ spin *ising = NULL;
 unsigned int step;
 
 long double J = 1;
-long double beta = 0.5;
+long double beta = 0.1;
 long double Z,mM,mE;
 
 void clear()
@@ -57,7 +57,7 @@ void metropolis()
     long double deltaE;
     for(i = 0; i < height; i++) for(j = 0; j < width; j++) {
         if( mersenne() < 0.5 ) new_spin = 1; else new_spin = -1;
-        deltaE = -J * ( ising[UP].s + ising[DOWN].s + ising[LEFT].s + ising[RIGHT].s ) * (new_spin - ising[CENTER].s);
+        deltaE = -J * ( ising[UP].s + ising[DOWN].s + ising[LEFT].s + ising[RIGHT].s ) * (new_spin - ising[CENTER].s) / 2;
         if( deltaE < 0 || mersenne() < exp(-beta*deltaE) ) ising[CENTER].s = new_spin;
     }
 }
@@ -65,7 +65,7 @@ void metropolis()
 void SW()
 {
     int i,j;
-    double prob = 0.99;
+    double prob = 0.5;
 
     for(i = 0; i < height; i++) for(j = 0; j < width; j++) {
         if( ising[RIGHT].s == ising[CENTER].s && mersenne() < prob ){
@@ -118,12 +118,13 @@ void run()
     else SW();
 
     if(step%10 == 0){
+        beta += 0.01;
         long double E;
         long long int M;
         int i,j;
         E = M = 0;
         for(i = 0; i < height; i++) for(j = 0; j < width; j++) {
-            E += -J * ( ising[UP].s + ising[DOWN].s + ising[LEFT].s + ising[RIGHT].s ) * ising[CENTER].s;
+            E += -J * ( ising[UP].s + ising[DOWN].s + ising[LEFT].s + ising[RIGHT].s ) * ising[CENTER].s / 2;
             M += ising[CENTER].s;
         }
         mM += M;

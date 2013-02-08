@@ -9,6 +9,23 @@
 int active = 0;
 float *pixels = NULL;
 
+void savePPM()
+{
+    unsigned char white[3] = {255,255,255};
+    unsigned char black[3] = {0,0,0};
+    FILE *f = fopen("image.ppm", "wb");
+    fprintf(f, "P6\n%d %d\n255\n", width, height);
+    int i,j;
+    for(i = height-1; i >= 0; i--)
+        for(j = 0; j < width; j++){
+            if(ising[i*width+j].s == 1)
+                fwrite(white, sizeof(unsigned char), 3, f);
+            if(ising[i*width+j].s == -1)
+                fwrite(black, sizeof(unsigned char), 3, f);
+        }
+    fclose(f);
+}
+
 void GLInit()
 {
     pixels = (float*)malloc(width * height * sizeof(float));
@@ -61,6 +78,9 @@ void keyboardF(unsigned char key, int mouseX, int mouseY)
             break;
         case 'm': case 'M':
             mode = !mode;
+            break;
+        case 'p': case 'P':
+            savePPM();
             break;
     }
 }
