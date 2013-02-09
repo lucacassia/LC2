@@ -19,7 +19,7 @@ all: rmxeq mkdep mkxeq rmpmk
 
 # main programs and required modules 
 
-MAIN = ising
+MAIN = ising main
 
 RANDOM = ranlxs ranlxd gauss
 

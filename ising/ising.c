@@ -13,6 +13,7 @@ void savePPM()
 {
     unsigned char white[3] = {255,255,255};
     unsigned char black[3] = {0,0,0};
+
     FILE *f = fopen("image.ppm", "wb");
     fprintf(f, "P6\n%d %d\n255\n", width, height);
     int i,j;
@@ -28,7 +29,7 @@ void savePPM()
 
 void GLInit()
 {
-    pixels = (float*)malloc(width * height * sizeof(float));
+    pixels = (float*)malloc(3 * width * height * sizeof(float));
 
     glDisable(GL_DEPTH_TEST);
     glClearColor(0.0f ,0.0f, 0.0f, 0.0f);
@@ -42,9 +43,9 @@ void displayF()
     int k;
     for(k = 0; k < width*height; k++){
         if(ising[k].s == 1)
-            pixels[k] = SPIN_UP;
+            pixels[k] = 1;
         else
-            pixels[k] = SPIN_DOWN;
+            pixels[k] = 0;
     }
 
     glRasterPos2i(0,0);
@@ -54,8 +55,9 @@ void displayF()
 
 void idleF()
 {
-    if(active)
+    if(active){
         run();
+    }
     glutPostRedisplay();
 }
 
@@ -71,7 +73,7 @@ void keyboardF(unsigned char key, int mouseX, int mouseY)
             active =! active;
             break;
         case 'r': case 'R':
-            Z = mE = mM = 0;
+            beta +=0.01;
             break;
         case 'i': case 'I':
             init();
