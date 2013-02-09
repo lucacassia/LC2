@@ -40,7 +40,7 @@ cluster *cl_merge(cluster *head, cluster *other){
     if(!head) return other;
     if(!other) return head;
     cluster *tmp = head;
-    while(tmp) if((tmp = tmp->next_cl) == other) break;
+    while(tmp && tmp->next_cl != other) tmp = tmp->next_cl;
     if(!tmp){
         tmp = other;
         other = head;

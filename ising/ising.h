@@ -21,14 +21,14 @@ typedef struct _spin{
     unsigned int r, l, u, d;
 }spin;
 
-int mode = 1;
+int mode = 0;
 
-unsigned int width = 500;
-unsigned int height = 500;
+unsigned int width = 64;
+unsigned int height = 64;
 spin *ising = NULL;
 unsigned int step,N;
 
-long double beta = 0.7;
+long double beta = 0;
 long double mM;
 
 void clear()
@@ -63,55 +63,81 @@ void metropolis()
 
 void SW()
 {
-    int i,j,k;
-    double prob = 0.5;
+    int i,j;
+    double prob = 1-exp(-beta);
 
     for(i = 0; i < height; i++) for(j = 0; j < width; j++) {
         ising[RIGHT].l = ising[CENTER].r = ( ising[RIGHT].s == ising[CENTER].s && mersenne() < prob );
-        ising[LEFT ].r = ising[CENTER].l = ( ising[LEFT ].s == ising[CENTER].s && mersenne() < prob );
-        ising[UP   ].d = ising[CENTER].u = ( ising[UP   ].s == ising[CENTER].s && mersenne() < prob );
+        //ising[LEFT ].r = ising[CENTER].l = ( ising[LEFT ].s == ising[CENTER].s && mersenne() < prob );
+        //ising[UP   ].d = ising[CENTER].u = ( ising[UP   ].s == ising[CENTER].s && mersenne() < prob );
         ising[DOWN ].u = ising[CENTER].d = ( ising[DOWN ].s == ising[CENTER].s && mersenne() < prob );
         ising[CENTER].cl = 0;
     }
 
-    unsigned int clnum = 1;
+    cluster *tmp = NULL, *head = NULL;
     for(i = 0; i < height; i++) for(j = 0; j < width; j++) {
-        if(ising[CENTER].l && !ising[CENTER].cl) ising[CENTER].cl = ising[LEFT].cl;
-        if(ising[CENTER].r && !ising[CENTER].cl) ising[CENTER].cl = ising[RIGHT].cl;
-        if(ising[CENTER].d && !ising[CENTER].cl) ising[CENTER].cl = ising[DOWN].cl;
-        if(ising[CENTER].u && !ising[CENTER].cl) ising[CENTER].cl = ising[UP].cl;
+        if(ising[CENTER].l && !ising[CENTER].cl && ising[LEFT].cl){
+            ising[CENTER].cl = 1;
+            tmp = cl_add_obj(cl_which(head,LEFT),CENTER);
+        }
+        if(ising[CENTER].r && !ising[CENTER].cl && ising[RIGHT].cl){
+            ising[CENTER].cl = 1;
+            tmp = cl_add_obj(cl_which(head,RIGHT),CENTER);
+        }
+        if(ising[CENTER].d && !ising[CENTER].cl && ising[DOWN].cl){
+            ising[CENTER].cl = 1;
+            tmp = cl_add_obj(cl_which(head,DOWN),CENTER);
+        }
+        if(ising[CENTER].u && !ising[CENTER].cl && ising[UP].cl){
+            ising[CENTER].cl = 1;
+            tmp = cl_add_obj(cl_which(head,UP),CENTER);
+        }
         if(!ising[CENTER].cl){
-            ising[CENTER].cl = clnum;
-            if(ising[CENTER].l) ising[LEFT].cl = clnum;
-            if(ising[CENTER].r) ising[RIGHT].cl = clnum;
-            if(ising[CENTER].d) ising[DOWN].cl = clnum;
-            if(ising[CENTER].u) ising[UP].cl = clnum;
-            clnum++;
+            ising[CENTER].cl = 1;
+            head = cl_add_cl(head,CENTER);
+            tmp = cl_which(head,CENTER);
         }
-        if(ising[CENTER].l && ising[CENTER].cl != ising[LEFT].cl){
-            if(!ising[LEFT].cl) ising[LEFT].cl = ising[CENTER].cl;
-            else for(k = 0; k < width*height; k++) if(ising[k].cl == ising[LEFT].cl) ising[k].cl = ising[CENTER].cl;
+        if(ising[CENTER].l){
+            if(ising[LEFT].cl) tmp = cl_merge(tmp, cl_which(head,LEFT) );
+            else{
+                tmp = cl_add_obj(tmp,LEFT);
+                ising[LEFT].cl = 1;
+            }
         }
-        if(ising[CENTER].r && ising[CENTER].cl != ising[RIGHT].cl){
-            if(!ising[RIGHT].cl) ising[RIGHT].cl = ising[CENTER].cl;
-            else for(k = 0; k < width*height; k++) if(ising[k].cl == ising[RIGHT].cl) ising[k].cl = ising[CENTER].cl;
+        if(ising[CENTER].r){
+            if(ising[RIGHT].cl) tmp = cl_merge(tmp, cl_which(head,RIGHT) );
+            else{
+                tmp = cl_add_obj(tmp,RIGHT);
+                ising[RIGHT].cl = 1;
+            }
         }
-        if(ising[CENTER].d && ising[CENTER].cl != ising[DOWN].cl){
-            if(!ising[DOWN].cl) ising[DOWN].cl = ising[CENTER].cl;
-            else for(k = 0; k < width*height; k++) if(ising[k].cl == ising[DOWN].cl) ising[k].cl = ising[CENTER].cl;
+        if(ising[CENTER].d){
+            if(ising[DOWN].cl) tmp = cl_merge(tmp, cl_which(head,DOWN) );
+            else{
+                tmp = cl_add_obj(tmp,DOWN);
+                ising[DOWN].cl = 1;
+            }
         }
-        if(ising[CENTER].u && ising[CENTER].cl != ising[UP].cl){
-            if(!ising[UP].cl) ising[UP].cl = ising[CENTER].cl;
-            else for(k = 0; k < width*height; k++) if(ising[k].cl == ising[UP].cl) ising[k].cl = ising[CENTER].cl;
+        if(ising[CENTER].u){
+            if(ising[UP].cl) tmp = cl_merge(tmp, cl_which(head,UP) );
+            else{
+                tmp = cl_add_obj(tmp,UP);
+                ising[UP].cl = 1;
+            }
         }
     }
 
     unsigned int flip;
-    for(i = 1; i < clnum; i++){
+    cluster *k;
+    tmp = head;
+    while(tmp){
         flip = mersenne() < 0.5;
-        if(flip) for(k = 0; k < width*height; k++) if(ising[k].cl == i) ising[k].s = -ising[k].s;
+        if(flip) for(k = tmp; k != NULL; k = k->next_obj)
+            ising[k->idx].s = -ising[k->idx].s;
+        tmp = tmp->next_cl;
     }
 
+    cl_clear(head);
 }
 
 void run()
