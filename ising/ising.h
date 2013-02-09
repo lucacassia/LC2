@@ -17,8 +17,7 @@
 
 typedef struct _spin{
     int s;
-    unsigned int done;
-    unsigned int flip;
+    unsigned int cl;
     unsigned int r, l, u, d;
 }spin;
 
@@ -64,7 +63,7 @@ void metropolis()
 
 void SW()
 {
-    int i,j;
+    int i,j,k;
     double prob = 0.5;
 
     for(i = 0; i < height; i++) for(j = 0; j < width; j++) {
@@ -72,31 +71,45 @@ void SW()
         ising[LEFT ].r = ising[CENTER].l = ( ising[LEFT ].s == ising[CENTER].s && mersenne() < prob );
         ising[UP   ].d = ising[CENTER].u = ( ising[UP   ].s == ising[CENTER].s && mersenne() < prob );
         ising[DOWN ].u = ising[CENTER].d = ( ising[DOWN ].s == ising[CENTER].s && mersenne() < prob );
+        ising[CENTER].cl = 0;
     }
 
+    unsigned int clnum = 1;
     for(i = 0; i < height; i++) for(j = 0; j < width; j++) {
-        ising[CENTER].done = 0;
-        if( (!ising[CENTER].done) && ising[CENTER].r && ising[RIGHT].done){
-            ising[CENTER].flip = ising[RIGHT].flip;
-            ising[CENTER].done = 1;
+        if(ising[CENTER].l && !ising[CENTER].cl) ising[CENTER].cl = ising[LEFT].cl;
+        if(ising[CENTER].r && !ising[CENTER].cl) ising[CENTER].cl = ising[RIGHT].cl;
+        if(ising[CENTER].d && !ising[CENTER].cl) ising[CENTER].cl = ising[DOWN].cl;
+        if(ising[CENTER].u && !ising[CENTER].cl) ising[CENTER].cl = ising[UP].cl;
+        if(!ising[CENTER].cl){
+            ising[CENTER].cl = clnum;
+            if(ising[CENTER].l) ising[LEFT].cl = clnum;
+            if(ising[CENTER].r) ising[RIGHT].cl = clnum;
+            if(ising[CENTER].d) ising[DOWN].cl = clnum;
+            if(ising[CENTER].u) ising[UP].cl = clnum;
+            clnum++;
         }
-        if( (!ising[CENTER].done) && ising[CENTER].l && ising[LEFT].done){
-            ising[CENTER].flip = ising[LEFT].flip;
-            ising[CENTER].done = 1;
+        if(ising[CENTER].l && ising[CENTER].cl != ising[LEFT].cl){
+            if(!ising[LEFT].cl) ising[LEFT].cl = ising[CENTER].cl;
+            else for(k = 0; k < width*height; k++) if(ising[k].cl == ising[LEFT].cl) ising[k].cl = ising[CENTER].cl;
         }
-        if( (!ising[CENTER].done) && ising[CENTER].u && ising[UP].done){
-            ising[CENTER].flip = ising[UP].flip;
-            ising[CENTER].done = 1;
+        if(ising[CENTER].r && ising[CENTER].cl != ising[RIGHT].cl){
+            if(!ising[RIGHT].cl) ising[RIGHT].cl = ising[CENTER].cl;
+            else for(k = 0; k < width*height; k++) if(ising[k].cl == ising[RIGHT].cl) ising[k].cl = ising[CENTER].cl;
         }
-        if( (!ising[CENTER].done) && ising[CENTER].d && ising[DOWN].done){
-            ising[CENTER].flip = ising[DOWN].flip;
-            ising[CENTER].done = 1;
+        if(ising[CENTER].d && ising[CENTER].cl != ising[DOWN].cl){
+            if(!ising[DOWN].cl) ising[DOWN].cl = ising[CENTER].cl;
+            else for(k = 0; k < width*height; k++) if(ising[k].cl == ising[DOWN].cl) ising[k].cl = ising[CENTER].cl;
         }
-        if( !ising[CENTER].done ){
-            ising[CENTER].flip = mersenne() < 0.5;
-            ising[CENTER].done = 1;
+        if(ising[CENTER].u && ising[CENTER].cl != ising[UP].cl){
+            if(!ising[UP].cl) ising[UP].cl = ising[CENTER].cl;
+            else for(k = 0; k < width*height; k++) if(ising[k].cl == ising[UP].cl) ising[k].cl = ising[CENTER].cl;
         }
-        if(ising[CENTER].flip) ising[CENTER].s = -ising[CENTER].s;
+    }
+
+    unsigned int flip;
+    for(i = 1; i < clnum; i++){
+        flip = mersenne() < 0.5;
+        if(flip) for(k = 0; k < width*height; k++) if(ising[k].cl == i) ising[k].s = -ising[k].s;
     }
 
 }
