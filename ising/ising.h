@@ -7,19 +7,13 @@
 #include <time.h>
 #include <string.h>
 #include <math.h>
+#include "cluster.h"
 
 #define RIGHT  ( i*width+(j+1)%width )
 #define LEFT   ( i*width+(width+j-1)%width )
 #define UP     ( ((height+i-1)%height)*width+j )
 #define DOWN   ( ((i+1)%height)*width+j )
 #define CENTER ( i*width+j )
-
-typedef struct _spin{
-    int s;
-    unsigned int done;
-    unsigned int flip;
-    unsigned int r, l, u, d;
-}spin;
 
 int mode = 1;
 
@@ -28,7 +22,7 @@ unsigned int height = 500;
 spin *ising = NULL;
 unsigned int step,N;
 
-long double beta = 0.1;
+long double beta = 0.7;
 long double mM;
 
 void clear()
@@ -67,42 +61,31 @@ void SW()
     double prob = 0.5;
 
     for(i = 0; i < height; i++) for(j = 0; j < width; j++) {
-        if( ising[RIGHT].s == ising[CENTER].s && mersenne() < prob ){
-            ising[RIGHT].l = ising[CENTER].r = 1;
-        }else ising[RIGHT].l = ising[CENTER].r = 0;
-
-        if( ising[LEFT].s == ising[CENTER].s && mersenne() < prob ){
-            ising[LEFT].r = ising[CENTER].l = 1;
-        }else ising[LEFT].r = ising[CENTER].l = 0;
-
-        if( ising[UP].s == ising[CENTER].s && mersenne() < prob ){
-            ising[UP].d = ising[CENTER].u = 1;
-        }else ising[UP].d = ising[CENTER].u = 0;
-
-        if( ising[DOWN].s == ising[CENTER].s && mersenne() < prob ){
-            ising[DOWN].u = ising[CENTER].d = 1;
-        }else ising[DOWN].u = ising[CENTER].d = 0;
+        ising[RIGHT].l = ising[CENTER].r = ( ising[RIGHT].s == ising[CENTER].s && mersenne() < prob );
+        ising[LEFT ].r = ising[CENTER].l = ( ising[LEFT ].s == ising[CENTER].s && mersenne() < prob );
+        ising[UP   ].d = ising[CENTER].u = ( ising[UP   ].s == ising[CENTER].s && mersenne() < prob );
+        ising[DOWN ].u = ising[CENTER].d = ( ising[DOWN ].s == ising[CENTER].s && mersenne() < prob );
     }
 
     for(i = 0; i < height; i++) for(j = 0; j < width; j++) {
         ising[CENTER].done = 0;
-        if(!ising[CENTER].done && ising[CENTER].l && ising[RIGHT].done){
+        if( (!ising[CENTER].done) && ising[CENTER].r && ising[RIGHT].done){
             ising[CENTER].flip = ising[RIGHT].flip;
             ising[CENTER].done = 1;
         }
-        if(!ising[CENTER].done && ising[CENTER].r && ising[LEFT].done){
+        if( (!ising[CENTER].done) && ising[CENTER].l && ising[LEFT].done){
             ising[CENTER].flip = ising[LEFT].flip;
             ising[CENTER].done = 1;
         }
-        if(!ising[CENTER].done && ising[CENTER].u && ising[UP].done){
+        if( (!ising[CENTER].done) && ising[CENTER].u && ising[UP].done){
             ising[CENTER].flip = ising[UP].flip;
             ising[CENTER].done = 1;
         }
-        if(!ising[CENTER].done && ising[CENTER].d && ising[DOWN].done){
+        if( (!ising[CENTER].done) && ising[CENTER].d && ising[DOWN].done){
             ising[CENTER].flip = ising[DOWN].flip;
             ising[CENTER].done = 1;
         }
-        if(!ising[CENTER].done){
+        if( !ising[CENTER].done ){
             ising[CENTER].flip = mersenne() < 0.5;
             ising[CENTER].done = 1;
         }
@@ -125,8 +108,8 @@ void run()
             M += ising[CENTER].s;
         }
         N++;
-        mM += M/(width*height*N);
-//        printf("\ne = %Lf\tM = %Lf\n",E/(width*height),M/(width*height));
+        mM += M;
+        //printf("\nN = %d\te = %Lf\tM = %Lf\n",N,E/(width*height),mM/(width*height*N));
     }
     step++;
 }
