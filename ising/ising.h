@@ -15,6 +15,13 @@
 #define DOWN   ( ((i+1)%height)*width+j )
 #define CENTER ( i*width+j )
 
+typedef struct _spin{
+    int s;
+    unsigned int done;
+    unsigned int flip;
+    unsigned int r, l, u, d;
+}spin;
+
 int mode = 1;
 
 unsigned int width = 500;
