@@ -79,7 +79,7 @@ void keyboardF(unsigned char key, int mouseX, int mouseY)
             init();
             break;
         case 'm': case 'M':
-            mode = !mode;
+            mode = (mode+1)%3;
             break;
         case 'p': case 'P':
             savePPM();

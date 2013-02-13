@@ -23,8 +23,8 @@ typedef struct _spin{
 
 int mode = 0;
 
-unsigned int width = 64;
-unsigned int height = 64;
+unsigned int width = 300;
+unsigned int height = 300;
 spin *ising = NULL;
 unsigned int step,N;
 
@@ -61,10 +61,22 @@ void metropolis()
     }
 }
 
+void heatbath()
+{
+    int i,j;
+    long double E,prob;
+    for(i = 0; i < height; i++) for(j = 0; j < width; j++) {
+        E = ( ising[UP].s + ising[DOWN].s + ising[LEFT].s + ising[RIGHT].s );
+        prob = 1 / (1 + exp(-2*beta*E));
+        if( mersenne() < prob ) ising[CENTER].s = 1;
+        else ising[CENTER].s = -1;
+    }
+}
+
 void SW()
 {
     int i,j;
-    double prob = 1-exp(-beta);
+    double prob = 1-exp(-2*beta);
 
     for(i = 0; i < height; i++) for(j = 0; j < width; j++) {
         ising[RIGHT].l = ising[CENTER].r = ( ising[RIGHT].s == ising[CENTER].s && mersenne() < prob );
@@ -142,8 +154,9 @@ void SW()
 
 void run()
 {
-    if(mode) metropolis();
-    else SW();
+    if(mode == 0) metropolis();
+    if(mode == 1) heatbath();
+    if(mode == 2) SW();
 
     if(step%10 == 0){
         long double E,M;
@@ -154,10 +167,22 @@ void run()
             M += ising[CENTER].s;
         }
         N++;
-        mM += M;
+        mM += abs(M);
         //printf("\nN = %d\te = %Lf\tM = %Lf\n",N,E/(width*height),mM/(width*height*N));
     }
     step++;
+}
+
+double correlation(int t){
+    int i,j;
+    double c = 0;
+    for(i = 0; i < height; i++){
+        c = 0;
+        for(j = 0; j < width; j++){
+            c += 1;
+        }
+    }
+    return c;
 }
 
 #endif
