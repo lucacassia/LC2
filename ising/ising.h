@@ -21,20 +21,24 @@ typedef struct _spin{
     unsigned int r, l, u, d;
 }spin;
 
-int mode = 0;
+int mode = 1;
 
-unsigned int width = 300;
-unsigned int height = 300;
+unsigned int width = 500;
+unsigned int height = 500;
 spin *ising = NULL;
 unsigned int step,N;
 
 long double beta = 0;
-long double mM;
+long double mM,mE;
+
+double *CORR = NULL;
 
 void clear()
 {
     if(ising != NULL)
         free(ising);
+    if(CORR != NULL)
+        free(CORR);
 }
 
 void init()
@@ -45,9 +49,10 @@ void init()
 
     clear();
     ising = (spin*)malloc(width * height * sizeof(spin));
+    CORR = (double*)malloc(height * sizeof(double));
     for(k = 0; k < width * height; k++)
         if( 1 ) ising[k].s = 1; else ising[k].s = -1;
-    N = step = mM = 0;
+    N = step = mM = mE = 0;
 }
 
 void metropolis()
@@ -168,21 +173,21 @@ void run()
         }
         N++;
         mM += abs(M);
-        //printf("\nN = %d\te = %Lf\tM = %Lf\n",N,E/(width*height),mM/(width*height*N));
+        mE += abs(E);
+        //printf("\nN = %d\te = %Lf\tM = %Lf\n",N,E/(width*height*N),mM/(width*height*N));
     }
     step++;
 }
 
 double correlation(int t){
     int i,j;
-    double c = 0;
+    double tmp1,tmp2,corr = 0;
     for(i = 0; i < height; i++){
-        c = 0;
-        for(j = 0; j < width; j++){
-            c += 1;
-        }
+        for(tmp1 = j = 0; j < width; j++) tmp1 += ising[i*width+j].s;
+        for(tmp2 = j = 0; j < width; j++) tmp2 += ising[((i+t)%height)*width+j].s;
+        corr += tmp1 * tmp2 / (width * width);
     }
-    return c;
+    return corr / height;
 }
 
 #endif
