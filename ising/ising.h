@@ -157,6 +157,17 @@ void SW()
     cl_clear(head);
 }
 
+double correlation(int t){
+    int i,j;
+    double tmp1,tmp2,corr = 0;
+    for(i = 0; i < height; i++){
+        for(tmp1 = j = 0; j < width; j++) tmp1 += ising[i*width+j].s;
+        for(tmp2 = j = 0; j < width; j++) tmp2 += ising[((i+t)%height)*width+j].s;
+        corr += tmp1 * tmp2 / (width * width);
+    }
+    return corr / height;
+}
+
 void run()
 {
     if(mode == 0) metropolis();
@@ -174,20 +185,10 @@ void run()
         N++;
         mM += abs(M);
         mE += abs(E);
-        //printf("\nN = %d\te = %Lf\tM = %Lf\n",N,E/(width*height*N),mM/(width*height*N));
+
+        for(i = 0; i < height; i++) CORR[i] = correlation(i);
     }
     step++;
-}
-
-double correlation(int t){
-    int i,j;
-    double tmp1,tmp2,corr = 0;
-    for(i = 0; i < height; i++){
-        for(tmp1 = j = 0; j < width; j++) tmp1 += ising[i*width+j].s;
-        for(tmp2 = j = 0; j < width; j++) tmp2 += ising[((i+t)%height)*width+j].s;
-        corr += tmp1 * tmp2 / (width * width);
-    }
-    return corr / height;
 }
 
 #endif
