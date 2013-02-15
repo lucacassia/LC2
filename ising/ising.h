@@ -21,7 +21,7 @@ typedef struct _spin{
     unsigned int r, l, u, d;
 }spin;
 
-int mode = 1;
+int mode = 0;
 
 unsigned int width = 500;
 unsigned int height = 500;

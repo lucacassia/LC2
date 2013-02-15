@@ -72,8 +72,11 @@ void keyboardF(unsigned char key, int mouseX, int mouseY)
         case ' ':
             active =! active;
             break;
-        case 'r': case 'R':
+        case '+':
             beta +=0.01;
+            break;
+        case '-':
+            beta -=0.01;
             break;
         case 'i': case 'I':
             init();
