@@ -28,10 +28,13 @@ unsigned int height = 500;
 spin *ising = NULL;
 unsigned int step,N;
 
-long double beta = 0;
-long double mM,mE;
+double beta = 0;
+double mM,mE;
 
 double *CORR = NULL;
+double *mem = NULL;
+unsigned int ptr = 0;
+unsigned int memlen = 1000;
 
 void clear()
 {
@@ -39,6 +42,8 @@ void clear()
         free(ising);
     if(CORR != NULL)
         free(CORR);
+    if(mem != NULL)
+        free(mem);
 }
 
 void init()
@@ -50,6 +55,7 @@ void init()
     clear();
     ising = (spin*)malloc(width * height * sizeof(spin));
     CORR = (double*)malloc(height * sizeof(double));
+    mem = (double*)malloc(memlen * sizeof(double));
     for(k = 0; k < width * height; k++)
         if( 1 ) ising[k].s = 1; else ising[k].s = -1;
     N = step = mM = mE = 0;
@@ -58,7 +64,7 @@ void init()
 void metropolis()
 {
     int i,j,new_spin;
-    long double deltaE;
+    double deltaE;
     for(i = 0; i < height; i++) for(j = 0; j < width; j++) {
         if( mersenne() < 0.5 ) new_spin = 1; else new_spin = -1;
         deltaE = - ( ising[UP].s + ising[DOWN].s + ising[LEFT].s + ising[RIGHT].s ) * (new_spin - ising[CENTER].s);
@@ -69,7 +75,7 @@ void metropolis()
 void heatbath()
 {
     int i,j;
-    long double E,prob;
+    double E,prob;
     for(i = 0; i < height; i++) for(j = 0; j < width; j++) {
         E = ( ising[UP].s + ising[DOWN].s + ising[LEFT].s + ising[RIGHT].s );
         prob = 1 / (1 + exp(-2*beta*E));
@@ -174,8 +180,8 @@ void run()
     if(mode == 1) heatbath();
     if(mode == 2) SW();
 
-    if(step%10 == 0){
-        long double E,M;
+    if(step%1 == 0){
+        double E,M;
         int i,j;
         E = M = 0;
         for(i = 0; i < height; i++) for(j = 0; j < width; j++) {
@@ -187,8 +193,24 @@ void run()
         mE += abs(E);
 
         for(i = 0; i < height; i++) CORR[i] = correlation(i);
+        mem[ptr] = abs(E);
+        ptr = (ptr+1)%memlen;
     }
     step++;
+}
+
+double get_sigma(unsigned int m){
+    double sigma, mean, tmp;
+    int i,j;
+    for(j = tmp = mean = sigma = i = 0; i < memlen; i++){
+        tmp += mem[(ptr+i)%memlen];
+        if((++j)%m == 0){
+            sigma += tmp*tmp/(m*m);
+            mean += tmp/m;
+            tmp = 0;
+        }
+    }
+    return sqrt((sigma-mean)/(memlen/m));
 }
 
 #endif
