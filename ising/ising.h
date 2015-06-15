@@ -21,64 +21,65 @@ typedef struct _spin{
     unsigned int r, l, u, d;
 }spin;
 
-int mode = 0;
+int algorithm = 0;
 
-unsigned int width = 500;
-unsigned int height = 500;
+unsigned int width = 100;
+unsigned int height = 100;
 spin *ising = NULL;
-unsigned int step,N;
+unsigned int markov_time;
 
 double beta = 0;
-double mM,mE;
+double mean_energy;
+double mean_magnetization;
 
-double *CORR = NULL;
-double *mem = NULL;
-unsigned int ptr = 0;
-unsigned int memlen = 1000;
+double *correlation = NULL;
+double *store_energy = NULL;
+double *store_magnetization = NULL;
+unsigned int store_ptr = 0;
+unsigned int store_size = 1000;
 
 void clear()
 {
-    if(ising != NULL)
-        free(ising);
-    if(CORR != NULL)
-        free(CORR);
-    if(mem != NULL)
-        free(mem);
+    if(ising != NULL) free(ising);
+    if(correlation != NULL) free(correlation);
+    if(store_energy != NULL) free(store_energy);
+    if(store_magnetization != NULL) free(store_magnetization);
 }
 
 void init()
 {
-    int k;
     seed_mersenne( (long)time(NULL) );
-    for(k = 0; k < 543210; k++) mersenne();
+    int k; for(k = 0; k < 543210; k++) mersenne();
 
     clear();
     ising = (spin*)malloc(width * height * sizeof(spin));
-    CORR = (double*)malloc(height * sizeof(double));
-    mem = (double*)malloc(memlen * sizeof(double));
-    for(k = 0; k < width * height; k++)
-        if( 1 ) ising[k].s = 1; else ising[k].s = -1;
-    N = step = mM = mE = 0;
+    correlation = (double*)malloc(height * sizeof(double));
+    store_energy = (double*)malloc(store_size * sizeof(double));
+    store_magnetization = (double*)malloc(store_size * sizeof(double));
+
+    for(k = 0; k < width * height; k++) if( 1 ) ising[k].s = 1; else ising[k].s = -1;
+
+    markov_time = mean_magnetization = mean_energy = 0;
 }
 
-void metropolis()
+void MH()
 {
     int i,j,new_spin;
-    double deltaE;
+    double delta_energy;
     for(i = 0; i < height; i++) for(j = 0; j < width; j++) {
         if( mersenne() < 0.5 ) new_spin = 1; else new_spin = -1;
-        deltaE = - ( ising[UP].s + ising[DOWN].s + ising[LEFT].s + ising[RIGHT].s ) * (new_spin - ising[CENTER].s);
-        if( deltaE < 0 || mersenne() < exp(-beta*deltaE) ) ising[CENTER].s = new_spin;
+        delta_energy = - ( ising[UP].s + ising[DOWN].s + ising[LEFT].s + ising[RIGHT].s ) * (new_spin - ising[CENTER].s);
+        if( delta_energy < 0 || mersenne() < exp(- beta * delta_energy) ) ising[CENTER].s = new_spin;
     }
 }
 
 void heatbath()
 {
     int i,j;
-    double E,prob;
+    double energy,prob;
     for(i = 0; i < height; i++) for(j = 0; j < width; j++) {
-        E = ( ising[UP].s + ising[DOWN].s + ising[LEFT].s + ising[RIGHT].s );
-        prob = 1 / (1 + exp(-2*beta*E));
+        energy = ( ising[UP].s + ising[DOWN].s + ising[LEFT].s + ising[RIGHT].s );
+        prob = 1 / (1 + exp(- 2 * beta * energy));
         if( mersenne() < prob ) ising[CENTER].s = 1;
         else ising[CENTER].s = -1;
     }
@@ -87,12 +88,12 @@ void heatbath()
 void SW()
 {
     int i,j;
-    double prob = 1-exp(-2*beta);
+    double prob = 1 - exp(- 2 * beta);
 
     for(i = 0; i < height; i++) for(j = 0; j < width; j++) {
         ising[RIGHT].l = ising[CENTER].r = ( ising[RIGHT].s == ising[CENTER].s && mersenne() < prob );
-        //ising[LEFT ].r = ising[CENTER].l = ( ising[LEFT ].s == ising[CENTER].s && mersenne() < prob );
-        //ising[UP   ].d = ising[CENTER].u = ( ising[UP   ].s == ising[CENTER].s && mersenne() < prob );
+        ising[LEFT ].r = ising[CENTER].l = ( ising[LEFT ].s == ising[CENTER].s && mersenne() < prob );
+        ising[UP   ].d = ising[CENTER].u = ( ising[UP   ].s == ising[CENTER].s && mersenne() < prob );
         ising[DOWN ].u = ising[CENTER].d = ( ising[DOWN ].s == ising[CENTER].s && mersenne() < prob );
         ising[CENTER].cl = 0;
     }
@@ -163,9 +164,9 @@ void SW()
     cl_clear(head);
 }
 
-double correlation(int t){
+double get_correlation(int t){
     int i,j;
-    double tmp1,tmp2,corr = 0;
+    double tmp1, tmp2, corr = 0;
     for(i = 0; i < height; i++){
         for(tmp1 = j = 0; j < width; j++) tmp1 += ising[i*width+j].s;
         for(tmp2 = j = 0; j < width; j++) tmp2 += ising[((i+t)%height)*width+j].s;
@@ -174,43 +175,45 @@ double correlation(int t){
     return corr / height;
 }
 
+double get_energy(){
+    double energy = 0;
+    int i,j; for(i = 0; i < height; i++) for(j = 0; j < width; j++)
+        energy += - ( ising[DOWN].s + ising[RIGHT].s ) * ising[CENTER].s;
+    return energy;
+}
+
+double get_magnetization(){
+    double magnetization = 0;
+    int i,j; for(i = 0; i < height; i++) for(j = 0; j < width; j++)
+        magnetization += ising[CENTER].s;
+    return magnetization;
+}
+
 void run()
 {
-    if(mode == 0) metropolis();
-    if(mode == 1) heatbath();
-    if(mode == 2) SW();
+    if(algorithm == 0) MH();
+    if(algorithm == 1) SW();
 
-    if(step%1 == 0){
-        double E,M;
-        int i,j;
-        E = M = 0;
-        for(i = 0; i < height; i++) for(j = 0; j < width; j++) {
-            E += - ( ising[UP].s + ising[DOWN].s + ising[LEFT].s + ising[RIGHT].s ) * ising[CENTER].s / 2;
-            M += ising[CENTER].s;
-        }
-        N++;
-        mM += abs(M);
-        mE += abs(E);
+    int i; for(i = 0; i < height; i++) correlation[i] = get_correlation(i);
+    mean_energy += store_energy[store_ptr] = abs( get_energy() );
+    mean_magnetization += store_magnetization[store_ptr] = abs( get_magnetization() );
+    store_ptr = (store_ptr + 1) % store_size;
 
-        for(i = 0; i < height; i++) CORR[i] = correlation(i);
-        mem[ptr] = abs(E);
-        ptr = (ptr+1)%memlen;
-    }
-    step++;
+    markov_time++;
 }
 
 double get_sigma(unsigned int m){
     double sigma, mean, tmp;
     int i,j;
-    for(j = tmp = mean = sigma = i = 0; i < memlen; i++){
-        tmp += mem[(ptr+i)%memlen];
+    for(j = tmp = mean = sigma = i = 0; i < store_size; i++){
+        tmp += store_energy[(store_ptr+i)%store_size];
         if((++j)%m == 0){
             sigma += tmp*tmp/(m*m);
             mean += tmp/m;
             tmp = 0;
         }
     }
-    return sqrt((sigma-mean)/(memlen/m));
+    return sqrt((sigma-mean)/(store_size/m));
 }
 
 #endif

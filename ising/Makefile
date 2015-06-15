@@ -19,15 +19,11 @@ all: rmxeq mkdep mkxeq rmpmk
 
 # main programs and required modules 
 
-MAIN = ising main test
+MAIN = ising termalization
 
-RANDOM = ranlxs ranlxd gauss
+RANDOM = mersenne
 
-START = start utils
-
-EXTRAS = mersenne
-
-MODULES = $(RANDOM) $(START) $(EXTRAS)
+MODULES = $(RANDOM)
 
 
 # search path for modules

@@ -68,24 +68,32 @@ void keyboardF(unsigned char key, int mouseX, int mouseY)
         case 'q': case 'Q': case 27:
             clear();
             free(pixels);
+            printf("\nBye Bye!\n");
             exit(EXIT_SUCCESS);
         case ' ':
             active =! active;
+            if(active) printf("\n[ACTIVE]\n"); else printf("\n[PAUSED]\n");
             break;
         case '+':
-            beta +=0.01;
+            beta += 0.01;
+            printf("\nBeta: %f\n",beta);
             break;
         case '-':
-            beta -=0.01;
+            beta -= 0.01;
+            printf("\nBeta: %f\n",beta);
             break;
         case 'i': case 'I':
             init();
+            printf("\nThe simulation has been reset!\n");
             break;
         case 'm': case 'M':
-            mode = (mode+1)%3;
+            algorithm = (algorithm + 1) % 2;
+            if(algorithm == 0) printf("\nActivating Metropolis-Hasting Algorithm\n");
+            if(algorithm == 1) printf("\nActivating Swendsen–Wang Algorithm\n");
             break;
         case 'p': case 'P':
             savePPM();
+            printf("\nPPM file saved to: image.ppm\n");
             break;
     }
 }
