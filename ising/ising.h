@@ -21,29 +21,15 @@ typedef struct _spin{
     unsigned int r, l, u, d;
 }spin;
 
-int algorithm = 0;
-
 unsigned int width = 100;
 unsigned int height = 100;
 spin *ising = NULL;
 unsigned int markov_time;
-
 double beta = 0;
-double mean_energy;
-double mean_magnetization;
-
-double *correlation = NULL;
-double *store_energy = NULL;
-double *store_magnetization = NULL;
-unsigned int store_ptr = 0;
-unsigned int store_size = 1000;
 
 void clear()
 {
     if(ising != NULL) free(ising);
-    if(correlation != NULL) free(correlation);
-    if(store_energy != NULL) free(store_energy);
-    if(store_magnetization != NULL) free(store_magnetization);
 }
 
 void init()
@@ -53,13 +39,21 @@ void init()
 
     clear();
     ising = (spin*)malloc(width * height * sizeof(spin));
-    correlation = (double*)malloc(height * sizeof(double));
-    store_energy = (double*)malloc(store_size * sizeof(double));
-    store_magnetization = (double*)malloc(store_size * sizeof(double));
 
-    for(k = 0; k < width * height; k++) if( 1 ) ising[k].s = 1; else ising[k].s = -1;
+    for(k = 0; k < width * height; k++)
+        if( mersenne() < 0.5 ) ising[k].s = 1;
+    else ising[k].s = -1;
 
-    markov_time = mean_magnetization = mean_energy = 0;
+    markov_time = 0;
+}
+
+void single_MH(int i, int j)
+{
+    int new_spin;
+    double delta_energy;
+    if( mersenne() < 0.5 ) new_spin = 1; else new_spin = -1;
+    delta_energy = - ( ising[UP].s + ising[DOWN].s + ising[LEFT].s + ising[RIGHT].s ) * (new_spin - ising[CENTER].s);
+    if( delta_energy < 0 || mersenne() < exp(- beta * delta_energy) ) ising[CENTER].s = new_spin;
 }
 
 void MH()
@@ -164,17 +158,6 @@ void SW()
     cl_clear(head);
 }
 
-double get_correlation(int t){
-    int i,j;
-    double tmp1, tmp2, corr = 0;
-    for(i = 0; i < height; i++){
-        for(tmp1 = j = 0; j < width; j++) tmp1 += ising[i*width+j].s;
-        for(tmp2 = j = 0; j < width; j++) tmp2 += ising[((i+t)%height)*width+j].s;
-        corr += tmp1 * tmp2 / (width * width);
-    }
-    return corr / height;
-}
-
 double get_energy(){
     double energy = 0;
     int i,j; for(i = 0; i < height; i++) for(j = 0; j < width; j++)
@@ -189,17 +172,30 @@ double get_magnetization(){
     return magnetization;
 }
 
-void run()
+void run(unsigned int algorithm_id)
 {
-    if(algorithm == 0) MH();
-    if(algorithm == 1) SW();
-
-    int i; for(i = 0; i < height; i++) correlation[i] = get_correlation(i);
-    mean_energy += store_energy[store_ptr] = abs( get_energy() );
-    mean_magnetization += store_magnetization[store_ptr] = abs( get_magnetization() );
-    store_ptr = (store_ptr + 1) % store_size;
-
+    if(algorithm_id == 0) MH();
+    if(algorithm_id == 1) SW();
     markov_time++;
+}
+
+void termalize(unsigned int algorithm_id, unsigned int termalization_time){
+    init();
+    int k;
+    for(k = 0; k < termalization_time; k++)
+        run(algorithm_id);
+    markov_time = 0;
+}
+
+/*double get_correlation(int t){
+    int i,j;
+    double tmp1, tmp2, corr = 0;
+    for(i = 0; i < height; i++){
+        for(tmp1 = j = 0; j < width; j++) tmp1 += ising[i*width+j].s;
+        for(tmp2 = j = 0; j < width; j++) tmp2 += ising[((i+t)%height)*width+j].s;
+        corr += tmp1 * tmp2 / (width * width);
+    }
+    return corr / height;
 }
 
 double get_sigma(unsigned int m){
@@ -214,6 +210,6 @@ double get_sigma(unsigned int m){
         }
     }
     return sqrt((sigma-mean)/(store_size/m));
-}
+}*/
 
 #endif

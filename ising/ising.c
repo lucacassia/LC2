@@ -6,7 +6,8 @@
 #define SPIN_UP     1
 #define SPIN_DOWN   0
 
-int active = 0;
+unsigned int active = 0;
+unsigned int algorithm = 0;
 float *pixels = NULL;
 
 void savePPM()
@@ -56,7 +57,7 @@ void displayF()
 void idleF()
 {
     if(active){
-        run();
+        run(algorithm);
     }
     glutPostRedisplay();
 }
