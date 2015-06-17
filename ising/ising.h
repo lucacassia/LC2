@@ -21,8 +21,8 @@ typedef struct _spin{
     unsigned int r, l, u, d;
 }spin;
 
-unsigned int width = 100;
-unsigned int height = 100;
+unsigned int width = 32;
+unsigned int height = 32;
 spin *ising = NULL;
 unsigned int markov_time;
 double beta = 0;
@@ -32,7 +32,7 @@ void clear()
     if(ising != NULL) free(ising);
 }
 
-void init()
+void init(double beta_value)
 {
     seed_mersenne( (long)time(NULL) );
     int k; for(k = 0; k < 543210; k++) mersenne();
@@ -45,6 +45,7 @@ void init()
     else ising[k].s = -1;
 
     markov_time = 0;
+    beta = beta_value;
 }
 
 void single_MH(int i, int j)
@@ -179,11 +180,12 @@ void run(unsigned int algorithm_id)
     markov_time++;
 }
 
-void termalize(unsigned int algorithm_id, unsigned int termalization_time){
-    init();
+void thermalize(unsigned int algorithm_id, unsigned int termalization_time){
     int k;
-    for(k = 0; k < termalization_time; k++)
-        run(algorithm_id);
+    for(k = 0; k < termalization_time; k++){
+        if(algorithm_id == 0) MH();
+        if(algorithm_id == 1) SW();
+    }
     markov_time = 0;
 }
 

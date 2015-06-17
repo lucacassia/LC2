@@ -19,7 +19,7 @@ all: rmxeq mkdep mkxeq rmpmk
 
 # main programs and required modules 
 
-MAIN = ising termalization autocorrelation
+MAIN = ising thermalization autocorrelationMH autocorrelationSW
 
 RANDOM = mersenne
 

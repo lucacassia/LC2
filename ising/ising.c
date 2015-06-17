@@ -36,7 +36,7 @@ void GLInit()
     glClearColor(0.0f ,0.0f, 0.0f, 0.0f);
     glClear(GL_COLOR_BUFFER_BIT);
     glOrtho(0.0, width, 0.0, height, 0.0, 1.0);
-    init();
+    init(0);
 }
 
 void displayF()
@@ -84,11 +84,11 @@ void keyboardF(unsigned char key, int mouseX, int mouseY)
             printf("\nBeta: %f\n",beta);
             break;
         case 'i': case 'I':
-            init();
+            init(beta);
             printf("\nThe simulation has been reset!\n");
             break;
         case 'm': case 'M':
-            algorithm = (algorithm + 1) % 2;
+            algorithm = !algorithm;
             if(algorithm == 0) printf("\nActivating Metropolis-Hasting Algorithm\n");
             if(algorithm == 1) printf("\nActivating Swendsen–Wang Algorithm\n");
             break;

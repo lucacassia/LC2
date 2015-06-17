@@ -7,23 +7,26 @@ double get_moment(int n, double* storage, int storage_size){
 
 int main(){
 
-    beta = 0.3;
-    unsigned int algorithm_id = 0;
+    FILE *f1 = fopen("data/energySW.dat","w");
+    FILE *f2 = fopen("data/magnetizationSW.dat","w");
+    FILE *f3 = fopen("data/autocorrelationSW.dat","w");
+    FILE *f4 = fopen("data/autocorrelation_timeSW.dat","w");
 
-    FILE *f1 = fopen("data/energy.dat","w");
-    FILE *f2 = fopen("data/autocorrelation.dat","w");
-    FILE *f3 = fopen("data/autocorrelation_time.dat","w");
+    init(0.3);
+    thermalize(1, 500);
 
-    termalize(algorithm_id, 500);
-
-    unsigned int storage_size = 100000;
+    unsigned int storage_size = 50000;
     double* storage = (double*)malloc(storage_size * sizeof(double));
     int k,k_max,t;
     for(t = 0; t < storage_size; t++){
         single_MH( (t/width)%height, t%width);
         storage[t] = get_energy() / (height * width);
         fprintf(f1, "%f\n", storage[t]);
+        fprintf(f2, "%f\n", get_magnetization() / (height * width));
     }
+
+    fclose(f1);
+    fclose(f2);
 
     double variance, mean;
     mean = get_moment(1,storage,storage_size);
@@ -35,7 +38,7 @@ int main(){
     }
 
     double autocorrelation, autocorrelation_time;
-    for(k_max = 0; k_max < 35000; k_max+=500){
+    for(k_max = 0; k_max < 5000; k_max+=10){
         autocorrelation_time = 0.5;
         for(k = 0; k < k_max; k++){
             autocorrelation = 0.0f;
@@ -43,13 +46,12 @@ int main(){
                 autocorrelation += storage[t] * storage[t+k];
             autocorrelation /= variance * (storage_size-k);
             autocorrelation_time += autocorrelation;
-            if(k_max == 10000)   fprintf(f2, "%d\t%f\n", k, autocorrelation);
+            if(k_max == 2500)   fprintf(f3, "%d\t%f\n", k, autocorrelation);
         }
-        fprintf(f3,"%d\t%f\n",k_max,autocorrelation_time);
+        fprintf(f4,"%d\t%f\n",k_max,autocorrelation_time);
     }
 
-    fclose(f1);
-    fclose(f2);
     fclose(f3);
+    fclose(f4);
     return 0;
 }
