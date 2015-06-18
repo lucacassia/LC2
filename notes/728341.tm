@@ -24,6 +24,14 @@
     <with|par-left|1tab|1.2<space|2spc>Autocorrelation
     <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
     <no-break><pageref|auto-5>>
+
+    <with|par-left|2tab|1.2.1<space|2spc>Autocorrelation time
+    <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
+    <no-break><pageref|auto-8>>
+
+    <with|par-left|1tab|1.3<space|2spc>Binning
+    <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
+    <no-break><pageref|auto-9>>
   </table-of-contents>
 
   <section|Ising Model>
@@ -109,7 +117,7 @@
   autocorrelation time> and is computed in the following way:
 
   <\equation>
-    \<tau\><rsub|\<cal-O\>>=<frac|1|2>+<big|sum><rsub|k=1><rsup|k<rsub|max>>R
+    \<tau\><rsub|\<cal-O\>,int>=<frac|1|2>+<big|sum><rsub|k=1><rsup|k<rsub|max>>R
     <around*|(|k|)>
   </equation>
 
@@ -138,17 +146,84 @@
   correlated (Fig.<reference|fig:autocorrelation2>):
 
   <big-figure|<image|../ising/thermalization/img/magnetization_MH2_0.3.eps|0.5par|||>|<label|fig:autocorrelation2>Average
-  magnetization for the MH process observed on a larger time interval.>
+  \ magnetization for the MH process observed on a larger time interval.>
+
+  <subsubsection|Autocorrelation time>
 
   We compute the autocorrelation time <math|\<tau\><rsub|e>> for the
   observable <math|e> (energy density).
+
+  <subsection|Binning>
+
+  In order to have a statistical ensamble of uncorrelated data we need to
+  address the issue of autocorrelation in the Markov process. An easy and
+  efficient way to do so is to split the data in non-overlapping blocks of
+  the same size and then average over each block to obtain
+  (almost)uncorrelated data for the observable <math|\<cal-O\>> of interest.
+  The blocks are also called <with|font-shape|italic|bins> and this method is
+  called binning.
+
+  Consider an ensamble of <math|N=N<rsub|B>\<cdot\>k> samples divided in
+  <math|N<rsub|B>> blocks of size <math|k>. For each block <math|n> we take
+  the average of the observables <math|\<cal-O\><rsub|i>> it contains and
+  then obtain a block-observable <math|\<cal-O\><rsub|B,n>>:
+
+  <\equation>
+    \<cal-O\><rsub|B,n>=<frac|1|k>*<big|sum><rsup|k-1><rsub|i=0>\<cal-O\><rsub|n*k+i><space|2em>n=0,\<ldots\>
+    ,N<rsub|B>-1
+  </equation>
+
+  From a simple calculation we obtain that the error estimate on the mean
+  value is:
+
+  <\equation>
+    \<epsilon\><rsup|2><rsub|<wide|\<cal-O\>|\<bar\>>>\<equiv\>\<sigma\><rsup|2><rsub|<wide|\<cal-O\>|\<bar\>>>=<frac|\<sigma\><rsup|2><rsub|B>|N<rsub|B>>=2*\<tau\><rsub|\<cal-O\>,int>*<frac|\<sigma\><rsup|2><rsub|\<cal-O\><rsub|i>>|N>
+  </equation>
+
+  hence:
+
+  <\equation>
+    2*\<tau\><rsub|\<cal-O\>,int>=k*\<sigma\><rsup|2><rsub|B>/\<sigma\><rsup|2><rsub|\<cal-O\><rsub|i>>
+  </equation>
+
+  We study the dependence of the variance <math|\<sigma\><rsup|2><rsub|B>> on
+  the block size <math|k>. The observable we consider is the energy density
+  <math|e>.
+
+  <\big-figure>
+    <image|../ising/binning/img/binning_MH_0.35.eps|0.5par|||><image|../ising/binning/img/binning_MH_0.40.eps|0.5par|||>
+
+    <image|../ising/binning/img/binning_MH_0.43.eps|0.5par|||><image|../ising/binning/img/binning_MH_0.44.eps|0.5par|||>
+
+    <image|../ising/binning/img/binning_MH_0.45.eps|0.5par|||><image|../ising/binning/img/binning_MH_0.50.eps|0.5par|||>
+  </big-figure|Binning analysis for the MH algorithm at various values of
+  <math|\<beta\>>.>
+
+  <\big-figure>
+    <image|../ising/binning/img/binning_SW_0.35.eps|0.5par|||><image|../ising/binning/img/binning_SW_0.40.eps|0.5par|||>
+
+    <image|../ising/binning/img/binning_SW_0.43.eps|0.5par|||><image|../ising/binning/img/binning_SW_0.44.eps|0.5par|||>
+
+    <image|../ising/binning/img/binning_SW_0.45.eps|0.5par|||><image|../ising/binning/img/binning_SW_0.50.eps|0.5par|||>
+  </big-figure|Binning analysis for the SW algorithm at various values of
+  <math|\<beta\>>.>
+
+  We fitted the data using formula:
+
+  <\equation>
+    k*\<sigma\><rsup|2><rsub|B>\<approx\>
+    2*\<tau\>*<around*|(|1-<frac|\<tau\>|k>*<around*|(|1-\<mathe\><rsup|-<frac|k|\<tau\>>>|)>|)>
+  </equation>
+
+  and we employed the self-consistent cut-off
+  <math|k<rsub|max>\<less\>6*\<tau\><rsub|int>>.
 </body>
 
 <\initial>
   <\collection>
     <associate|page-even-footer|>
     <associate|page-even-header|>
-    <associate|page-medium|paper>
+    <associate|page-medium|papyrus>
     <associate|page-odd-footer|>
     <associate|page-odd-header|>
     <associate|page-screen-margin|false>
@@ -159,21 +234,24 @@
 <\references>
   <\collection>
     <associate|auto-1|<tuple|1|1>>
+    <associate|auto-10|<tuple|5|6>>
+    <associate|auto-11|<tuple|6|7>>
     <associate|auto-2|<tuple|1.1|2>>
     <associate|auto-3|<tuple|1|2>>
     <associate|auto-4|<tuple|2|3>>
-    <associate|auto-5|<tuple|1.2|3>>
+    <associate|auto-5|<tuple|1.2|4>>
     <associate|auto-6|<tuple|3|4>>
-    <associate|auto-7|<tuple|4|4>>
-    <associate|auto-8|<tuple|1.4|?>>
+    <associate|auto-7|<tuple|4|5>>
+    <associate|auto-8|<tuple|1.2.1|5>>
+    <associate|auto-9|<tuple|1.3|5>>
     <associate|eq:MC|<tuple|2|?>>
     <associate|fig:autocorrelation1|<tuple|3|4>>
-    <associate|fig:autocorrelation2|<tuple|4|4>>
+    <associate|fig:autocorrelation2|<tuple|4|5>>
     <associate|fig:termalization|<tuple|1|2>>
     <associate|fig:termalizationMH|<tuple|1|?>>
     <associate|fig:thermalizationMH|<tuple|1|2>>
     <associate|fig:thermalizationSW|<tuple|2|3>>
-    <associate|sect:autocorrelation|<tuple|1.2|3>>
+    <associate|sect:autocorrelation|<tuple|1.2|4>>
   </collection>
 </references>
 
@@ -194,8 +272,14 @@
       <with|mode|<quote|math>|\<beta\>=0.3>. (Left) MH (Right)
       SW.|<pageref|auto-6>>
 
-      <tuple|normal|Average magnetization for the MH process observed on a
+      <tuple|normal|Average \ magnetization for the MH process observed on a
       larger time interval.|<pageref|auto-7>>
+
+      <tuple|normal|Binning analysis for the MH algorithm at various values
+      of <with|mode|<quote|math>|\<beta\>>.|<pageref|auto-10>>
+
+      <tuple|normal|Binning analysis for the SW algorithm at various values
+      of <with|mode|<quote|math>|\<beta\>>.|<pageref|auto-11>>
     </associate>
     <\associate|toc>
       <vspace*|1fn><with|font-series|<quote|bold>|math-font-series|<quote|bold>|1<space|2spc>Ising
@@ -209,6 +293,14 @@
       <with|par-left|<quote|1tab>|1.2<space|2spc>Autocorrelation
       <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
       <no-break><pageref|auto-5>>
+
+      <with|par-left|<quote|2tab>|1.2.1<space|2spc>Autocorrelation time
+      <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
+      <no-break><pageref|auto-8>>
+
+      <with|par-left|<quote|1tab>|1.3<space|2spc>Binning
+      <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
+      <no-break><pageref|auto-9>>
     </associate>
   </collection>
 </auxiliary>
