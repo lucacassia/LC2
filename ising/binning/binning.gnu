@@ -1,31 +1,76 @@
-## autocorrelation
-
-#set title "Autocorrelation"
-set xlabel "k"
-set ylabel "R(k)"
-#set yrange[0:1]
+set title "Binning"
+set xlabel "block size k"
+set ylabel "k{/Symbol s}_{B}^{2}/{/Symbol s}_{0}^{2}"
 set terminal postscript eps size 4.5,4.5 enhanced color dashed lw 1 "DejaVuSans" 12
 
-set output 'img/autocorrelation_MH.eps'
-plot 'data/autocorrelation_MH_0.3.dat'   pt 1 ps 0.8 lc rgb '#000000' title 'MH \@ beta = 0.3',\
-     'data/autocorrelation_MH_0.6.dat'   pt 7 ps 0.8 lc rgb '#000000' title 'MH \@ beta = 0.6'
+f(x) = 2*t*(1-t*(1-exp(-x/t))/x)
 
-#set output 'img/autocorrelation_SW.eps'
-#plot 'data/autocorrelation_SW_0.3.dat'   pt 1 ps 0.8 lc rgb '#000000' title 'SW \@ beta = 0.3',\
-#     'data/autocorrelation_SW_0.6.dat'   pt 7 ps 0.8 lc rgb '#000000' title 'SW \@ beta = 0.6'
+##MH
 
-## autocorrelation time
+set output 'img/binning_MH_0.30.eps'
+fit f(x) 'data/variance_0_0.300000.dat' via t
+plot 'data/variance_0_0.300000.dat'   pt 1 ps 0.8 lc rgb '#000000' title 'MH \@ beta = 0.30', f(x) lc rgb '#000000' title sprintf("{/Symbol t} = %.2f",t)
 
-#set title "Autocorrelation Time"
-set xlabel "k_{max}"
-set ylabel "{/Symbol t}_{int}(\k_{max})"
-set terminal postscript eps size 4.5,4.5 enhanced color dashed lw 1 "DejaVuSans" 12
+set output 'img/binning_MH_0.35.eps'
+fit f(x) 'data/variance_0_0.350000.dat' via t
+plot 'data/variance_0_0.350000.dat'   pt 1 ps 0.8 lc rgb '#000000' title 'MH \@ beta = 0.35', f(x) lc rgb '#000000' title sprintf("{/Symbol t} = %.2f",t)
 
-set output 'img/autocorrelation_time_MH.eps'
-plot 'data/autocorrelation_time_MH_0.3.dat'   pt 1 ps 0.8 lc rgb '#000000' title 'MH \@ beta = 0.3',\
-     'data/autocorrelation_time_MH_0.6.dat'   pt 7 ps 0.8 lc rgb '#000000' title 'MH \@ beta = 0.6'
+set output 'img/binning_MH_0.40.eps'
+fit f(x) 'data/variance_0_0.400000.dat' via t
+plot 'data/variance_0_0.400000.dat'   pt 1 ps 0.8 lc rgb '#000000' title 'MH \@ beta = 0.40', f(x) lc rgb '#000000' title sprintf("{/Symbol t} = %.2f",t)
 
-set output 'img/autocorrelation_time_SW.eps'
-plot 'data/autocorrelation_time_SW_0.3.dat'   pt 1 ps 0.8 lc rgb '#000000' title 'SW \@ beta = 0.3',\
-     'data/autocorrelation_time_SW_0.6.dat'   pt 7 ps 0.8 lc rgb '#000000' title 'SW \@ beta = 0.6'
+set output 'img/binning_MH_0.43.eps'
+fit f(x) 'data/variance_0_0.430000.dat' via t
+plot 'data/variance_0_0.430000.dat'   pt 1 ps 0.8 lc rgb '#000000' title 'MH \@ beta = 0.43', f(x) lc rgb '#000000' title sprintf("{/Symbol t} = %.2f",t)
 
+set output 'img/binning_MH_0.44.eps'
+fit f(x) 'data/variance_0_0.440000.dat' via t
+plot 'data/variance_0_0.440000.dat'   pt 1 ps 0.8 lc rgb '#000000' title 'MH \@ beta = 0.44', f(x) lc rgb '#000000' title sprintf("{/Symbol t} = %.2f",t)
+
+t=2683.65
+
+set output 'img/binning_MH_0.45.eps'
+fit f(x) 'data/variance_0_0.450000.dat' via t
+plot 'data/variance_0_0.450000.dat'   pt 1 ps 0.8 lc rgb '#000000' title 'MH \@ beta = 0.45', f(x) lc rgb '#000000' title sprintf("{/Symbol t} = %.2f",t)
+
+set output 'img/binning_MH_0.50.eps'
+fit f(x) 'data/variance_0_0.500000.dat' via t
+plot 'data/variance_0_0.500000.dat'   pt 1 ps 0.8 lc rgb '#000000' title 'MH \@ beta = 0.50', f(x) lc rgb '#000000' title sprintf("{/Symbol t} = %.2f",t)
+
+set output 'img/binning_MH_0.55.eps'
+fit f(x) 'data/variance_0_0.550000.dat' via t
+plot 'data/variance_0_0.550000.dat'   pt 1 ps 0.8 lc rgb '#000000' title 'MH \@ beta = 0.55', f(x) lc rgb '#000000' title sprintf("{/Symbol t} = %.2f",t)
+
+##SW
+
+set output 'img/binning_SW_0.30.eps'
+fit f(x) 'data/variance_1_0.300000.dat' via t
+plot 'data/variance_1_0.300000.dat'   pt 1 ps 0.8 lc rgb '#000000' title 'SW \@ beta = 0.30', f(x) lc rgb '#000000' title sprintf("{/Symbol t} = %.2f",t)
+
+set output 'img/binning_SW_0.35.eps'
+fit f(x) 'data/variance_1_0.350000.dat' via t
+plot 'data/variance_1_0.350000.dat'   pt 1 ps 0.8 lc rgb '#000000' title 'SW \@ beta = 0.35', f(x) lc rgb '#000000' title sprintf("{/Symbol t} = %.2f",t)
+
+set output 'img/binning_SW_0.40.eps'
+fit f(x) 'data/variance_1_0.400000.dat' via t
+plot 'data/variance_1_0.400000.dat'   pt 1 ps 0.8 lc rgb '#000000' title 'SW \@ beta = 0.40', f(x) lc rgb '#000000' title sprintf("{/Symbol t} = %.2f",t)
+
+set output 'img/binning_SW_0.43.eps'
+fit f(x) 'data/variance_1_0.430000.dat' via t
+plot 'data/variance_1_0.430000.dat'   pt 1 ps 0.8 lc rgb '#000000' title 'SW \@ beta = 0.43', f(x) lc rgb '#000000' title sprintf("{/Symbol t} = %.2f",t)
+
+set output 'img/binning_SW_0.44.eps'
+fit f(x) 'data/variance_1_0.440000.dat' via t
+plot 'data/variance_1_0.440000.dat'   pt 1 ps 0.8 lc rgb '#000000' title 'SW \@ beta = 0.44', f(x) lc rgb '#000000' title sprintf("{/Symbol t} = %.2f",t)
+
+set output 'img/binning_SW_0.45.eps'
+fit f(x) 'data/variance_1_0.450000.dat' via t
+plot 'data/variance_1_0.450000.dat'   pt 1 ps 0.8 lc rgb '#000000' title 'SW \@ beta = 0.45', f(x) lc rgb '#000000' title sprintf("{/Symbol t} = %.2f",t)
+
+set output 'img/binning_SW_0.50.eps'
+fit f(x) 'data/variance_1_0.500000.dat' via t
+plot 'data/variance_1_0.500000.dat'   pt 1 ps 0.8 lc rgb '#000000' title 'SW \@ beta = 0.50', f(x) lc rgb '#000000' title sprintf("{/Symbol t} = %.2f",t)
+
+set output 'img/binning_SW_0.55.eps'
+fit f(x) 'data/variance_1_0.550000.dat' via t
+plot 'data/variance_1_0.550000.dat'   pt 1 ps 0.8 lc rgb '#000000' title 'SW \@ beta = 0.55', f(x) lc rgb '#000000' title sprintf("{/Symbol t} = %.2f",t)
