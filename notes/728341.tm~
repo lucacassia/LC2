@@ -130,7 +130,11 @@
 
   here <math|n> is the total number of samples of <math|\<cal-O\><rsub|t>>
   and <math|\<mu\>,\<sigma\><rsup|2>> are the mean and variance of the
-  process.
+  process. For a gaussian distributed process:
+
+  <\equation>
+    R<around*|(|k|)>=\<mathe\><rsup|-k/\<tau\><rsub|exp>>
+  </equation>
 
   \;
 
@@ -166,7 +170,7 @@
   Consider an ensamble of <math|N=N<rsub|B>\<cdot\>k> samples divided in
   <math|N<rsub|B>> blocks of size <math|k>. For each block <math|n> we take
   the average of the observables <math|\<cal-O\><rsub|i>> it contains and
-  obtain a block-observable <math|\<cal-O\><rsub|B,n>>:
+  then obtain a block-observable <math|\<cal-O\><rsub|B,n>>:
 
   <\equation>
     \<cal-O\><rsub|B,n>=<frac|1|k>*<big|sum><rsup|k-1><rsub|i=0>\<cal-O\><rsub|n*k+i><space|2em>n=0,\<ldots\>
@@ -191,36 +195,48 @@
   <math|e>.
 
   <\big-figure>
-    <image|../ising/binning/img/binning_MH_0.30.eps|0.5par|||><image|../ising/binning/img/binning_MH_0.35.eps|0.5par|||>
+    <image|../ising/binning/img/binning_MH_0.35.eps|0.5par|||><image|../ising/binning/img/binning_MH_0.40.eps|0.5par|||>
 
-    <image|../ising/binning/img/binning_MH_0.40.eps|0.5par|||><image|../ising/binning/img/binning_MH_0.45.eps|0.5par|||>
+    <image|../ising/binning/img/binning_MH_0.43.eps|0.5par|||><image|../ising/binning/img/binning_MH_0.44.eps|0.5par|||>
 
-    <image|../ising/binning/img/binning_MH_0.50.eps|0.5par|||><image|../ising/binning/img/binning_MH_0.55.eps|0.5par|||>
+    <image|../ising/binning/img/binning_MH_0.45.eps|0.5par|||><image|../ising/binning/img/binning_MH_0.50.eps|0.5par|||>
   </big-figure|Binning analysis for the MH algorithm at various values of
   <math|\<beta\>>.>
 
-  We fitted the data using formula:
+  <\big-figure>
+    <image|../ising/binning/img/binning_SW_0.35.eps|0.5par|||><image|../ising/binning/img/binning_SW_0.40.eps|0.5par|||>
+
+    <image|../ising/binning/img/binning_SW_0.43.eps|0.5par|||><image|../ising/binning/img/binning_SW_0.44.eps|0.5par|||>
+
+    <image|../ising/binning/img/binning_SW_0.45.eps|0.5par|||><image|../ising/binning/img/binning_SW_0.50.eps|0.5par|||>
+  </big-figure|Binning analysis for the SW algorithm at various values of
+  <math|\<beta\>>.>
+
+  Where we fitted the data using the formula:
 
   <\equation>
     k*\<sigma\><rsup|2><rsub|B>\<approx\>
-    2*\<tau\>*<around*|(|1-<frac|\<tau\>|k>*<around*|(|1-\<mathe\><rsup|-<frac|k|\<tau\>>>|)>|)>
+    2*\<tau\><rsub|exp>*<around*|(|1-<frac|\<tau\><rsub|exp>|k>*<around*|(|1-\<mathe\><rsup|-<frac|k|\<tau\><rsub|exp>>>|)>|)>
   </equation>
 
   and we employed the self-consistent cut-off
   <math|k<rsub|max>\<less\>6*\<tau\><rsub|int>>.
 
-  <\big-figure>
-    <image|../ising/binning/img/binning_SW_0.30.eps|0.5par|||><image|../ising/binning/img/binning_SW_0.35.eps|0.5par|||>
-
-    <image|../ising/binning/img/binning_SW_0.40.eps|0.5par|||><image|../ising/binning/img/binning_SW_0.43.eps|0.5par|||>
-
-    <image|../ising/binning/img/binning_SW_0.45.eps|0.5par|||>
-
-    <image|../ising/binning/img/binning_SW_0.50.eps|0.5par|||><image|../ising/binning/img/binning_SW_0.55.eps|0.5par|||>
-  </big-figure|Binning analysis for the SW algorithm at various values of
-  <math|\<beta\>>.>
-
   \;
+
+  The lowest value of <math|k> for which we can consider the data to be
+  uncorrelated is obtained by looking at the point for which the signal for
+  <math|k*\<sigma\><rsup|2><rsub|B>/\<sigma\><rsup|2><rsub|\<cal-O\><rsub|i>>>
+  stabilizes and its first derivarive tends to zero. We call this point
+  <math|<wide|k|^><around*|(|\<beta\>|)>>. Since <math|\<tau\><rsub|exp>> has
+  a local maximum at the critical point, we take
+  <math|<wide|k|^><around*|(|\<beta\><rsub|c>|)>> as the block size for the
+  following simulations.
+
+  The value of <math|<wide|k|^><around*|(|\<beta\><rsub|c>|)>> for MH is
+  taken to be <math|2\<cdot\>10<rsup|5>>, almost two hundreds times the size
+  of the lattice, while for SW it suffices to take
+  <math|<wide|k|^><around*|(|\<beta\><rsub|c>|)>\<sim\>500>.
 </body>
 
 <\initial>
@@ -239,7 +255,7 @@
   <\collection>
     <associate|auto-1|<tuple|1|1>>
     <associate|auto-10|<tuple|5|6>>
-    <associate|auto-11|<tuple|6|8>>
+    <associate|auto-11|<tuple|6|7>>
     <associate|auto-2|<tuple|1.1|2>>
     <associate|auto-3|<tuple|1|2>>
     <associate|auto-4|<tuple|2|3>>

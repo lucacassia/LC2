@@ -130,7 +130,11 @@
 
   here <math|n> is the total number of samples of <math|\<cal-O\><rsub|t>>
   and <math|\<mu\>,\<sigma\><rsup|2>> are the mean and variance of the
-  process.
+  process. For a gaussian distributed process:
+
+  <\equation>
+    R<around*|(|k|)>=\<mathe\><rsup|-k/\<tau\><rsub|exp>>
+  </equation>
 
   \;
 
@@ -208,15 +212,31 @@
   </big-figure|Binning analysis for the SW algorithm at various values of
   <math|\<beta\>>.>
 
-  We fitted the data using formula:
+  Where we fitted the data using the formula:
 
   <\equation>
     k*\<sigma\><rsup|2><rsub|B>\<approx\>
-    2*\<tau\>*<around*|(|1-<frac|\<tau\>|k>*<around*|(|1-\<mathe\><rsup|-<frac|k|\<tau\>>>|)>|)>
+    2*\<tau\><rsub|exp>*<around*|(|1-<frac|\<tau\><rsub|exp>|k>*<around*|(|1-\<mathe\><rsup|-<frac|k|\<tau\><rsub|exp>>>|)>|)>
   </equation>
 
   and we employed the self-consistent cut-off
   <math|k<rsub|max>\<less\>6*\<tau\><rsub|int>>.
+
+  \;
+
+  The lowest value of <math|k> for which we can consider the data to be
+  uncorrelated is obtained by looking at the point for which the signal for
+  <math|k*\<sigma\><rsup|2><rsub|B>/\<sigma\><rsup|2><rsub|\<cal-O\><rsub|i>>>
+  stabilizes and its first derivarive tends to zero. We call this point
+  <math|<wide|k|^><around*|(|\<beta\>|)>>. Since <math|\<tau\><rsub|exp>> has
+  a local maximum at the critical point, we take
+  <math|<wide|k|^><around*|(|\<beta\><rsub|c>|)>> as the block size for the
+  following simulations.
+
+  The value of <math|<wide|k|^><around*|(|\<beta\><rsub|c>|)>> for MH is
+  taken to be <math|2\<cdot\>10<rsup|5>>, almost two hundreds times the size
+  of the lattice, while for SW it suffices to take
+  <math|<wide|k|^><around*|(|\<beta\><rsub|c>|)>\<sim\>400>.
 </body>
 
 <\initial>
