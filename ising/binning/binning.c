@@ -48,9 +48,6 @@ void get_variance_bin(int algorithm_id, double beta_value){
 
     free(storage);
     fclose(f);
-    clear();
-
-
 }
 
 int main(){
