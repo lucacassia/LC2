@@ -23,7 +23,11 @@
 
     <with|par-left|1tab|1.2<space|2spc>Autocorrelation
     <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
-    <no-break><pageref|auto-5>>
+    <no-break><pageref|auto-6>>
+
+    <with|par-left|1tab|1.3<space|2spc>Autocorrelation time
+    <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
+    <no-break><pageref|auto-7>>
   </table-of-contents>
 
   <section|Ising Model>
@@ -130,18 +134,18 @@
   process is strongly correlated in time even for small values of the
   temperature:
 
-  <big-figure|<image|../ising/thermalization/img/magnetization_MH_0.3.eps|0.5par|||><image|../ising/thermalization/img/magnetization_SW_0.3.eps|0.5par|||>|<label|fig:autocorrelation1>Comparison
+  <big-figure|<image|../ising/img/magnetization_MH_0.3.eps|0.5par|||><image|../ising/img/magnetization_SW_0.3.eps|0.5par|||>|<label|fig:autocorrelation1>Comparison
   of the magnetization for the two algorithms at <math|\<beta\>=0.3>. (Left)
   MH (Right) SW.>
 
   Only on a larger time scale, the MH process can be regarded as weakly
   correlated (Fig.<reference|fig:autocorrelation2>):
 
-  <big-figure|<image|../ising/thermalization/img/magnetization_MH2_0.3.eps|0.5par|||>|<label|fig:autocorrelation2>Average
+  <big-figure|<image|../ising/img/magnetization_MH2_0.3.eps|0.5par|||>|<label|fig:autocorrelation2>Average
   magnetization for the MH process observed on a larger time interval.>
 
   We compute the autocorrelation time <math|\<tau\><rsub|e>> for the
-  observable <math|e> (energy density).
+  observable energy density <math|e>.
 </body>
 
 <\initial>
@@ -162,18 +166,18 @@
     <associate|auto-2|<tuple|1.1|2>>
     <associate|auto-3|<tuple|1|2>>
     <associate|auto-4|<tuple|2|3>>
-    <associate|auto-5|<tuple|1.2|3>>
+    <associate|auto-5|<tuple|1.2|4>>
     <associate|auto-6|<tuple|3|4>>
     <associate|auto-7|<tuple|4|4>>
     <associate|auto-8|<tuple|1.4|?>>
     <associate|eq:MC|<tuple|2|?>>
     <associate|fig:autocorrelation1|<tuple|3|4>>
-    <associate|fig:autocorrelation2|<tuple|4|4>>
+    <associate|fig:autocorrelation2|<tuple|4|?>>
     <associate|fig:termalization|<tuple|1|2>>
     <associate|fig:termalizationMH|<tuple|1|?>>
     <associate|fig:thermalizationMH|<tuple|1|2>>
     <associate|fig:thermalizationSW|<tuple|2|3>>
-    <associate|sect:autocorrelation|<tuple|1.2|3>>
+    <associate|sect:autocorrelation|<tuple|1.2|4>>
   </collection>
 </references>
 
@@ -193,9 +197,6 @@
       <tuple|normal|Comparison of the magnetization for the two algorithms at
       <with|mode|<quote|math>|\<beta\>=0.3>. (Left) MH (Right)
       SW.|<pageref|auto-6>>
-
-      <tuple|normal|Average magnetization for the MH process observed on a
-      larger time interval.|<pageref|auto-7>>
     </associate>
     <\associate|toc>
       <vspace*|1fn><with|font-series|<quote|bold>|math-font-series|<quote|bold>|1<space|2spc>Ising

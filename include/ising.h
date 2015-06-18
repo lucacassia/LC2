@@ -24,7 +24,6 @@ typedef struct _spin{
 unsigned int width = 32;
 unsigned int height = 32;
 spin *ising = NULL;
-unsigned int markov_time;
 double beta = 0;
 
 void clear()
@@ -42,9 +41,8 @@ void init(double beta_value)
 
     for(k = 0; k < width * height; k++)
         if( mersenne() < 0.5 ) ising[k].s = 1;
-    else ising[k].s = -1;
+        else ising[k].s = -1;
 
-    markov_time = 0;
     beta = beta_value;
 }
 
@@ -175,43 +173,73 @@ double get_magnetization(){
 
 void run(unsigned int algorithm_id)
 {
-    if(algorithm_id == 0) MH();
-    if(algorithm_id == 1) SW();
-    markov_time++;
+    if( !algorithm_id ){ MH(); } else { SW(); }
 }
 
-void thermalize(unsigned int algorithm_id, unsigned int termalization_time){
-    int k;
-    for(k = 0; k < termalization_time; k++){
-        if(algorithm_id == 0) MH();
-        if(algorithm_id == 1) SW();
-    }
-    markov_time = 0;
+void thermalize(unsigned int algorithm_id, unsigned int termalization_time)
+{
+    int k; for(k = 0; k < termalization_time; k++){ if ( !algorithm_id ) { MH(); } else { SW(); } }
 }
 
-/*double get_correlation(int t){
-    int i,j;
-    double tmp1, tmp2, corr = 0;
-    for(i = 0; i < height; i++){
-        for(tmp1 = j = 0; j < width; j++) tmp1 += ising[i*width+j].s;
-        for(tmp2 = j = 0; j < width; j++) tmp2 += ising[((i+t)%height)*width+j].s;
-        corr += tmp1 * tmp2 / (width * width);
-    }
-    return corr / height;
+double get_moment(int n, double* storage, int storage_size)
+{
+    double tmp = 0; int i; for(i = 0; i < storage_size; i++) tmp += pow(storage[i], n);
+    return tmp / storage_size;
 }
 
-double get_sigma(unsigned int m){
-    double sigma, mean, tmp;
-    int i,j;
-    for(j = tmp = mean = sigma = i = 0; i < store_size; i++){
-        tmp += store_energy[(store_ptr+i)%store_size];
-        if((++j)%m == 0){
-            sigma += tmp*tmp/(m*m);
-            mean += tmp/m;
-            tmp = 0;
+double * get_binned_data(int algorithm_id, double beta_value, int bin_size, int bin_number)
+{
+    init(beta_value);
+    printf("\nExecuting %d @ β = %f\n\n", algorithm_id, beta_value);
+    printf("Thermalizing..."); fflush(stdout);
+    thermalize(algorithm_id, 500);
+    printf("......DONE!\n");
+
+    printf("Allocating Memory..."); fflush(stdout);
+    double *storage = (double*)malloc(bin_number * sizeof(double));
+    printf(".DONE!\t%d Bins\n", bin_number);
+
+    printf("Gathering Binned Data..."); fflush(stdout);
+    int t,i; double tmp;
+    for(i = 0; i < bin_number; i++){
+        tmp = 0.0f;
+        for(t = 0; t < bin_size; t++){
+            if ( !algorithm_id ) { single_MH( (t/width)%height, t%width); } else { SW(); }
+            tmp += get_energy() / (height * width);
         }
+        storage[t] = tmp / bin_size;
     }
-    return sqrt((sigma-mean)/(store_size/m));
-}*/
+    printf("....DONE!\t%d   Samples Gathered\n\n",storage_size);
+    return storage;
+}
+
+double * get_data(int algorithm_id, double beta_value, int storage_size)
+{
+    init(beta_value);
+    printf("\nExecuting %d @ β = %f\n\n", algorithm_id, beta_value);
+    printf("Thermalizing..."); fflush(stdout);
+    thermalize(algorithm_id, 500);
+    printf("......DONE!\n");
+
+    printf("Allocating Memory..."); fflush(stdout);
+    double *storage = (double*)malloc(storage_size * sizeof(double));
+    printf(".DONE!\t%d * sizeof(double)\n", storage_size);
+
+    printf("Gathering Data..."); fflush(stdout);
+    int t; for(t = 0; t < storage_size; t++){
+        if ( !algorithm_id ) { single_MH( (t/width)%height, t%width); } else { SW(); }
+        storage[t] = get_energy() / (height * width);
+    }
+    printf("....DONE!\t%d   Samples Gathered\n\n",storage_size);
+    return storage;
+}
+
+double * bin_data(double *storage, int storage_size, int bin_size)
+{
+    if (storage_size < bin_size) return NULL;
+
+    double *binned_data = (double*)malloc((storage_size/bin_size)*sizeof(double));
+    return binned_data;
+}
 
 #endif

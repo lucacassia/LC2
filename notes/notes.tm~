@@ -8,9 +8,15 @@
   Cassia>|<\author-affiliation>
     Dipartimento di Fisica, Università di Milano-Bicocca, I-20126 Milano,
     Italy
+
+    \;
+
+    <with|font-shape|italic|Matriculation:> 728341
   </author-affiliation>|<\author-email>
     l.cassia@campus.unimib.it
-  </author-email>>>>
+  </author-email>|<\author-misc>
+    \;
+  </author-misc>>>>
 
   <\table-of-contents|toc>
     <vspace*|1fn><with|font-series|bold|math-font-series|bold|1<space|2spc>Ising
@@ -23,7 +29,11 @@
 
     <with|par-left|1tab|1.2<space|2spc>Autocorrelation
     <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
-    <no-break><pageref|auto-5>>
+    <no-break><pageref|auto-6>>
+
+    <with|par-left|1tab|1.3<space|2spc>Autocorrelation time
+    <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
+    <no-break><pageref|auto-7>>
   </table-of-contents>
 
   <section|Ising Model>
@@ -65,29 +75,29 @@
   employes as opposed to the cluster update of the SW algorithm.
 
   <\big-figure>
-    <image|../ising/thermalization/img/thermalization_MH_0.2.eps|0.33par|||><image|../ising/thermalization/img/thermalization_MH_0.3.eps|0.33par|||><image|../ising/thermalization/img/thermalization_MH_0.4.eps|0.33par|||>
+    <image|../ising/img/thermalization_MH_0.2.eps|0.33par|||><image|../ising/img/thermalization_MH_0.3.eps|0.33par|||><image|../ising/img/thermalization_MH_0.4.eps|0.33par|||>
 
-    <image|../ising/thermalization/img/thermalization_MH_0.45.eps|0.33par|||><image|../ising/thermalization/img/thermalization_MH_0.5.eps|0.33par|||><image|../ising/thermalization/img/thermalization_MH_0.6.eps|0.33par|||>
+    <image|../ising/img/thermalization_MH_0.45.eps|0.33par|||><image|../ising/img/thermalization_MH_0.5.eps|0.33par|||><image|../ising/img/thermalization_MH_0.6.eps|0.33par|||>
   </big-figure|<label|fig:thermalizationMH>Plot of the energy density for the
   MH markov process at different values of <math|\<beta\>>. The first
   <math|3.5\<cdot\>10<rsup|6>> steps are drawn to show the thermalization
   process of the system.>
 
   <\big-figure>
-    <image|../ising/thermalization/img/thermalization_SW_0.2.eps|0.33par|||><image|../ising/thermalization/img/thermalization_SW_0.3.eps|0.33par|||><image|../ising/thermalization/img/thermalization_SW_0.4.eps|0.33par|||>
+    <image|../ising/img/thermalization_SW_0.2.eps|0.33par|||><image|../ising/img/thermalization_SW_0.3.eps|0.33par|||><image|../ising/img/thermalization_SW_0.4.eps|0.33par|||>
 
-    <image|../ising/thermalization/img/thermalization_SW_0.45.eps|0.33par|||><image|../ising/thermalization/img/thermalization_SW_0.5.eps|0.33par|||><image|../ising/thermalization/img/thermalization_SW_0.6.eps|0.33par|||>
+    <image|../ising/img/thermalization_SW_0.45.eps|0.33par|||><image|../ising/img/thermalization_SW_0.5.eps|0.33par|||><image|../ising/img/thermalization_SW_0.6.eps|0.33par|||>
   </big-figure|<label|fig:thermalizationSW>Plot of the energy density for the
   SW markov process at different values of <math|\<beta\>>. This time we only
   present the first <math|500> steps.>
 
-  As we can see from (Fig.<reference|fig:thermalizationMH>) the MH algorithm
+  As we can see from (Fig. <reference|fig:thermalizationMH>) the MH algorithm
   reaches thermalization after a Markov time two orders of magnitude larger
-  than the lattice size <math|32\<times\>32> while the SW algorithm
-  (Fig.<reference|fig:thermalizationSW>) takes only <math|\<sim\> 500> steps.
-  The reason for this discrepancy is that the MH update algorithm is local
-  and therefore successive steps in the chain are strogly correlated, as we
-  will see in section (<reference|sect:autocorrelation>).
+  than the lattice size <math|32\<times\>32> while the SW algorithm (Fig.
+  <reference|fig:thermalizationSW>) takes only <math|\<sim\> 500> steps. The
+  reason for this discrepancy is that the MH update algorithm is local and
+  therefore successive steps in the chain are strogly correlated, as we will
+  see in section (<reference|sect:autocorrelation>).
 
   This effect is called <with|font-shape|italic|critical slowing down> and it
   tells us that when using local update algorithms only approximately every
@@ -126,22 +136,15 @@
 
   \;
 
-  We immediately see from (Fig.<reference|fig:autocorrelation1>) that the MH
+  We immediately see from (Fig. <reference|fig:autocorrelation1>) that the MH
   process is strongly correlated in time even for small values of the
   temperature:
 
-  <big-figure|<image|../ising/thermalization/img/magnetization_MH_0.3.eps|0.5par|||><image|../ising/thermalization/img/magnetization_SW_0.3.eps|0.5par|||>|<label|fig:autocorrelation1>Comparison
+  <big-figure|<image|../ising/img/magnetization_MH_0.3.eps|0.5par|||><image|../ising/img/magnetization_SW_0.3.eps|0.5par|||>|<label|fig:autocorrelation1>Comparison
   of the magnetization for the two algorithms at <math|\<beta\>=0.3>. (Left)
   MH (Right) SW.>
 
-  Only on a larger time scale, the MH process can be regarded as weakly
-  correlated (Fig.<reference|fig:autocorrelation2>):
-
-  <big-figure|<image|../ising/thermalization/img/magnetization_MH2_0.3.eps|0.5par|||>|<label|fig:autocorrelation2>Average
-  magnetization for the MH process observed on a larger time interval.>
-
-  We compute the autocorrelation time <math|\<tau\><rsub|e>> for the
-  observable <math|e> (energy density).
+  \;
 </body>
 
 <\initial>
@@ -164,16 +167,15 @@
     <associate|auto-4|<tuple|2|3>>
     <associate|auto-5|<tuple|1.2|3>>
     <associate|auto-6|<tuple|3|4>>
-    <associate|auto-7|<tuple|4|4>>
+    <associate|auto-7|<tuple|1.3|4>>
     <associate|auto-8|<tuple|1.4|?>>
     <associate|eq:MC|<tuple|2|?>>
-    <associate|fig:autocorrelation1|<tuple|3|4>>
-    <associate|fig:autocorrelation2|<tuple|4|4>>
+    <associate|fig:autocorrelation1|<tuple|3|?>>
     <associate|fig:termalization|<tuple|1|2>>
     <associate|fig:termalizationMH|<tuple|1|?>>
     <associate|fig:thermalizationMH|<tuple|1|2>>
     <associate|fig:thermalizationSW|<tuple|2|3>>
-    <associate|sect:autocorrelation|<tuple|1.2|3>>
+    <associate|sect:autocorrelation|<tuple|1.2|4>>
   </collection>
 </references>
 
@@ -190,12 +192,9 @@
       only present the first <with|mode|<quote|math>|500>
       steps.|<pageref|auto-4>>
 
-      <tuple|normal|Comparison of the magnetization for the two algorithms at
-      <with|mode|<quote|math>|\<beta\>=0.3>. (Left) MH (Right)
-      SW.|<pageref|auto-6>>
-
-      <tuple|normal|Average magnetization for the MH process observed on a
-      larger time interval.|<pageref|auto-7>>
+      <tuple|normal|Comparison of the energy densities for the two algorithms
+      at <with|mode|<quote|math>|\<beta\>=0.3>. (Left) MH (Right)
+      SW.|<pageref|auto-5>>
     </associate>
     <\associate|toc>
       <vspace*|1fn><with|font-series|<quote|bold>|math-font-series|<quote|bold>|1<space|2spc>Ising
@@ -208,7 +207,11 @@
 
       <with|par-left|<quote|1tab>|1.2<space|2spc>Autocorrelation
       <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
-      <no-break><pageref|auto-5>>
+      <no-break><pageref|auto-6>>
+
+      <with|par-left|<quote|1tab>|1.3<space|2spc>Autocorrelation time
+      <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
+      <no-break><pageref|auto-7>>
     </associate>
   </collection>
 </auxiliary>
