@@ -7,10 +7,6 @@ f(x) = 2*t*(1-t*(1-exp(-x/t))/x)
 
 ##MH
 
-set output 'img/binning_MH_0.30.eps'
-fit f(x) 'data/variance_0_0.300000.dat' via t
-plot 'data/variance_0_0.300000.dat'   pt 1 ps 0.8 lc rgb '#000000' title 'MH \@ beta = 0.30', f(x) lc rgb '#000000' title sprintf("{/Symbol t} = %.2f",t)
-
 set output 'img/binning_MH_0.35.eps'
 fit f(x) 'data/variance_0_0.350000.dat' via t
 plot 'data/variance_0_0.350000.dat'   pt 1 ps 0.8 lc rgb '#000000' title 'MH \@ beta = 0.35', f(x) lc rgb '#000000' title sprintf("{/Symbol t} = %.2f",t)
@@ -37,15 +33,7 @@ set output 'img/binning_MH_0.50.eps'
 fit f(x) 'data/variance_0_0.500000.dat' via t
 plot 'data/variance_0_0.500000.dat'   pt 1 ps 0.8 lc rgb '#000000' title 'MH \@ beta = 0.50', f(x) lc rgb '#000000' title sprintf("{/Symbol t} = %.2f",t)
 
-set output 'img/binning_MH_0.55.eps'
-fit f(x) 'data/variance_0_0.550000.dat' via t
-plot 'data/variance_0_0.550000.dat'   pt 1 ps 0.8 lc rgb '#000000' title 'MH \@ beta = 0.55', f(x) lc rgb '#000000' title sprintf("{/Symbol t} = %.2f",t)
-
 ##SW
-
-set output 'img/binning_SW_0.30.eps'
-fit f(x) 'data/variance_1_0.300000.dat' via t
-plot 'data/variance_1_0.300000.dat'   pt 1 ps 0.8 lc rgb '#000000' title 'SW \@ beta = 0.30', f(x) lc rgb '#000000' title sprintf("{/Symbol t} = %.2f",t)
 
 set output 'img/binning_SW_0.35.eps'
 fit f(x) 'data/variance_1_0.350000.dat' via t
@@ -71,6 +59,3 @@ set output 'img/binning_SW_0.50.eps'
 fit f(x) 'data/variance_1_0.500000.dat' via t
 plot 'data/variance_1_0.500000.dat'   pt 1 ps 0.8 lc rgb '#000000' title 'SW \@ beta = 0.50', f(x) lc rgb '#000000' title sprintf("{/Symbol t} = %.2f",t)
 
-set output 'img/binning_SW_0.55.eps'
-fit f(x) 'data/variance_1_0.550000.dat' via t
-plot 'data/variance_1_0.550000.dat'   pt 1 ps 0.8 lc rgb '#000000' title 'SW \@ beta = 0.55', f(x) lc rgb '#000000' title sprintf("{/Symbol t} = %.2f",t)
