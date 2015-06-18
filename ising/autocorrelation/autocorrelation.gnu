@@ -13,8 +13,12 @@ set xlabel "k_{max}"
 set ylabel "{/Symbol t}_{int}(\k_{max})"
 set terminal postscript eps size 4.5,4.5 enhanced color dashed lw 1 "DejaVuSans" 12
 
+f(x)=a*(1-(2*t/(2*t+1))*exp(-x/t))
+
 set output 'img/autocorrelation_time_MH_0.35.eps'
-plot 'data/autocorrelation_time_0_0.350000.dat'   pt 1 ps 0.8 lc rgb '#000000' title 'MH \@ beta = 0.35'
+fit f(x) 'data/autocorrelation_time_0_0.350000.dat' via t,a
+plot 'data/autocorrelation_time_0_0.350000.dat'   pt 1 ps 0.8 lc rgb '#000000' title 'MH \@ beta = 0.35',\
+     f(x) lc rgb '#000000' title sprintf("{/Symbol t}_{exp} = %.2f  {/Symbol t}_{int} = %.2f",t,a)
 set output 'img/autocorrelation_time_MH_0.36.eps'
 plot 'data/autocorrelation_time_0_0.360000.dat'   pt 1 ps 0.8 lc rgb '#000000' title 'MH \@ beta = 0.36'
 set output 'img/autocorrelation_time_MH_0.37.eps'
