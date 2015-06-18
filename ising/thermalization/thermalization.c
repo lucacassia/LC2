@@ -60,5 +60,6 @@ int main(){
     }
     fclose(f);
 
+    clear();
     return 0;
 }

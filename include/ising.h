@@ -28,7 +28,10 @@ double beta = 0;
 
 void clear()
 {
-    if(ising != NULL) free(ising);
+    if(ising != NULL){
+        free(ising);
+        ising = NULL;
+    }
 }
 
 void init(double beta_value)
@@ -186,7 +189,7 @@ double get_moment(int n, double* storage, int storage_size)
     double tmp = 0; int i; for(i = 0; i < storage_size; i++) tmp += pow(storage[i], n);
     return tmp / storage_size;
 }
-
+/*
 double * get_binned_data(int algorithm_id, double beta_value, int bin_size, int bin_number)
 {
     init(beta_value);
@@ -209,21 +212,16 @@ double * get_binned_data(int algorithm_id, double beta_value, int bin_size, int 
         }
         storage[t] = tmp / bin_size;
     }
-    printf("....DONE!\t%d   Samples Gathered\n\n",storage_size);
+    printf("....DONE!\t%d   Samples Gathered\n\n",bin_number*bin_size);
     return storage;
 }
-
+*/
 double * get_data(int algorithm_id, double beta_value, int storage_size)
 {
-    init(beta_value);
-    printf("\nExecuting %d @ β = %f\n\n", algorithm_id, beta_value);
-    printf("Thermalizing..."); fflush(stdout);
-    thermalize(algorithm_id, 500);
-    printf("......DONE!\n");
+    printf("\nExecuting %d @ β = %f\n\n", algorithm_id, beta_value); init(beta_value);
+    printf("Thermalizing..."); fflush(stdout); thermalize(algorithm_id, 500); printf("......DONE!\n");
 
-    printf("Allocating Memory..."); fflush(stdout);
     double *storage = (double*)malloc(storage_size * sizeof(double));
-    printf(".DONE!\t%d * sizeof(double)\n", storage_size);
 
     printf("Gathering Data..."); fflush(stdout);
     int t; for(t = 0; t < storage_size; t++){
@@ -231,6 +229,7 @@ double * get_data(int algorithm_id, double beta_value, int storage_size)
         storage[t] = get_energy() / (height * width);
     }
     printf("....DONE!\t%d   Samples Gathered\n\n",storage_size);
+    clear();
     return storage;
 }
 
@@ -239,6 +238,13 @@ double * bin_data(double *storage, int storage_size, int bin_size)
     if (storage_size < bin_size) return NULL;
 
     double *binned_data = (double*)malloc((storage_size/bin_size)*sizeof(double));
+    int t;
+    for(t = 0; t < storage_size/bin_size; t++)
+        binned_data[t] = 0.0f;
+    for(t = 0; t < bin_size*(storage_size/bin_size); t++)
+        binned_data[t/bin_size] += storage[t];
+    for(t = 0; t < storage_size/bin_size; t++)
+        binned_data[t] /= bin_size;
     return binned_data;
 }
 
