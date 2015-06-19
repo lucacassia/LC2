@@ -4,7 +4,7 @@ int thermalization_MH(FILE* f, double beta_value){
     int t; init(beta_value);
     printf("\nMetropolis-Hasting Algorithm\tbeta = %f\n",beta);
     for(t = 0; t < 350000; t++){
-        single_MH( (t/width)%height, t%width );
+        MH(1);
         if(t%700 == 0) fprintf(f,"%u\t%e\t%e\n", t, get_energy()/(width*height), beta);
     }
     return 0;
@@ -41,14 +41,14 @@ int main(){
 
     f = fopen("data/magnetization_MH_0.3.dat","w");
     for(t = 0; t < 1000; t++){
-        single_MH( (t/width)%height, t%width );
+        MH(1);
         fprintf(f,"%u\t%e\t%e\n", t, get_magnetization()/(width*height), beta);
     }
     fclose(f);
 
     f = fopen("data/magnetization_MH2_0.3.dat","w");
     for(t = 0; t < 1000000; t++){
-        single_MH( (t/width)%height, t%width );
+        MH(1);
         if(t%(32*32)==0)fprintf(f,"%u\t%e\t%e\n", t, get_magnetization()/(width*height), beta);
     }
     fclose(f);

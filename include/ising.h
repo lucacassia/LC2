@@ -24,6 +24,7 @@ typedef struct _spin{
 unsigned int width = 32;
 unsigned int height = 32;
 spin *ising = NULL;
+unsigned int position;
 double beta = 0;
 
 void clear()
@@ -47,8 +48,25 @@ void init(double beta_value)
         else ising[k].s = -1;
 
     beta = beta_value;
+    position = 0;
 }
 
+void MH(unsigned int n)
+{
+    int new_spin;
+    int i,j;
+    double delta_energy;
+    while(n){
+        i = (position/width)%height;
+        j = position%width;
+        if( mersenne() < 0.5 ) new_spin = 1; else new_spin = -1;
+        delta_energy = - ( ising[UP].s + ising[DOWN].s + ising[LEFT].s + ising[RIGHT].s ) * ( new_spin - ising[CENTER].s );
+        if( delta_energy < 0 || mersenne() < exp(- beta * delta_energy) ) ising[CENTER].s = new_spin;
+        position = (position+1)%(width*height);
+        n--;
+    }
+}
+/*
 void single_MH(int i, int j)
 {
     int new_spin;
@@ -80,7 +98,7 @@ void heatbath()
         else ising[CENTER].s = -1;
     }
 }
-
+*/
 void SW()
 {
     int i,j;
@@ -176,12 +194,12 @@ double get_magnetization(){
 
 void run(unsigned int algorithm_id)
 {
-    if( !algorithm_id ){ MH(); } else { SW(); }
+    if( !algorithm_id ){ MH(width*height); } else { SW(); }
 }
 
 void thermalize(unsigned int algorithm_id, unsigned int termalization_time)
 {
-    int k; for(k = 0; k < termalization_time; k++){ if ( !algorithm_id ) { MH(); } else { SW(); } }
+    int k; for(k = 0; k < termalization_time; k++){ if ( !algorithm_id ) { MH(width*height); } else { SW(); } }
 }
 
 double get_moment(int n, double* storage, int storage_size)
@@ -189,46 +207,47 @@ double get_moment(int n, double* storage, int storage_size)
     double tmp = 0; int i; for(i = 0; i < storage_size; i++) tmp += pow(storage[i], n);
     return tmp / storage_size;
 }
-/*
+
 double * get_binned_data(int algorithm_id, double beta_value, int bin_size, int bin_number)
 {
     init(beta_value);
     printf("\nExecuting %d @ β = %f\n\n", algorithm_id, beta_value);
-    printf("Thermalizing..."); fflush(stdout);
+    printf("Thermalizing........."); fflush(stdout);
     thermalize(algorithm_id, 500);
-    printf("......DONE!\n");
+    printf("DONE!\n");
 
-    printf("Allocating Memory..."); fflush(stdout);
+    printf("Allocating Memory...."); fflush(stdout);
     double *storage = (double*)malloc(bin_number * sizeof(double));
-    printf(".DONE!\t%d Bins\n", bin_number);
+    printf("DONE!\t%d Bins\n", bin_number);
 
-    printf("Gathering Binned Data..."); fflush(stdout);
+    printf("Gathering Binned Data......."); fflush(stdout);
     int t,i; double tmp;
     for(i = 0; i < bin_number; i++){
         tmp = 0.0f;
         for(t = 0; t < bin_size; t++){
-            if ( !algorithm_id ) { single_MH( (t/width)%height, t%width); } else { SW(); }
+            if ( !algorithm_id ) { MH(1); } else { SW(); }
             tmp += get_energy() / (height * width);
         }
-        storage[t] = tmp / bin_size;
+        storage[i] = tmp / bin_size;
     }
-    printf("....DONE!\t%d   Samples Gathered\n\n",bin_number*bin_size);
+    printf("DONE!\t%d   Samples Gathered\n\n",bin_number*bin_size);
+    clear();
     return storage;
 }
-*/
+
 double * get_data(int algorithm_id, double beta_value, int storage_size)
 {
     printf("\nExecuting %d @ β = %f\n\n", algorithm_id, beta_value); init(beta_value);
-    printf("Thermalizing..."); fflush(stdout); thermalize(algorithm_id, 500); printf("......DONE!\n");
+    printf("Thermalizing........."); fflush(stdout); thermalize(algorithm_id, 500); printf("DONE!\n");
 
     double *storage = (double*)malloc(storage_size * sizeof(double));
 
-    printf("Gathering Data..."); fflush(stdout);
+    printf("Gathering Data......."); fflush(stdout);
     int t; for(t = 0; t < storage_size; t++){
-        if ( !algorithm_id ) { single_MH( (t/width)%height, t%width); } else { SW(); }
+        if ( !algorithm_id ) { MH(1); } else { SW(); }
         storage[t] = get_energy() / (height * width);
     }
-    printf("....DONE!\t%d   Samples Gathered\n\n",storage_size);
+    printf("DONE!\t%d   Samples Gathered\n\n",storage_size);
     clear();
     return storage;
 }
