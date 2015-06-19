@@ -6,8 +6,9 @@
   <doc-data|<doc-title|Laboratory of Computational
   Physics>|<doc-author|<author-data|<author-name|Luca
   Cassia>|<\author-affiliation>
-    Dipartimento di Fisica, Università di Milano-Bicocca, I-20126 Milano,
-    Italy
+    Dipartimento di Fisica, Università di Milano-Bicocca
+
+    I-20126 Milano, Italy
   </author-affiliation>|<\author-email>
     l.cassia@campus.unimib.it
   </author-email>>>>
@@ -146,7 +147,7 @@
   of the magnetization for the two algorithms at <math|\<beta\>=0.3>. (Left)
   MH (Right) SW.>
 
-  Only on a larger time scale, the MH process can be regarded as weakly
+  Only on a much larger time scale, the MH process can be regarded as weakly
   correlated (Fig.<reference|fig:autocorrelation2>):
 
   <big-figure|<image|../ising/thermalization/img/magnetization_MH2_0.3.eps|0.5par|||>|<label|fig:autocorrelation2>Average
@@ -228,15 +229,27 @@
   uncorrelated is obtained by looking at the point for which the signal for
   <math|k*\<sigma\><rsup|2><rsub|B>/\<sigma\><rsup|2><rsub|\<cal-O\><rsub|i>>>
   stabilizes and its first derivarive tends to zero. We call this point
-  <math|<wide|k|^><around*|(|\<beta\>|)>>. Since <math|\<tau\><rsub|exp>> has
-  a local maximum at the critical point, we take
-  <math|<wide|k|^><around*|(|\<beta\><rsub|c>|)>> as the block size for the
-  following simulations.
+  <math|k<rsup|\<ast\>><around*|(|\<beta\>|)>>. Since
+  <math|\<tau\><rsub|exp>> has a local maximum at the critical point, we take
+  <math|k<rsup|\<ast\>><around*|(|\<beta\><rsub|c>|)>> as the block size for
+  the following simulations.
 
-  The value of <math|<wide|k|^><around*|(|\<beta\><rsub|c>|)>> for MH is
-  taken to be <math|2\<cdot\>10<rsup|5>>, almost two hundreds times the size
+  \;
+
+  The value of <math|k<rsup|\<ast\>><around*|(|\<beta\><rsub|c>|)>> for MH is
+  taken to be <math|2\<cdot\>10<rsup|5>>, almost two hundred times the size
   of the lattice, while for SW it suffices to take
-  <math|<wide|k|^><around*|(|\<beta\><rsub|c>|)>\<sim\>400>.
+  <math|k<rsup|\<ast\>><around*|(|\<beta\><rsub|c>|)>\<sim\>400>.
+
+  <\big-figure>
+    <image|../ising/energy/img/energy_bin_100_MH.eps|0.5par|||><image|../ising/energy/img/energy_bin_100_SW.eps|0.5par|||>
+
+    <image|../ising/energy/img/energy_bin_1000_MH.eps|0.5par|||><image|../ising/energy/img/energy_bin_1000_SW.eps|0.5par|||>
+  </big-figure|<label|fig:energy_bin>Sampled data after the binning. MH on
+  the left and SW on the right.>
+
+  As we can see from (Fig.<reference|fig:energy_bin>) the signal loses almost
+  all of its autocorrelation after the binning.
 </body>
 
 <\initial>
@@ -256,6 +269,7 @@
     <associate|auto-1|<tuple|1|1>>
     <associate|auto-10|<tuple|5|6>>
     <associate|auto-11|<tuple|6|7>>
+    <associate|auto-12|<tuple|7|8>>
     <associate|auto-2|<tuple|1.1|2>>
     <associate|auto-3|<tuple|1|2>>
     <associate|auto-4|<tuple|2|3>>
@@ -267,6 +281,7 @@
     <associate|eq:MC|<tuple|2|?>>
     <associate|fig:autocorrelation1|<tuple|3|4>>
     <associate|fig:autocorrelation2|<tuple|4|5>>
+    <associate|fig:energy_bin|<tuple|7|8>>
     <associate|fig:termalization|<tuple|1|2>>
     <associate|fig:termalizationMH|<tuple|1|?>>
     <associate|fig:thermalizationMH|<tuple|1|2>>
@@ -300,6 +315,9 @@
 
       <tuple|normal|Binning analysis for the SW algorithm at various values
       of <with|mode|<quote|math>|\<beta\>>.|<pageref|auto-11>>
+
+      <tuple|normal|Sampled data after the binning. MH on the left and SW on
+      the right.|<pageref|auto-12>>
     </associate>
     <\associate|toc>
       <vspace*|1fn><with|font-series|<quote|bold>|math-font-series|<quote|bold>|1<space|2spc>Ising

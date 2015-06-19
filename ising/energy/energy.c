@@ -1,35 +1,44 @@
 #include"ising.h"
 
-void get_energy_plot(int algorithm_id, double beta_value, FILE *f){
-    int bin_number, bin_size;
+void get_energy_plot(int algorithm_id, double beta_value, int bin_number){
+
+    char filename[50];
+    int bin_size;
     if(!algorithm_id){
         bin_size = 200000;
-        bin_number = 10;
+        sprintf(filename,"data/energy_bin_%d_MH.dat",bin_number);
+
     }else{
         bin_size = 400;
-        bin_number = 10;
+        sprintf(filename,"data/energy_bin_%d_SW.dat",bin_number);
     }
-    double *storage = get_binned_data(algorithm_id, beta_value, bin_size, bin_number);
-    double mean = 0;
-    double variance = 0;
+
+    FILE *f = fopen(filename,"w");
+
+    double *binned_data = get_binned_data(algorithm_id, beta_value, bin_size, bin_number);
+
+    double mean = 0.0f;
+    double variance = 0.0f;
+
     int t;
-    for(t = 0; t < bin_number; t++)
-        mean += storage[t];
+
+    mean = variance = 0.0f;
+    for(t = 0; t < bin_number; t++){
+        fprintf(f,"%f\n",binned_data[t]);
+        mean += binned_data[t];
+    }fclose(f);
+
     mean /= bin_number;
+    printf("μ  = %f\t(binned)\n", mean );
     for(t = 0; t < bin_number; t++)
-        variance += storage[t] * storage[t];
+        variance += binned_data[t] * binned_data[t];
     variance = variance / bin_number - mean * mean;
-    fprintf(f, "%f\t%f\t%f", beta_value, mean, sqrt(variance) );
-    free(storage);
-    clear();
-    
+    printf("σ² = %f\t(binned)\n\n", variance );
+
+    free(binned_data);
 }
 
 int main(){
-    FILE *f = fopen("data/energy_MH","w");
-    double b;
-    for(b = 0.0f; b < 1; b += 0.1)
-        get_energy_plot(0,b,f);
-    fclose(f);
+    get_energy_plot(1,0.3,1000);
     return 0;
 }

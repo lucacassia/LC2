@@ -212,11 +212,11 @@ double * get_binned_data(int algorithm_id, double beta_value, int bin_size, int 
 {
     init(beta_value);
     printf("\nExecuting %d @ β = %f\n\n", algorithm_id, beta_value);
-    printf("Thermalizing........."); fflush(stdout);
+    printf("Thermalizing................"); fflush(stdout);
     thermalize(algorithm_id, 500);
     printf("DONE!\n");
 
-    printf("Allocating Memory...."); fflush(stdout);
+    printf("Allocating Memory..........."); fflush(stdout);
     double *storage = (double*)malloc(bin_number * sizeof(double));
     printf("DONE!\t%d Bins\n", bin_number);
 
@@ -230,7 +230,7 @@ double * get_binned_data(int algorithm_id, double beta_value, int bin_size, int 
         }
         storage[i] = tmp / bin_size;
     }
-    printf("DONE!\t%d   Samples Gathered\n\n",bin_number*bin_size);
+    printf("DONE!\t%d Samples Gathered\n\n",bin_number*bin_size);
     clear();
     return storage;
 }
@@ -247,7 +247,7 @@ double * get_data(int algorithm_id, double beta_value, int storage_size)
         if ( !algorithm_id ) { MH(1); } else { SW(); }
         storage[t] = get_energy() / (height * width);
     }
-    printf("DONE!\t%d   Samples Gathered\n\n",storage_size);
+    printf("DONE!\t%d Samples Gathered\n\n",storage_size);
     clear();
     return storage;
 }
