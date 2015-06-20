@@ -14,8 +14,9 @@ void savePPM()
 {
     unsigned char white[3] = {255,255,255};
     unsigned char black[3] = {0,0,0};
-
-    FILE *f = fopen("image.ppm", "wb");
+    char filename[50];
+    sprintf(filename, "ising_%dx%d_%f.ppm", width, height, beta);
+    FILE *f = fopen(filename, "wb");
     fprintf(f, "P6\n%d %d\n255\n", 4*width, 4*height);
     int i,j;
     for(i = height-1; i >= 0; i--){
@@ -77,6 +78,7 @@ void savePPM()
         }
     }
     fclose(f);
+    printf("\nPPM file saved to %s\n",filename);
 }
 
 void GLInit()
@@ -145,7 +147,6 @@ void keyboardF(unsigned char key, int mouseX, int mouseY)
             break;
         case 'p': case 'P':
             savePPM();
-            printf("\nPPM file saved to: image.ppm\n");
             break;
     }
 }
