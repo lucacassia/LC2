@@ -195,8 +195,10 @@ double get_moment(int n, double* storage, int storage_size)
     return tmp / storage_size;
 }
 
-double * get_binned_data(int algorithm_id, double beta_value, int bin_size, int bin_number, double (*func)() )
+double * get_binned_data(int algorithm_id, double beta_value, int bin_number, double (*func)() )
 {
+    int bin_size;
+    if(!algorithm_id){bin_size=200000;}else{bin_size=400;}
     init(beta_value);
     printf("\nExecuting %d @ β = %f\n\n", algorithm_id, beta_value);
     printf("Thermalizing................"); fflush(stdout);
