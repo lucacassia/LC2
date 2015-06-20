@@ -37,7 +37,7 @@ int main(){
     f = fopen("data/thermalization_SW_0.5.dat","w");    thermalization_SW(f,0.5);    fclose(f);
     f = fopen("data/thermalization_SW_0.6.dat","w");    thermalization_SW(f,0.6);    fclose(f);
 
-    init(0.3); thermalize(0,500);
+    init(0.3); thermalize(0);
 
     f = fopen("data/magnetization_MH_0.3.dat","w");
     for(t = 0; t < 1000; t++){

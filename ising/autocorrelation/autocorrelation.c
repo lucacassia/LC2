@@ -6,7 +6,7 @@ void get_autocorrelation(int algorithm_id, double beta_value){
 
     int t, k, k_max;
 
-    double *storage = get_data(algorithm_id, beta_value, storage_size);
+    double *storage = get_data(algorithm_id, beta_value, storage_size, get_energy);
 
     double mean = 0;
     for(t = 0; t < storage_size; t++)

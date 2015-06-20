@@ -17,7 +17,7 @@ void get_variance_bin(int algorithm_id, double beta_value){
         step = 2;
     }
 
-    double *storage = get_data(algorithm_id, beta_value, storage_size);
+    double *storage = get_data(algorithm_id, beta_value, storage_size, get_energy);
     double old_mean = 0;
     for(t = 0; t < storage_size; t++)
         old_mean += storage[t];
@@ -44,18 +44,13 @@ void get_variance_bin(int algorithm_id, double beta_value){
         fprintf(f,"%d\t%f\n",k,k*variance/old_variance);
         free(binned_data);
     }
-    printf("...........DONE!\n");
+    printf("...........DONE!\n\nWritten to %s\n",filename);
 
     free(storage);
     fclose(f);
 }
 
 int main(){
-    get_variance_bin(1,0.35);
-    get_variance_bin(1,0.40);
-    get_variance_bin(1,0.43);
-    get_variance_bin(1,0.44);
-    get_variance_bin(1,0.45);
-    get_variance_bin(1,0.50);
+    get_variance_bin(0,0.35);
     return 0;
 }
