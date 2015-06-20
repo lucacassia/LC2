@@ -1,6 +1,6 @@
 #include"ising.h"
 
-void get_energy_bin_plot(int algorithm_id, double beta_value, int bin_number){
+void plot_observable_bin(int algorithm_id, double beta_value, int bin_number, double (*func)() ){
 
     char filename[50];
     int t, bin_size;
@@ -13,7 +13,7 @@ void get_energy_bin_plot(int algorithm_id, double beta_value, int bin_number){
         sprintf(filename,"data/energy_bin_%d_SW.dat",bin_number);
     }
 
-    double *binned_data = get_binned_data(algorithm_id, beta_value, bin_size, bin_number);
+    double *binned_data = get_binned_data(algorithm_id, beta_value, bin_size, bin_number, func);
     FILE *f = fopen(filename,"w");
     for(t = 0; t < bin_number; t++){
         fprintf(f,"%f\n",binned_data[t]);
@@ -22,13 +22,13 @@ void get_energy_bin_plot(int algorithm_id, double beta_value, int bin_number){
     free(binned_data);
 }
 
-void plot_energy(int algorithm_id, double beta_value, int bin_number, FILE *f){
+void plot_observable(int algorithm_id, double beta_value, int bin_number, double (*func)(), FILE *f){
 
     int t, bin_size;
 
     if(!algorithm_id){ bin_size = 200000; }else{ bin_size = 400; }
 
-    double *binned_data = get_binned_data(algorithm_id, beta_value, bin_size, bin_number);
+    double *binned_data = get_binned_data(algorithm_id, beta_value, bin_size, bin_number, func);
 
     double mean = 0.0f;
     double std = 0.0f;
@@ -45,10 +45,12 @@ void plot_energy(int algorithm_id, double beta_value, int bin_number, FILE *f){
 }
 
 int main(){
-    FILE *f = fopen("energy_plot_MH.dat","w");
+
+    FILE *f = fopen("data/energy_plot_SW.dat","w");
     double b;
-    for(b = 0.0f; b <= 1; b += 0.1)
-        plot_energy(0,b,100,f);
+    for(b = 0.0f; b <= 1; b += 0.05)
+        plot_observable(0,b,100,get_energy,f);
     fclose(f);
+
     return 0;
 }

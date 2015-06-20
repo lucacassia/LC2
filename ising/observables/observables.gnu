@@ -16,3 +16,16 @@ plot 'data/energy_bin_1000_MH.dat'   pt 1 ps 0.5 lc rgb '#000000' title 'MH  N_B
 
 set output 'img/energy_bin_1000_SW.eps'
 plot 'data/energy_bin_1000_SW.dat'   pt 1 ps 0.5 lc rgb '#000000' title 'SW  N_B = 1000 \@ {/Symbol b} = 0.3'
+
+
+set xlabel "{/Symbol b}"
+set ylabel "energy density"
+set yrange[-2:0]
+
+set output 'img/energy_plot_MH.eps'
+plot -(1+(2/3.14159265359)*(2*tanh(2*x)**2-1)*EllipticK(2*sinh(2*x)/cosh(2*x)**2))/tanh(2*x) ls 0 lc rgb '#000000' title 'exact',\
+     'data/energy_plot_MH.dat' pt 7 ps 0.5 lc rgb '#000000' title 'MH' w yerrorbars
+
+set output 'img/energy_plot_SW.eps'
+plot -(1+(2/3.14159265359)*(2*tanh(2*x)**2-1)*EllipticK(2*sinh(2*x)/cosh(2*x)**2))/tanh(2*x) ls 0 lc rgb '#000000' title 'exact',\
+     'data/energy_plot_SW.dat' pt 7 ps 0.5 lc rgb '#000000' title 'SW' w yerrorbars
