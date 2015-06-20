@@ -61,32 +61,12 @@ void MH(unsigned int n)
         j = position%width;
         if( mersenne() < 0.5 ) new_spin = 1; else new_spin = -1;
         delta_energy = - ( ising[UP].s + ising[DOWN].s + ising[LEFT].s + ising[RIGHT].s ) * ( new_spin - ising[CENTER].s );
-        if( delta_energy < 0 || mersenne() < exp(- beta * delta_energy) ) ising[CENTER].s = new_spin;
+        if( delta_energy <= 0 || mersenne() < exp(- beta * delta_energy) ) ising[CENTER].s = new_spin;
         position = (position+1)%(width*height);
         n--;
     }
 }
 /*
-void single_MH(int i, int j)
-{
-    int new_spin;
-    double delta_energy;
-    if( mersenne() < 0.5 ) new_spin = 1; else new_spin = -1;
-    delta_energy = - ( ising[UP].s + ising[DOWN].s + ising[LEFT].s + ising[RIGHT].s ) * (new_spin - ising[CENTER].s);
-    if( delta_energy < 0 || mersenne() < exp(- beta * delta_energy) ) ising[CENTER].s = new_spin;
-}
-
-void MH()
-{
-    int i,j,new_spin;
-    double delta_energy;
-    for(i = 0; i < height; i++) for(j = 0; j < width; j++) {
-        if( mersenne() < 0.5 ) new_spin = 1; else new_spin = -1;
-        delta_energy = - ( ising[UP].s + ising[DOWN].s + ising[LEFT].s + ising[RIGHT].s ) * (new_spin - ising[CENTER].s);
-        if( delta_energy < 0 || mersenne() < exp(- beta * delta_energy) ) ising[CENTER].s = new_spin;
-    }
-}
-
 void heatbath()
 {
     int i,j;
@@ -185,11 +165,18 @@ double get_energy(){
     return energy;
 }
 
-double get_magnetization(){
+double get_magnetization_nofabs(){
     double magnetization = 0;
     int i,j; for(i = 0; i < height; i++) for(j = 0; j < width; j++)
         magnetization += ising[CENTER].s;
     return magnetization;
+}
+
+double get_magnetization(){
+    double magnetization = 0;
+    int i,j; for(i = 0; i < height; i++) for(j = 0; j < width; j++)
+        magnetization += ising[CENTER].s;
+    return fabs(magnetization);
 }
 
 void run(unsigned int algorithm_id)
@@ -197,9 +184,9 @@ void run(unsigned int algorithm_id)
     if( !algorithm_id ){ MH(width*height); } else { SW(); }
 }
 
-void thermalize(unsigned int algorithm_id, unsigned int termalization_time)
+void thermalize(unsigned int algorithm_id)
 {
-    int k; for(k = 0; k < termalization_time; k++){ if ( !algorithm_id ) { MH(width*height); } else { SW(); } }
+    int k; for(k = 0; k < 1000; k++){ if ( !algorithm_id ) { MH(100*width*height); } else { SW(); } }
 }
 
 double get_moment(int n, double* storage, int storage_size)
@@ -208,12 +195,12 @@ double get_moment(int n, double* storage, int storage_size)
     return tmp / storage_size;
 }
 
-double * get_binned_data(int algorithm_id, double beta_value, int bin_size, int bin_number)
+double * get_binned_data(int algorithm_id, double beta_value, int bin_size, int bin_number, double (*func)() )
 {
     init(beta_value);
     printf("\nExecuting %d @ β = %f\n\n", algorithm_id, beta_value);
     printf("Thermalizing................"); fflush(stdout);
-    thermalize(algorithm_id, 500);
+    thermalize(algorithm_id);
     printf("DONE!\n");
 
     printf("Allocating Memory..........."); fflush(stdout);
@@ -226,7 +213,7 @@ double * get_binned_data(int algorithm_id, double beta_value, int bin_size, int 
         tmp = 0.0f;
         for(t = 0; t < bin_size; t++){
             if ( !algorithm_id ) { MH(1); } else { SW(); }
-            tmp += get_energy() / (height * width);
+            tmp += func() / (height * width);
         }
         storage[i] = tmp / bin_size;
     }
@@ -235,17 +222,17 @@ double * get_binned_data(int algorithm_id, double beta_value, int bin_size, int 
     return storage;
 }
 
-double * get_data(int algorithm_id, double beta_value, int storage_size)
+double * get_data(int algorithm_id, double beta_value, int storage_size, double (*func)())
 {
     printf("\nExecuting %d @ β = %f\n\n", algorithm_id, beta_value); init(beta_value);
-    printf("Thermalizing........."); fflush(stdout); thermalize(algorithm_id, 500); printf("DONE!\n");
+    printf("Thermalizing........."); fflush(stdout); thermalize(algorithm_id); printf("DONE!\n");
 
     double *storage = (double*)malloc(storage_size * sizeof(double));
 
     printf("Gathering Data......."); fflush(stdout);
     int t; for(t = 0; t < storage_size; t++){
         if ( !algorithm_id ) { MH(1); } else { SW(); }
-        storage[t] = get_energy() / (height * width);
+        storage[t] = func() / (height * width);
     }
     printf("DONE!\t%d Samples Gathered\n\n",storage_size);
     clear();

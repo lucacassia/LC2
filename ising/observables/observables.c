@@ -64,7 +64,13 @@ void plot_observable(int algorithm_id, int bin_number, double (*func)(), int n){
 }
 
 int main(){
-/*    plot_observable_bin(0,0.8,100,get_magnetization);*/
-    plot_observable(0,50,get_magnetization,40);
+    plot_observable_bin(0,0.80,1000,get_magnetization);
+    plot_observable_bin(0,0.30,1000,get_magnetization);
+    plot_observable_bin(0,0.42,1000,get_magnetization);
+    plot_observable_bin(0,0.43,1000,get_magnetization);
+    plot_observable_bin(0,0.44,1000,get_magnetization);
+    plot_observable_bin(0,0.46,1000,get_magnetization);
+
+/*    plot_observable(0,50,get_magnetization,50);*/
     return 0;
 }

@@ -21,6 +21,7 @@ plot 'data/energy_bin_1000_SW.dat'   pt 1 ps 0.5 lc rgb '#000000' title 'SW  N_B
 set xlabel "{/Symbol b}"
 set ylabel "energy density"
 set yrange[-2:0]
+set xrange[0:1]
 
 set output 'img/energy_plot_MH.eps'
 plot -(1+(2/3.14159265359)*(2*tanh(2*x)**2-1)*EllipticK(2*sinh(2*x)/cosh(2*x)**2))/tanh(2*x) ls 0 lc rgb '#000000' title 'exact',\
