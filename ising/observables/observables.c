@@ -3,15 +3,12 @@
 void plot_observable_bin(int algorithm_id, double beta_value, int bin_number, double (*func)() ){
 
     char filename[50];
+    char *algorithm_string;
     int t;
 
-    if(!algorithm_id){
-        if(func == get_energy)          sprintf(filename,"data/energy_bin_%d_%f_MH.dat",bin_number,beta_value);
-        if(func == get_magnetization)   sprintf(filename,"data/magnetization_bin_%d_%f_MH.dat",bin_number,beta_value);
-    }else{
-        if(func == get_energy)          sprintf(filename,"data/energy_bin_%d_%f_SW.dat",bin_number,beta_value);
-        if(func == get_magnetization)   sprintf(filename,"data/magnetization_bin_%d_%f_SW.dat",bin_number,beta_value);
-    }
+    if(!algorithm_id){ algorithm_string = "MH"; }else{ algorithm_string = "SW"; }
+    if(func == get_energy)        { sprintf(filename,"data/energy_bin_%d_%f_%s.dat",bin_number,beta_value,algorithm_string); }
+    if(func == get_magnetization) { sprintf(filename,"data/magnetization_bin_%d_%f_%s.dat",bin_number,beta_value,algorithm_string); }
 
     double *binned_data = get_binned_data(algorithm_id, beta_value, bin_number, func);
     FILE *f = fopen(filename,"w");
@@ -27,20 +24,16 @@ void plot_observable_bin(int algorithm_id, double beta_value, int bin_number, do
 void plot_observable(int algorithm_id, int bin_number, double (*func)(), int n){
 
     char filename[50];
+    char *algorithm_string;
     int t;
     double beta_value, mean, std;
     double *binned_data;
-    FILE *f;
 
-    if(!algorithm_id){
-        if(func == get_energy)          sprintf(filename,"data/energy_plot_%d_MH.dat",bin_number);
-        if(func == get_magnetization)   sprintf(filename,"data/magnetization_plot_%d_MH.dat",bin_number);
-    }else{
-        if(func == get_energy)          sprintf(filename,"data/energy_plot_%d_SW.dat",bin_number);
-        if(func == get_magnetization)   sprintf(filename,"data/magnetization_plot_%d_SW.dat",bin_number);
-    }
+    if(!algorithm_id){ algorithm_string = "MH"; }else{ algorithm_string = "SW"; }
+    if(func == get_energy)        { sprintf(filename,"data/energy_plot_%d_%s.dat",bin_number,algorithm_string); }
+    if(func == get_magnetization) { sprintf(filename,"data/magnetization_plot_%d_%s.dat",bin_number,algorithm_string); }
 
-    f = fopen(filename,"w");
+    FILE *f = fopen(filename,"w");
     for(beta_value = 0; beta_value <= 1; beta_value += 1.0f / n){
 
         binned_data = get_binned_data(algorithm_id, beta_value, bin_number, func);
@@ -52,21 +45,23 @@ void plot_observable(int algorithm_id, int bin_number, double (*func)(), int n){
         for(t = 0; t < bin_number; t++)
             std += binned_data[t] * binned_data[t];
         std = sqrt( std / bin_number - mean * mean );
-        free(binned_data);
         fprintf(f, "%f\t%f\t%f\n", beta_value, mean, std);
+
+        free(binned_data);
     }
     fclose(f);
     printf("Written to: %s\n",filename);
 }
 
 int main(){
+/*
     plot_observable_bin(0,0.80,1000,get_magnetization);
     plot_observable_bin(0,0.30,1000,get_magnetization);
     plot_observable_bin(0,0.42,1000,get_magnetization);
     plot_observable_bin(0,0.43,1000,get_magnetization);
     plot_observable_bin(0,0.44,1000,get_magnetization);
     plot_observable_bin(0,0.46,1000,get_magnetization);
-
-/*    plot_observable(0,50,get_magnetization,50);*/
+*/
+    plot_observable(0,100,get_magnetization,50);
     return 0;
 }

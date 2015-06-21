@@ -186,7 +186,7 @@ void run(unsigned int algorithm_id)
 
 void thermalize(unsigned int algorithm_id)
 {
-    int k; for(k = 0; k < 1000; k++){ if ( !algorithm_id ) { MH(100*width*height); } else { SW(); } }
+    int k; for(k = 0; k < 5000; k++){ if ( !algorithm_id ) { MH(100*width*height); } else { SW(); } }
 }
 
 double get_moment(int n, double* storage, int storage_size)
