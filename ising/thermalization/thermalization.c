@@ -21,7 +21,7 @@ int thermalization_SW(double beta_value){
     FILE *f = fopen(filename,"w");
     printf("\nSwendsen-Wang Algorithm\tbeta = %f\n",beta);
     for(t = 0; t < 500; t++){
-        SW();
+        SW(1);
         fprintf(f,"%u\t%e\t%e\n", t, get_energy()/(width*height), beta);
     }
     fclose(f);
@@ -47,7 +47,7 @@ int main(){
 
     int t;
     init(0.3);
-    thermalize(0);
+    thermalize(MH);
     FILE *f = fopen("data/magnetization_0.300000_MH.dat","w");
     for(t = 0; t < 1000; t++){
         MH(1);
@@ -64,7 +64,7 @@ int main(){
 
     f = fopen("data/magnetization_0.300000_SW.dat","w");
     for(t = 0; t < 1000; t++){
-        SW();
+        SW(1);
         fprintf(f,"%u\t%e\t%e\n", t, get_magnetization_nofabs()/(width*height), beta);
     }
     fclose(f);

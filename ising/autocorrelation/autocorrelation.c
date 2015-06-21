@@ -2,13 +2,17 @@
 
 int storage_size, step1, step2, k_max_star;
 
-void get_autocorrelation(int algorithm_id, double beta_value){
+void get_autocorrelation(void (*algorithm)(int), double beta_value){
 
-    int t, k, k_max;
+    char *algorithm_string = NULL;
+    if( algorithm == MH ){ algorithm_string = "MH"; }
+    if( algorithm == SW ){ algorithm_string = "SW"; }
+    if( algorithm != MH && algorithm != SW ){ printf("\nInvalid Algorithm!\n"); }
 
-    double *storage = get_data(algorithm_id, beta_value, storage_size, get_energy);
+    double *storage = get_data(algorithm, beta_value, storage_size, get_energy);
 
     double mean = 0;
+    int t, k, k_max;
     for(t = 0; t < storage_size; t++)
         mean += storage[t];
     mean /= storage_size;
@@ -21,8 +25,8 @@ void get_autocorrelation(int algorithm_id, double beta_value){
     printf("μ  = %f\nσ² = %f\n",mean,variance);
     printf("\nComputing Autocorrelations..."); fflush(stdout);
 
-    char filename1[50];    sprintf(filename1,"data/autocorrelation_%d_%f.dat",algorithm_id,beta_value);
-    char filename2[50];    sprintf(filename2,"data/autocorrelation_time_%d_%f.dat",algorithm_id,beta_value);
+    char filename1[50];    sprintf(filename1,"data/autocorrelation_%s_%f.dat",algorithm_string,beta_value);
+    char filename2[50];    sprintf(filename2,"data/autocorrelation_time_%s_%f.dat",algorithm_string,beta_value);
 
     FILE *f1 = fopen(filename1,"w");
     FILE *f2 = fopen(filename2,"w");
@@ -34,7 +38,7 @@ void get_autocorrelation(int algorithm_id, double beta_value){
             autocorrelation = 0.0f;
             for(t = 0; t < storage_size - k; t++)
                 autocorrelation += storage[t] * storage[t+k];
-            autocorrelation /= variance * (storage_size-k);
+            autocorrelation /= variance * (storage_size - k);
             autocorrelation_time += autocorrelation;
 /*            if(k_max == k_max_star && k%step2 == 0 )   fprintf(f1, "%d\t%f\n", k, autocorrelation);*/
         }
@@ -58,7 +62,7 @@ int main(){
 
     double b;
     for(b=0.35;b<0.56;b+=0.01)
-        get_autocorrelation(0,b);
+        get_autocorrelation(MH,b);
 
     storage_size = 50000;
     step1 = 2;
@@ -66,7 +70,7 @@ int main(){
     k_max_star = 50;
 
     for(b=0.35;b<0.56;b+=0.01)
-        get_autocorrelation(1,b);
+        get_autocorrelation(SW,b);
 
     return 0;
 }

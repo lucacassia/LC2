@@ -7,7 +7,7 @@
 #define SPIN_DOWN   0
 
 unsigned int active = 0;
-unsigned int algorithm = 0;
+void (*algorithm)(int) = MH;
 float *pixels = NULL;
 
 void savePPM()
@@ -141,9 +141,14 @@ void keyboardF(unsigned char key, int mouseX, int mouseY)
             printf("\nThe simulation has been reset!\n");
             break;
         case 'm': case 'M':
-            algorithm = !algorithm;
-            if(algorithm == 0) printf("\nActivating Metropolis-Hasting Algorithm\n");
-            if(algorithm == 1) printf("\nActivating Swendsen–Wang Algorithm\n");
+            if(algorithm == SW){
+                algorithm = MH;
+                printf("\nActivating Metropolis-Hasting Algorithm\n");
+            }
+            else{
+                algorithm = SW;
+                printf("\nActivating Swendsen–Wang Algorithm\n");
+            }
             break;
         case 'p': case 'P':
             savePPM();

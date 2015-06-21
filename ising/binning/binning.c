@@ -1,23 +1,28 @@
 #include "ising.h"
 
-void get_variance_bin(int algorithm_id, double beta_value){
+void get_variance_bin(void (*algorithm)(int), double beta_value){
 
+    char *algorithm_string = NULL;
+    if( algorithm == MH ){ algorithm_string = "MH"; }
+    if( algorithm == SW ){ algorithm_string = "SW"; }
+    if( algorithm != MH && algorithm != SW ){ printf("\nInvalid Algorithm!\n"); }
     char filename[50];
-    sprintf(filename,"data/variance_%d_%f.dat", algorithm_id, beta_value);
+    sprintf(filename,"data/variance_%s_%f.dat", algorithm_string, beta_value);
 
     FILE *f = fopen(filename,"w");
 
     int storage_size, t, k, step;
 
-    if(!algorithm_id){
+    if(algorithm == MH){
         storage_size = 1000000;
         step = 100;
-    }else{
+    }
+    if(algorithm == SW){
         storage_size = 50000;
         step = 2;
     }
 
-    double *storage = get_data(algorithm_id, beta_value, storage_size, get_energy);
+    double *storage = get_data(algorithm, beta_value, storage_size, get_energy);
     double old_mean = 0;
     for(t = 0; t < storage_size; t++)
         old_mean += storage[t];
@@ -28,7 +33,7 @@ void get_variance_bin(int algorithm_id, double beta_value){
     old_variance = old_variance / storage_size - old_mean * old_mean;
     printf("μ  = %f\nσ² = %f\n",old_mean,old_variance);
 
-    printf("Binning..."); fflush(stdout);
+    printf("Binning.............."); fflush(stdout);
     double *binned_data;
 
     for(k = 1; k < 100*step; k += step){
@@ -44,13 +49,13 @@ void get_variance_bin(int algorithm_id, double beta_value){
         fprintf(f,"%d\t%f\n",k,k*variance/old_variance);
         free(binned_data);
     }
-    printf("...........DONE!\n\nWritten to %s\n",filename);
+    printf("DONE!\n\nWritten to %s\n",filename);
 
     free(storage);
     fclose(f);
 }
 
 int main(){
-    get_variance_bin(0,0.35);
+    get_variance_bin(MH,0.35);
     return 0;
 }

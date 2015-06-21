@@ -1,16 +1,17 @@
 #include"ising.h"
 
-void plot_observable_bin(int algorithm_id, double beta_value, int bin_number, double (*func)() ){
+void plot_observable_bin(void (*algorithm)(int), double beta_value, int bin_number, double (*func)() ){
 
     char filename[50];
     char *algorithm_string;
     int t;
 
-    if(!algorithm_id){ algorithm_string = "MH"; }else{ algorithm_string = "SW"; }
+    if(algorithm == MH){ algorithm_string = "MH"; }
+    if(algorithm == SW){ algorithm_string = "SW"; }
     if(func == get_energy)        { sprintf(filename,"data/energy_bin_%d_%f_%s.dat",bin_number,beta_value,algorithm_string); }
     if(func == get_magnetization) { sprintf(filename,"data/magnetization_bin_%d_%f_%s.dat",bin_number,beta_value,algorithm_string); }
 
-    double *binned_data = get_binned_data(algorithm_id, beta_value, bin_number, func);
+    double *binned_data = get_binned_data(algorithm, beta_value, bin_number, func);
     FILE *f = fopen(filename,"w");
     for(t = 0; t < bin_number; t++){
         fprintf(f,"%f\n",binned_data[t]);
@@ -21,7 +22,7 @@ void plot_observable_bin(int algorithm_id, double beta_value, int bin_number, do
     printf("Written to: %s\n",filename);
 }
 
-void plot_observable(int algorithm_id, int bin_number, double (*func)(), int n){
+void plot_observable(void (*algorithm)(int), int bin_number, double (*func)(), int n){
 
     char filename[50];
     char *algorithm_string;
@@ -29,14 +30,15 @@ void plot_observable(int algorithm_id, int bin_number, double (*func)(), int n){
     double beta_value, mean, std;
     double *binned_data;
 
-    if(!algorithm_id){ algorithm_string = "MH"; }else{ algorithm_string = "SW"; }
+    if(algorithm == MH){ algorithm_string = "MH"; }
+    if(algorithm == SW){ algorithm_string = "SW"; }
     if(func == get_energy)        { sprintf(filename,"data/energy_plot_%d_%s.dat",bin_number,algorithm_string); }
     if(func == get_magnetization) { sprintf(filename,"data/magnetization_plot_%d_%s.dat",bin_number,algorithm_string); }
 
     FILE *f = fopen(filename,"w");
     for(beta_value = 0; beta_value <= 1; beta_value += 1.0f / n){
 
-        binned_data = get_binned_data(algorithm_id, beta_value, bin_number, func);
+        binned_data = get_binned_data(algorithm, beta_value, bin_number, func);
 
         mean = std = 0.0f;
         for(t = 0; t < bin_number; t++)
@@ -62,6 +64,6 @@ int main(){
     plot_observable_bin(0,0.44,1000,get_magnetization);
     plot_observable_bin(0,0.46,1000,get_magnetization);
 */
-    plot_observable(0,100,get_magnetization,50);
+    plot_observable(MH,100,get_energy,100);
     return 0;
 }
