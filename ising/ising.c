@@ -7,7 +7,7 @@
 #define SPIN_DOWN   0
 
 unsigned int active = 0;
-void (*algorithm)(int) = MH;
+void (*algorithm)() = MH;
 float *pixels = NULL;
 
 void savePPM()
@@ -15,61 +15,61 @@ void savePPM()
     unsigned char white[3] = {255,255,255};
     unsigned char black[3] = {0,0,0};
     char filename[50];
-    sprintf(filename, "ising_%dx%d_%f.ppm", width, height, beta);
+    sprintf(filename, "ising_%dx%d_%f.ppm", size, size, beta);
     FILE *f = fopen(filename, "wb");
-    fprintf(f, "P6\n%d %d\n255\n", 4*width, 4*height);
+    fprintf(f, "P6\n%d %d\n255\n", 4*size, 4*size);
     int i,j;
-    for(i = height-1; i >= 0; i--){
-        for(j = 0; j < width; j++){
-            if(ising[i*width+j].s == 1){
+    for(i = size-1; i >= 0; i--){
+        for(j = 0; j < size; j++){
+            if(ising[i][j].s == 1){
                 fwrite(white, sizeof(unsigned char), 3, f);
                 fwrite(white, sizeof(unsigned char), 3, f);
                 fwrite(white, sizeof(unsigned char), 3, f);
                 fwrite(white, sizeof(unsigned char), 3, f);
             }
-            if(ising[i*width+j].s == -1){
-                fwrite(black, sizeof(unsigned char), 3, f);
-                fwrite(black, sizeof(unsigned char), 3, f);
-                fwrite(black, sizeof(unsigned char), 3, f);
-                fwrite(black, sizeof(unsigned char), 3, f);
-            }
-        }
-        for(j = 0; j < width; j++){
-            if(ising[i*width+j].s == 1){
-                fwrite(white, sizeof(unsigned char), 3, f);
-                fwrite(white, sizeof(unsigned char), 3, f);
-                fwrite(white, sizeof(unsigned char), 3, f);
-                fwrite(white, sizeof(unsigned char), 3, f);
-            }
-            if(ising[i*width+j].s == -1){
+            if(ising[i][j].s == -1){
                 fwrite(black, sizeof(unsigned char), 3, f);
                 fwrite(black, sizeof(unsigned char), 3, f);
                 fwrite(black, sizeof(unsigned char), 3, f);
                 fwrite(black, sizeof(unsigned char), 3, f);
             }
         }
-        for(j = 0; j < width; j++){
-            if(ising[i*width+j].s == 1){
+        for(j = 0; j < size; j++){
+            if(ising[i][j].s == 1){
                 fwrite(white, sizeof(unsigned char), 3, f);
                 fwrite(white, sizeof(unsigned char), 3, f);
                 fwrite(white, sizeof(unsigned char), 3, f);
                 fwrite(white, sizeof(unsigned char), 3, f);
             }
-            if(ising[i*width+j].s == -1){
+            if(ising[i][j].s == -1){
                 fwrite(black, sizeof(unsigned char), 3, f);
                 fwrite(black, sizeof(unsigned char), 3, f);
                 fwrite(black, sizeof(unsigned char), 3, f);
                 fwrite(black, sizeof(unsigned char), 3, f);
             }
         }
-        for(j = 0; j < width; j++){
-            if(ising[i*width+j].s == 1){
+        for(j = 0; j < size; j++){
+            if(ising[i][j].s == 1){
                 fwrite(white, sizeof(unsigned char), 3, f);
                 fwrite(white, sizeof(unsigned char), 3, f);
                 fwrite(white, sizeof(unsigned char), 3, f);
                 fwrite(white, sizeof(unsigned char), 3, f);
             }
-            if(ising[i*width+j].s == -1){
+            if(ising[i][j].s == -1){
+                fwrite(black, sizeof(unsigned char), 3, f);
+                fwrite(black, sizeof(unsigned char), 3, f);
+                fwrite(black, sizeof(unsigned char), 3, f);
+                fwrite(black, sizeof(unsigned char), 3, f);
+            }
+        }
+        for(j = 0; j < size; j++){
+            if(ising[i][j].s == 1){
+                fwrite(white, sizeof(unsigned char), 3, f);
+                fwrite(white, sizeof(unsigned char), 3, f);
+                fwrite(white, sizeof(unsigned char), 3, f);
+                fwrite(white, sizeof(unsigned char), 3, f);
+            }
+            if(ising[i][j].s == -1){
                 fwrite(black, sizeof(unsigned char), 3, f);
                 fwrite(black, sizeof(unsigned char), 3, f);
                 fwrite(black, sizeof(unsigned char), 3, f);
@@ -83,35 +83,33 @@ void savePPM()
 
 void GLInit()
 {
-    pixels = (float*)malloc(3 * width * height * sizeof(float));
+    pixels = (float*)malloc(3 * size * size * sizeof(float));
 
     glDisable(GL_DEPTH_TEST);
     glClearColor(0.0f ,0.0f, 0.0f, 0.0f);
     glClear(GL_COLOR_BUFFER_BIT);
-    glOrtho(0.0, width, 0.0, height, 0.0, 1.0);
+    glOrtho(0.0, size, 0.0, size, 0.0, 1.0);
     init(0);
 }
 
 void displayF()
 {
     int k;
-    for(k = 0; k < width*height; k++){
-        if(ising[k].s == 1)
+    for(k = 0; k < size * size; k++){
+        if(ising[k/size][k%size].s == 1)
             pixels[k] = 1;
         else
             pixels[k] = 0;
     }
 
     glRasterPos2i(0,0);
-    glDrawPixels(width, height, GL_LUMINANCE, GL_FLOAT, pixels);
+    glDrawPixels(size, size, GL_LUMINANCE, GL_FLOAT, pixels);
     glutSwapBuffers();
 }
 
 void idleF()
 {
-    if(active){
-        run(algorithm);
-    }
+    if(active){ run(algorithm); }
     glutPostRedisplay();
 }
 
@@ -158,11 +156,10 @@ void keyboardF(unsigned char key, int mouseX, int mouseY)
 
 int main(int argc, char *argv[])
 {
-    width = 100;
-    height = 100;
+    size = 100;
 
     glutInit(&argc, argv);
-    glutInitWindowSize(width, height); 
+    glutInitWindowSize(size, size); 
     glutInitDisplayMode( GLUT_LUMINANCE );
     glutCreateWindow("ising"); 
     GLInit();
