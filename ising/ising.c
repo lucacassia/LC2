@@ -83,27 +83,43 @@ void savePPM()
 
 void GLInit()
 {
-    pixels = (float*)malloc(3 * size * size * sizeof(float));
+    pixels = (float*)malloc(3 * 4 * size * 4 * size * sizeof(float));
 
     glDisable(GL_DEPTH_TEST);
     glClearColor(0.0f ,0.0f, 0.0f, 0.0f);
     glClear(GL_COLOR_BUFFER_BIT);
-    glOrtho(0.0, size, 0.0, size, 0.0, 1.0);
+    glOrtho(0.0, 4*size, 0.0, 4*size, 0.0, 1.0);
     init(0);
 }
 
 void displayF()
 {
-    int k;
-    for(k = 0; k < size * size; k++){
-        if(ising[k/size][k%size].s == 1)
-            pixels[k] = 1;
-        else
-            pixels[k] = 0;
+    int i,j,k; k = 0;
+    for(i = 0; i < size; i++){
+        for(j = 0; j < size; j++){
+            if(ising[i][j].s == 1){ pixels[k] = pixels[k+1] = pixels[k+2] = pixels[k+3] = 1; k += 4; }
+            else                  { pixels[k] = pixels[k+1] = pixels[k+2] = pixels[k+3] = 0; k += 4; }
+
+        }
+        for(j = 0; j < size; j++){
+            if(ising[i][j].s == 1){ pixels[k] = pixels[k+1] = pixels[k+2] = pixels[k+3] = 1; k += 4; }
+            else                  { pixels[k] = pixels[k+1] = pixels[k+2] = pixels[k+3] = 0; k += 4; }
+
+        }
+        for(j = 0; j < size; j++){
+            if(ising[i][j].s == 1){ pixels[k] = pixels[k+1] = pixels[k+2] = pixels[k+3] = 1; k += 4; }
+            else                  { pixels[k] = pixels[k+1] = pixels[k+2] = pixels[k+3] = 0; k += 4; }
+
+        }
+        for(j = 0; j < size; j++){
+            if(ising[i][j].s == 1){ pixels[k] = pixels[k+1] = pixels[k+2] = pixels[k+3] = 1; k += 4; }
+            else                  { pixels[k] = pixels[k+1] = pixels[k+2] = pixels[k+3] = 0; k += 4; }
+
+        }
     }
 
     glRasterPos2i(0,0);
-    glDrawPixels(size, size, GL_LUMINANCE, GL_FLOAT, pixels);
+    glDrawPixels(4*size, 4*size, GL_LUMINANCE, GL_FLOAT, pixels);
     glutSwapBuffers();
 }
 
@@ -156,10 +172,10 @@ void keyboardF(unsigned char key, int mouseX, int mouseY)
 
 int main(int argc, char *argv[])
 {
-    size = 100;
+    size = 32;
 
     glutInit(&argc, argv);
-    glutInitWindowSize(size, size); 
+    glutInitWindowSize(4*size, 4*size); 
     glutInitDisplayMode( GLUT_LUMINANCE );
     glutCreateWindow("ising"); 
     GLInit();
