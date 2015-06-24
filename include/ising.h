@@ -46,7 +46,7 @@ void MH()
     int i,j;
     double delta_energy;
     for(i = 0; i < size; i++) for(j = 0; j < size; j++) {
-        if( mersenne() < 0.5 ) new_spin = 1; else new_spin = -1;
+        if( mersenne() < 0.5f ) new_spin = 1; else new_spin = -1;
         delta_energy = -(ising[(i+1)%size][j].s+ising[(size+i-1)%size][j].s+ising[i][(j+1)%size].s+ising[i][(size+j-1)%size].s)*(new_spin-ising[i][j].s);
         if( delta_energy <= 0 || mersenne() < exp(- beta * delta_energy) ) ising[i][j].s = new_spin;
     }
@@ -80,33 +80,37 @@ void SW()
     }
     /* flip clusters */
     for(i = 0; i < size; i++) for(j = 0; j < size; j++){
-        if(ising[i][j].cl == &ising[i][j] && mersenne() < 0.5){
-            spin *tmp = &ising[i][j];
+        if(ising[i][j].cl == &ising[i][j] && mersenne() < 0.5f){
             for(k = 0; k < size; k++) for(l = 0; l < size; l++){
-                if(ising[k][l].cl == tmp) ising[k][l].s *= -1;
+                if(ising[k][l].cl == &ising[i][j]) ising[k][l].s *= -1;
             }
         }
     }
 }
 
 double get_energy(){
-    double energy = 0;
+    double energy = 0.0f;
     int i,j; for(i = 0; i < size; i++) for(j = 0; j < size; j++)
         energy += - ( ising[(size+i-1)%size][j].s + ising[i][(size+j-1)%size].s ) * ising[i][j].s;
     return energy;
 }
 
 double get_magnetization_nofabs(){
-    double magnetization = 0;
+    double magnetization = 0.0f;
     int i,j; for(i = 0; i < size; i++) for(j = 0; j < size; j++)
         magnetization += ising[i][j].s;
     return magnetization;
 }
 
 double get_magnetization(){
-    double magnetization = 0;
+    double magnetization = 0.0f;
     int i,j; for(i = 0; i < size; i++) for(j = 0; j < size; j++)
         magnetization += ising[i][j].s;
+    return fabs(magnetization);
+}
+
+double get_improved(){
+    double magnetization = 0.0f;
     return fabs(magnetization);
 }
 
@@ -119,7 +123,7 @@ void run(void (*algorithm)())
 void thermalize(void (*algorithm)())
 {
     if( algorithm != MH && algorithm != SW ){ printf("\nInvalid Algorithm!\n"); }
-    else{ int t; for(t = 0; t < 2000; t++){ algorithm(); } }
+    else{ int t; for(t = 0; t < 5000; t++){ algorithm(); } }
 }
 
 double get_moment(int n, double* storage, int storage_size)
@@ -142,31 +146,35 @@ int get_bin_size(void (*algorithm)())
     return NULL;
 }
 
-double * get_binned_data(void (*algorithm)(), double beta_value, int bin_number, double (*func)() )
+double **get_binned_data(void (*algorithm)(), double beta_value, int bin_number)
 {
     if( algorithm != MH && algorithm != SW ){ printf("\nInvalid Algorithm!\n"); return NULL; }
     printf("\nExecuting %s @ β = %f\n\n", get_algorithm_string(algorithm), beta_value); init(beta_value);
     printf("Thermalizing................"); fflush(stdout); thermalize(algorithm); printf("DONE!\n");
 
-    double *storage = (double*)malloc(bin_number * sizeof(double));
+    double **storage = (double**)malloc(2 * sizeof(double*));
+    storage[0] = (double*)malloc(bin_number * sizeof(double));
+    storage[1] = (double*)malloc(bin_number * sizeof(double));
 
     printf("Gathering Binned Data......."); fflush(stdout);
     int i, t, bin_size = get_bin_size(algorithm);
-    double tmp;
+    double tmp[2];
     for(i = 0; i < bin_number; i++){
-        tmp = 0.0f;
+        tmp[0] = tmp[1] = 0.0f;
         for(t = 0; t < bin_size; t++){
             algorithm();
-            tmp += func() / (size * size);
+            tmp[0] += get_energy() / (size * size);
+            tmp[1] += get_magnetization() / (size * size);
         }
-        storage[i] = tmp / bin_size;
+        storage[0][i] = tmp[0] / bin_size;
+        storage[1][i] = tmp[1] / bin_size;
     }
     printf("DONE!\t%d Samples x %d Bin Gathered\n\n", bin_size, bin_number);
     clear();
     return storage;
 }
 
-double * get_data(void (*algorithm)(), double beta_value, int storage_size, double (*func)())
+double *get_data(void (*algorithm)(), double beta_value, int storage_size, double (*func)())
 {
     if( algorithm != MH && algorithm != SW ){ printf("\nInvalid Algorithm!\n"); return NULL; }
     printf("\nExecuting %s @ β = %f\n\n", get_algorithm_string(algorithm), beta_value); init(beta_value);
@@ -184,7 +192,7 @@ double * get_data(void (*algorithm)(), double beta_value, int storage_size, doub
     return storage;
 }
 
-double * bin_data(double *storage, int storage_size, int bin_size)
+double *bin_data(double *storage, int storage_size, int bin_size)
 {
     if (storage_size < bin_size) return NULL;
 
