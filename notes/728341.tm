@@ -24,27 +24,27 @@
 
     <with|par-left|1tab|1.2<space|2spc>Estimators and Autocorrelation Times
     <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
-    <no-break><pageref|auto-5>>
+    <no-break><pageref|auto-6>>
 
     <with|par-left|1tab|1.3<space|2spc>Binning Analysis
     <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
-    <no-break><pageref|auto-9>>
+    <no-break><pageref|auto-10>>
 
     <with|par-left|1tab|1.4<space|2spc>Observables
     <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
-    <no-break><pageref|auto-13>>
+    <no-break><pageref|auto-14>>
 
     <with|par-left|1tab|1.5<space|2spc>Probability Distribution Functions
     <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
-    <no-break><pageref|auto-18>>
+    <no-break><pageref|auto-19>>
 
     <with|par-left|1tab|1.6<space|2spc>Spatial Correlations
     <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
-    <no-break><pageref|auto-20>>
+    <no-break><pageref|auto-21>>
 
     <with|par-left|1tab|1.7<space|2spc>Finite size scaling
     <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
-    <no-break><pageref|auto-22>>
+    <no-break><pageref|auto-23>>
   </table-of-contents>
 
   <section|Ising Model <math|2d>>
@@ -118,7 +118,8 @@
   The MH algorithm reaches thermalization very rapidly for inverse
   temperatures <math|\<beta\>> far from the critical value
   <math|\<beta\><rsub|c>>, while for values of <math|\<beta\>> near the phase
-  transition it becomes much slower (Fig.<reference|fig:thermalizationMH>).
+  transition it becomes much slower (Fig.<reference|fig:thermalizationMH>).\ 
+
   This effect is called <with|font-shape|italic|critical slowing down> and it
   tells us that, when using local update algorithms, successive steps in the
   Markov chain are strongly correlated and therefore only approximately every
@@ -154,7 +155,7 @@
   \;
 
   For the rest of the simulations we used a thermalization time
-  <math|t<rsub|thermalization>=1000<rsup|>> both for MH and for SW.
+  <math|t<rsub|thermalization>\<approx\>1000<rsup|>> both for MH and for SW.
 
   <subsection|<label|sect:autocorrelation>Estimators and Autocorrelation
   Times>
@@ -177,10 +178,9 @@
     R <around*|(|k|)> = <frac|1|<around*|(|n-k|)>*\<sigma\><rsup|2>>*<big|sum><rsup|n-k><rsub|t=1><around*|(|\<cal-O\><rsub|t>-\<mu\>|)>*<around*|(|\<cal-O\><rsub|t+k>-\<mu\>|)>
   </equation>
 
-  here <math|n> is the total number of samples of <math|\<cal-O\><rsub|t>>
-  and <math|\<mu\>,\<sigma\><rsup|2>> are the mean and variance of the
-  process. For large time separations <math|k>, <math|R(k)> decays
-  exponentially:
+  here <math|n> is the total number of samples of <math|\<cal-O\>> and
+  <math|\<mu\>,\<sigma\><rsup|2>> are the mean and variance of the process.
+  For large time separations <math|k>, <math|R(k)> decays exponentially:
 
   <\equation>
     R<around*|(|k|)><long-arrow|\<rubber-rightarrow\>|k\<rightarrow\>\<infty\>>r\<mathe\><rsup|-k/\<tau\><rsub|\<cal-O\>,exp>>
@@ -200,11 +200,12 @@
   (Right) SW.>
 
   We now compute the autocorrelation time <math|\<tau\><rsub|int>> for the
-  observable <math|e> using formula (<reference|eq:tint>).
+  observable <math|e=E/V> using formula (<reference|eq:tint>):
 
   <big-figure|<image|../ising/autocorrelation/img/MH_autocorrelation.eps|0.5par|||><image|../ising/autocorrelation/img/SW_autocorrelation.eps|0.5par|||>|Plot
   of the integrated autocorrelation time near the phase transition. (Left) MH
-  (Right) SW.>
+  (Right) SW. The raw data was obtained from a simulation of <math|100000>
+  measurements.>
 
   The data is fitted using the function:
 
@@ -216,15 +217,16 @@
   MH process becomes very large compared to the autocorrelation time of the
   SW process. In fact due to the critical slowing down of the MH algorithm,
   we have <math|\<tau\><rsub|int><rsup|MH>\<sim\>100> compared to an
-  autocorrelation time <math|\<tau\><rsub|int><rsup|SW>\<sim\>5> for SW
-  (Fig.<reference|fig:autocorrelation_time>).
+  autocorrelation time <math|\<tau\><rsub|int><rsup|SW>\<sim\>5> for SW.
 
   <big-figure|<image|../ising/autocorrelation/img/autocorrelation_time.eps|0.5par|||>|<label|fig:autocorrelation_time>Plot
   of the integrated autocorrelation time as a function of
   <math|x=<frac|\<beta\>-\<beta\><rsub|c>|\<beta\><rsub|c>>>.>
 
-  We remark that the peak is slightly off centered because of the finite size
-  of the lattice (<math|L=32>).
+  The points in (Fig.<reference|fig:autocorrelation_time>) were obtained
+  averaging the fit parameters of <math|20> independent simulations. We
+  remark that the peak is slightly off centered because of the finite size of
+  the lattice (<math|L=32>).
 
   <subsection|Binning Analysis>
 
@@ -450,30 +452,30 @@
 <\references>
   <\collection>
     <associate|auto-1|<tuple|1|1>>
-    <associate|auto-10|<tuple|1.3|7>>
-    <associate|auto-11|<tuple|7|8>>
-    <associate|auto-12|<tuple|8|9>>
+    <associate|auto-10|<tuple|1.3|6>>
+    <associate|auto-11|<tuple|7|7>>
+    <associate|auto-12|<tuple|8|8>>
     <associate|auto-13|<tuple|9|9>>
-    <associate|auto-14|<tuple|1.4|10>>
+    <associate|auto-14|<tuple|1.4|9>>
     <associate|auto-15|<tuple|10|10>>
-    <associate|auto-16|<tuple|11|11>>
+    <associate|auto-16|<tuple|11|10>>
     <associate|auto-17|<tuple|12|11>>
     <associate|auto-18|<tuple|13|12>>
     <associate|auto-19|<tuple|1.5|12>>
-    <associate|auto-2|<tuple|1.1|2>>
+    <associate|auto-2|<tuple|1.1|1>>
     <associate|auto-20|<tuple|14|12>>
     <associate|auto-21|<tuple|1.6|13>>
     <associate|auto-22|<tuple|15|13>>
-    <associate|auto-23|<tuple|1.7|?>>
+    <associate|auto-23|<tuple|1.7|14>>
     <associate|auto-3|<tuple|1|2>>
-    <associate|auto-4|<tuple|2|3>>
-    <associate|auto-5|<tuple|3|4>>
-    <associate|auto-6|<tuple|1.2|5>>
+    <associate|auto-4|<tuple|2|2>>
+    <associate|auto-5|<tuple|3|3>>
+    <associate|auto-6|<tuple|1.2|4>>
     <associate|auto-7|<tuple|4|5>>
-    <associate|auto-8|<tuple|5|6>>
+    <associate|auto-8|<tuple|5|5>>
     <associate|auto-9|<tuple|6|6>>
     <associate|eq:MC|<tuple|2|?>>
-    <associate|eq:scalingtau|<tuple|3|?>>
+    <associate|eq:scalingtau|<tuple|3|4>>
     <associate|eq:tint|<tuple|5|4>>
     <associate|fig:autocorrelation1|<tuple|4|5>>
     <associate|fig:autocorrelation2|<tuple|4|5>>
@@ -484,70 +486,73 @@
     <associate|fig:termalizationMH|<tuple|1|?>>
     <associate|fig:thermalizationMH|<tuple|2|2>>
     <associate|fig:thermalizationSW|<tuple|3|3>>
-    <associate|fig:toruseffect|<tuple|1|?>>
+    <associate|fig:toruseffect|<tuple|1|2>>
     <associate|sect:autocorrelation|<tuple|1.2|4>>
-    <associate|sect:fss|<tuple|1.7|13>>
+    <associate|sect:fss|<tuple|1.7|14>>
   </collection>
 </references>
 
 <\auxiliary>
   <\collection>
     <\associate|figure>
-      <tuple|normal|Plot of the energy density for the MH markov process at
-      different values of <with|mode|<quote|math>|\<beta\>>
-      (<with|mode|<quote|math>|L=32>).|<pageref|auto-3>>
+      <tuple|normal|Illustration of two topologically non-trivial
+      configurations on a lattice <with|mode|<quote|math>|128\<times\>128>.|<pageref|auto-3>>
 
-      <tuple|normal|Plot of the energy density for the SW markov process at
+      <tuple|normal|Plot of the energy density for the MH markov process at
       different values of <with|mode|<quote|math>|\<beta\>>
       (<with|mode|<quote|math>|L=32>).|<pageref|auto-4>>
 
+      <tuple|normal|Plot of the energy density for the SW markov process at
+      different values of <with|mode|<quote|math>|\<beta\>>
+      (<with|mode|<quote|math>|L=32>).|<pageref|auto-5>>
+
       <tuple|normal|Comparison of the energy for the two algorithms at
       <with|mode|<quote|math>|\<beta\>=0.43>. (Left) MH (Right)
-      SW.|<pageref|auto-6>>
+      SW.|<pageref|auto-7>>
 
       <tuple|normal|Plot of the integrated autocorrelation time near the
-      phase transition. (Left) MH (Right) SW.|<pageref|auto-7>>
+      phase transition. (Left) MH (Right) SW.|<pageref|auto-8>>
 
       <tuple|normal|Plot of the integrated autocorrelation time as a function
-      of <with|mode|<quote|math>|x=<frac|\<beta\>-\<beta\><rsub|c>|\<beta\><rsub|c>>>.|<pageref|auto-8>>
+      of <with|mode|<quote|math>|x=<frac|\<beta\>-\<beta\><rsub|c>|\<beta\><rsub|c>>>.|<pageref|auto-9>>
 
       <tuple|normal|Binning analysis for the MH algorithm at various values
-      of <with|mode|<quote|math>|\<beta\>>.|<pageref|auto-10>>
+      of <with|mode|<quote|math>|\<beta\>>.|<pageref|auto-11>>
 
       <tuple|normal|Binning analysis for the SW algorithm at various values
-      of <with|mode|<quote|math>|\<beta\>>.|<pageref|auto-11>>
+      of <with|mode|<quote|math>|\<beta\>>.|<pageref|auto-12>>
 
       <tuple|normal|Sampled data after the binning. MH on the left and SW on
       the right. As we can see the signal loses almost all of its
-      autocorrelation after the binning.|<pageref|auto-12>>
+      autocorrelation after the binning.|<pageref|auto-13>>
 
       <tuple|normal|Energy density as a function of
       <with|mode|<quote|math>|\<beta\>>. MH on the left and SW on the right.
       The energy and the errors are computed from a sample of
       <with|mode|<quote|math>|100> blocks of binned data on a
-      <with|mode|<quote|math>|32\<times\>32> lattice.|<pageref|auto-14>>
+      <with|mode|<quote|math>|32\<times\>32> lattice.|<pageref|auto-15>>
 
       <tuple|normal|Magnetization as a function of
       <with|mode|<quote|math>|\<beta\>>. MH on the left and SW on the
-      right.|<pageref|auto-15>>
+      right.|<pageref|auto-16>>
 
       <tuple|normal|Heat capacity as a function of
       <with|mode|<quote|math>|\<beta\>>. MH on the left and SW on the
-      right.|<pageref|auto-16>>
+      right.|<pageref|auto-17>>
 
       <tuple|normal|Magnetic susceptibility as a function of
       <with|mode|<quote|math>|\<beta\>>. MH on the left and SW on the
-      right.|<pageref|auto-17>>
+      right.|<pageref|auto-18>>
 
       <tuple|normal|Probability distribution function of
       <with|mode|<quote|math>|m> for various values of
-      <with|mode|<quote|math>|\<beta\>> (<with|mode|<quote|math>|L=32>).|<pageref|auto-19>>
+      <with|mode|<quote|math>|\<beta\>> (<with|mode|<quote|math>|L=32>).|<pageref|auto-20>>
 
       <\tuple|normal>
         Ilustration of the growth of spatial correlations when criticality is
         approached on a lattice <with|mode|<quote|math>|100\<times\>100> :
         <with|mode|<quote|math>|\<beta\>=0.22 , 0.31, 0.37, 0.39, 0.42, 0.43>
-      </tuple|<pageref|auto-21>>
+      </tuple|<pageref|auto-22>>
     </associate>
     <\associate|toc>
       <vspace*|1fn><with|font-series|<quote|bold>|math-font-series|<quote|bold>|1<space|2spc>Ising
@@ -560,27 +565,27 @@
 
       <with|par-left|<quote|1tab>|1.2<space|2spc>Estimators and
       Autocorrelation Times <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
-      <no-break><pageref|auto-5>>
+      <no-break><pageref|auto-6>>
 
       <with|par-left|<quote|1tab>|1.3<space|2spc>Binning Analysis
       <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
-      <no-break><pageref|auto-9>>
+      <no-break><pageref|auto-10>>
 
       <with|par-left|<quote|1tab>|1.4<space|2spc>Observables
       <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
-      <no-break><pageref|auto-13>>
+      <no-break><pageref|auto-14>>
 
       <with|par-left|<quote|1tab>|1.5<space|2spc>Probability Distribution
       Functions <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
-      <no-break><pageref|auto-18>>
+      <no-break><pageref|auto-19>>
 
       <with|par-left|<quote|1tab>|1.6<space|2spc>Spatial Correlations
       <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
-      <no-break><pageref|auto-20>>
+      <no-break><pageref|auto-21>>
 
       <with|par-left|<quote|1tab>|1.7<space|2spc>Finite size scaling
       <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
-      <no-break><pageref|auto-22>>
+      <no-break><pageref|auto-23>>
     </associate>
   </collection>
 </auxiliary>
