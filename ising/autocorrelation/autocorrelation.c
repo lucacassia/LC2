@@ -20,7 +20,8 @@ void get_autocorrelation(void (*algorithm)(int), double beta_value){
     printf("μ  = %f\nσ² = %f\n",mean,variance);
     printf("\nComputing Autocorrelations.."); fflush(stdout);
 
-    char filename[50];    sprintf(filename, "data/%s_autocorrelation_time_%f.dat", get_algorithm_string(algorithm), beta_value);
+    char filename[50];
+    sprintf(filename, "data/%s_autocorrelation_time_%f.dat", get_algorithm_string(algorithm), beta_value);
     FILE *f = fopen(filename,"w");
 
     double autocorrelation, autocorrelation_time;
@@ -33,7 +34,7 @@ void get_autocorrelation(void (*algorithm)(int), double beta_value){
             autocorrelation /= variance * (storage_size - k);
             autocorrelation_time += autocorrelation;
         }
-        fprintf(f, "%d\t%f\n", k_max, autocorrelation_time);
+        fprintf(f, "%f\t%d\t%f\n", beta_value, k_max, autocorrelation_time);
     }
     printf("DONE!\n");
     free(storage);
@@ -43,18 +44,18 @@ void get_autocorrelation(void (*algorithm)(int), double beta_value){
 
 int main(){
 
-    storage_size = 50000;
-    step = 2;
+    storage_size = 100000;
+    step = 10;
 
     double b;
-    for(b=0.35;b<0.56;b+=0.01)
-        get_autocorrelation(MH,b);
+    for(b=-0.1;b<=0.1;b+=0.004)
+        get_autocorrelation(MH,(b+1)*0.4406868);
 
     storage_size = 50000;
     step = 1;
 
-    for(b=0.35;b<0.56;b+=0.01)
-        get_autocorrelation(SW,b);
+    for(b=-0.1;b<0.1;b+=0.004)
+        get_autocorrelation(SW,(b+1)*0.4406868);
 
     return 0;
 }
