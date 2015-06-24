@@ -7,7 +7,7 @@ int thermalization(void (*algorithm)(), double beta_value, double (*func)()){
     init(beta_value);
     printf("\nExecuting %s @ β = %f\n\n", get_algorithm_string(algorithm), beta_value);
     int t;
-    for(t = 0; t < 2000; t++){
+    for(t = 0; t < 500; t++){
         algorithm();
         fprintf(f,"%u\t%e\t%e\n", t, func()/(size*size), beta_value);
     }
@@ -17,35 +17,41 @@ int thermalization(void (*algorithm)(), double beta_value, double (*func)()){
 
 int main(){
 
-    thermalization(MH,0.50,get_magnetization_nofabs);
-    thermalization(MH,0.30,get_magnetization_nofabs);
-    thermalization(MH,0.40,get_magnetization_nofabs);
-    thermalization(MH,0.45,get_magnetization_nofabs);
-    thermalization(MH,0.60,get_magnetization_nofabs);
-    thermalization(MH,0.80,get_magnetization_nofabs);
+    thermalization(MH,0.50,get_energy);
+    thermalization(MH,0.30,get_energy);
+    thermalization(MH,0.40,get_energy);
+    thermalization(MH,0.43,get_energy);
+    thermalization(MH,0.60,get_energy);
+    thermalization(MH,0.80,get_energy);
 
-    thermalization(SW,0.50,get_magnetization);
-    thermalization(SW,0.30,get_magnetization);
-    thermalization(SW,0.40,get_magnetization);
-    thermalization(SW,0.45,get_magnetization);
-    thermalization(SW,0.60,get_magnetization);
-    thermalization(SW,0.80,get_magnetization);
+    thermalization(SW,0.50,get_energy);
+    thermalization(SW,0.30,get_energy);
+    thermalization(SW,0.40,get_energy);
+    thermalization(SW,0.43,get_energy);
+    thermalization(SW,0.60,get_energy);
+    thermalization(SW,0.80,get_energy);
 
 
     int t;
-    init(0.3);
+    init(0.43);
     thermalize(MH);
-    FILE *f = fopen("data/MH_magnetization_0.300000.dat","w");
-    for(t = 0; t < 1000; t++){
+
+    FILE *f;
+    char filename[50];
+
+    sprintf(filename, "data/MH_energy_%f.dat", beta);
+    f = fopen(filename,"w");
+    for(t = 0; t < 500; t++){
         MH();
-        fprintf(f,"%u\t%e\t%e\n", t, get_magnetization_nofabs()/(size*size), beta);
+        fprintf(f,"%u\t%e\t%e\n", t, get_energy()/(size*size), beta);
     }
     fclose(f);
 
-    f = fopen("data/SW_magnetization_0.300000.dat","w");
-    for(t = 0; t < 1000; t++){
+    sprintf(filename, "data/SW_energy_%f.dat", beta);
+    f = fopen(filename,"w");
+    for(t = 0; t < 500; t++){
         SW();
-        fprintf(f,"%u\t%e\t%e\n", t, get_magnetization()/(size*size), beta);
+        fprintf(f,"%u\t%e\t%e\n", t, get_energy()/(size*size), beta);
     }
     fclose(f);
 
