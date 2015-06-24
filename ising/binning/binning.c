@@ -43,13 +43,17 @@ void get_variance_bin(void (*algorithm)(), double beta_value, int step){
     fclose(f);
 }
 
-void plot_bined_data(void (*algorithm)(int), double beta_value, int bin_number, double (*func)() ){
+void plot_bined_data(void (*algorithm)(), double beta_value, int bin_number, double (*func)() ){
 
     char filename[50];
     int t;
 
-    if(func == get_energy)        { sprintf(filename,"data/energy_bin_%d_%f_%s.dat",bin_number,beta_value,get_algorithm_string(algorithm)); }
-    if(func == get_magnetization) { sprintf(filename,"data/magnetization_bin_%d_%f_%s.dat",bin_number,beta_value,get_algorithm_string(algorithm)); }
+    if(func == get_energy){
+        sprintf(filename, "data/%s_energy_bin_%d_%f.dat", get_algorithm_string(algorithm), bin_number, beta_value);
+    }
+    if(func == get_magnetization_nofabs || func == get_magnetization){
+        sprintf(filename, "data/%s_magnetization_bin_%d_%f.dat", get_algorithm_string(algorithm), bin_number, beta_value);
+    }
 
     double *binned_data = get_binned_data(algorithm, beta_value, bin_number, func);
     FILE *f = fopen(filename,"w");

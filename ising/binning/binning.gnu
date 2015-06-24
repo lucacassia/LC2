@@ -71,3 +71,17 @@ fit f(x) 'data/SW_variance_0.500000.dat' via t
 plot 'data/SW_variance_0.500000.dat'   pt 1 ps 0.8 lc rgb '#000000' title 'SW \@ beta = 0.50',\
      f(x) lc rgb '#000000' title sprintf("{/Symbol t}_{exp} = %.2f",t)
 
+
+## magnetization binning
+
+set xlabel "Markov time"
+set ylabel "m"
+unset yrange
+set terminal postscript eps size 4.5,4.5 enhanced color dashed lw 1 "DejaVuSans" 12
+
+set output 'img/magnetization_bin_1000_MH.eps'
+plot 'data/MH_magnetization_bin_1000_0.430000.dat'   pt 1 ps 0.5 lc rgb '#000000' title 'MH  N_B = 1000 \@ {/Symbol b} = 0.43'
+
+set output 'img/magnetization_bin_1000_SW.eps'
+plot 'data/SW_magnetization_bin_1000_0.430000.dat'   pt 1 ps 0.5 lc rgb '#000000' title 'SW  N_B = 1000 \@ {/Symbol b} = 0.43'
+
