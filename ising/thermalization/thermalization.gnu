@@ -6,10 +6,10 @@ set ylabel "E/V"
 set terminal postscript eps size 4.5,4.5 enhanced color dashed lw 1 "DejaVuSans" 12
 
 set output 'img/MH_energy_0.43.eps'
-plot 'data/MH_energy_0.430000.dat'   pt 1 ps 0.5 lc rgb '#000000' title 'MH \@ {/Symbol b} = 0.3'
+plot 'data/MH_energy_0.430000.dat'   pt 1 ps 0.5 lc rgb '#000000' title 'MH \@ {/Symbol b} = 0.43'
 
 set output 'img/SW_energy_0.43.eps'
-plot 'data/SW_energy_0.430000.dat'   pt 1 ps 0.5 lc rgb '#000000' title 'SW \@ {/Symbol b} = 0.3'
+plot 'data/SW_energy_0.430000.dat'   pt 1 ps 0.5 lc rgb '#000000' title 'SW \@ {/Symbol b} = 0.43'
 
 set xlabel "Markov time"
 set ylabel "E/V"

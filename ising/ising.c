@@ -167,12 +167,15 @@ void keyboardF(unsigned char key, int mouseX, int mouseY)
         case 'p': case 'P':
             savePPM();
             break;
+        case 'c': case 'C':
+            printf("\nClusters: %d\tLargest Cluster: %f\n", get_cluster_number(), get_largest_cluster());
+            break;
     }
 }
 
 int main(int argc, char *argv[])
 {
-    size = 32;
+    size = 128;
 
     glutInit(&argc, argv);
     glutInitWindowSize(4*size, 4*size); 

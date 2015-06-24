@@ -10,8 +10,11 @@
 #include "cluster.h"
 
 unsigned int size = 32;
+unsigned int thermalization_time = 1000;
 spin **ising = NULL;
 double beta = 0;
+
+double beta_critical(){return log(1+sqrt(2))/2;}
 
 void clear()
 {
@@ -33,8 +36,8 @@ void init(double beta_value)
     for(i = 0; i < size; i++) ising[i] = (spin*)malloc(size * sizeof(spin));
 
     for(i = 0; i < size; i++) for(j = 0; j < size; j++){
-        if( mersenne() < 0.5 ) ising[i][j].s = 1;
-        else ising[i][j].s = -1;
+        ising[i][j].s = 1;
+        ising[i][j].cl = &ising[i][j];
     }
 
     beta = beta_value;
@@ -109,9 +112,28 @@ double get_magnetization(){
     return fabs(magnetization);
 }
 
-double get_improved(){
-    double magnetization = 0.0f;
-    return fabs(magnetization);
+double get_largest_cluster()
+{
+    int i,j,k,l;
+    int cl_size_max = 0;
+    for(i = 0; i < size; i++) for(j = 0; j < size; j++){
+        if(ising[i][j].cl == &ising[i][j]){
+            int cl_size = 0;
+            for(k = 0; k < size; k++) for(l = 0; l < size; l++) if(ising[k][l].cl == &ising[i][j]) cl_size++;
+            if(cl_size > cl_size_max) cl_size_max = cl_size;
+        }
+    }
+    return cl_size_max * 1.0f;
+}
+
+int get_cluster_number()
+{
+    int i,j;
+    int n_clusters = 0;
+    for(i = 0; i < size; i++) for(j = 0; j < size; j++)
+        if(ising[i][j].cl == &ising[i][j])
+            n_clusters++;
+    return n_clusters;
 }
 
 void run(void (*algorithm)())
@@ -123,7 +145,7 @@ void run(void (*algorithm)())
 void thermalize(void (*algorithm)())
 {
     if( algorithm != MH && algorithm != SW ){ printf("\nInvalid Algorithm!\n"); }
-    else{ int t; for(t = 0; t < 5000; t++){ algorithm(); } }
+    else{ int t; for(t = 0; t < thermalization_time; t++){ algorithm(); } }
 }
 
 double get_moment(int n, double* storage, int storage_size)

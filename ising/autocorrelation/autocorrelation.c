@@ -43,19 +43,29 @@ void get_autocorrelation(void (*algorithm)(int), double beta_value){
 }
 
 int main(){
+/*
+    storage_size = 100000;
+    step = 10;
+    get_autocorrelation(MH,0.43);
+    storage_size = 50000;
+    step = 1;
+    get_autocorrelation(SW,0.43);
+*/
+
+    size = 128;
 
     storage_size = 100000;
     step = 10;
 
-    double b;
-    for(b=-0.1;b<=0.1;b+=0.004)
-        get_autocorrelation(MH,(b+1)*0.4406868);
+    double x;
+    for(x=-0.1;x<=0.1;x+=0.004)
+        get_autocorrelation(MH,(x+1)*0.4406868);
 
     storage_size = 50000;
     step = 1;
 
-    for(b=-0.1;b<0.1;b+=0.004)
-        get_autocorrelation(SW,(b+1)*0.4406868);
+    for(x=-0.1;x<=0.1;x+=0.004)
+        get_autocorrelation(SW,(x+1)*0.4406868);
 
     return 0;
 }

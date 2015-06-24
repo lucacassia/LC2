@@ -46,6 +46,6 @@ void plot_observables(void (*algorithm)(), int bin_number, double start, double 
 }
 
 int main(){
-    plot_observables(MH,100,0.3f,0.6f,50);
+    plot_observables(SW,100,0.3f,0.6f,50);
     return 0;
 }
