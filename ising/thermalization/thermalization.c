@@ -2,7 +2,7 @@
 
 int thermalization(void (*algorithm)(), double beta_value, double (*func)()){
     char filename[50];
-    sprintf(filename,"data/thermalization_%f_%s.dat", beta_value, get_algorithm_string(algorithm));
+    sprintf(filename,"data/%s_thermalization_%f.dat", get_algorithm_string(algorithm), beta_value);
     FILE *f = fopen(filename,"w");
     init(beta_value);
     printf("\nExecuting %s @ β = %f\n\n", get_algorithm_string(algorithm), beta_value);
@@ -35,14 +35,14 @@ int main(){
     int t;
     init(0.3);
     thermalize(MH);
-    FILE *f = fopen("data/magnetization_0.300000_MH.dat","w");
+    FILE *f = fopen("data/MH_magnetization_0.300000.dat","w");
     for(t = 0; t < 1000; t++){
         MH();
         fprintf(f,"%u\t%e\t%e\n", t, get_magnetization_nofabs()/(size*size), beta);
     }
     fclose(f);
 
-    f = fopen("data/magnetization_0.300000_SW.dat","w");
+    f = fopen("data/SW_magnetization_0.300000.dat","w");
     for(t = 0; t < 1000; t++){
         SW();
         fprintf(f,"%u\t%e\t%e\n", t, get_magnetization()/(size*size), beta);

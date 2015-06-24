@@ -55,13 +55,14 @@ void MH()
 void SW()
 {
     int i,j,k,l;
+    /* activate links */
     double prob = 1 - exp(- 2 * beta);
     for(i = 0; i < size; i++) for(j = 0; j < size; j++) {
         ising[i][j].l = ( ising[i][j].s == ising[i][(size+j-1)%size].s && mersenne() < prob );
         ising[i][j].u = ( ising[i][j].s == ising[(size+i-1)%size][j].s && mersenne() < prob );
         ising[i][j].cl = &ising[i][j];
     }
-    
+    /* create clusters */
     for(i = 0; i < size; i++) for(j = 0; j < size; j++){
     	if( ising[i][j].l &&  ising[i][j].u){
             ising[i][j].cl = cl_merge( ising[(size+i-1)%size][j].cl, ising[i][(size+j-1)%size].cl );
@@ -73,11 +74,11 @@ void SW()
             ising[i][j].cl = cl_find( ising[i][(size+j-1)%size].cl );
         }
     }
-
+    /* simplify clusters */
     for(i = 0; i < size; i++) for(j = 0; j < size; j++){
         ising[i][j].cl = cl_find(ising[i][j].cl);
     }
-
+    /* flip clusters */
     for(i = 0; i < size; i++) for(j = 0; j < size; j++){
         if(ising[i][j].cl == &ising[i][j] && mersenne() < 0.5){
             spin *tmp = &ising[i][j];
@@ -136,8 +137,8 @@ char *get_algorithm_string(void (*algorithm)())
 
 int get_bin_size(void (*algorithm)())
 {
-    if( algorithm == MH ) return 200;
-    if( algorithm == SW ) return 400;
+    if( algorithm == MH ) return 1000;
+    if( algorithm == SW ) return 50;
     return NULL;
 }
 
