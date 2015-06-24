@@ -22,7 +22,7 @@ void get_autocorrelation(void (*algorithm)(int), double beta_value){
 
     char filename[50];
     sprintf(filename, "data/%s_autocorrelation_time_%f.dat", get_algorithm_string(algorithm), beta_value);
-    FILE *f = fopen(filename,"w");
+    FILE *f = fopen(filename,"wa");
 
     double autocorrelation, autocorrelation_time;
     for(k_max = 0; k_max < 100 * step; k_max += step){
