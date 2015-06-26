@@ -89,7 +89,7 @@ void GLInit()
     glClearColor(0.0f ,0.0f, 0.0f, 0.0f);
     glClear(GL_COLOR_BUFFER_BIT);
     glOrtho(0.0, 4*size, 0.0, 4*size, 0.0, 1.0);
-    init(0);
+    init(size,0);
 }
 
 void displayF()
@@ -151,7 +151,7 @@ void keyboardF(unsigned char key, int mouseX, int mouseY)
             printf("\nBeta: %f\n",beta);
             break;
         case 'i': case 'I':
-            init(beta);
+            init(size,beta);
             printf("\nThe simulation has been reset!\n");
             break;
         case 'm': case 'M':
@@ -168,7 +168,7 @@ void keyboardF(unsigned char key, int mouseX, int mouseY)
             savePPM();
             break;
         case 'c': case 'C':
-            printf("\nClusters: %d\tLargest Cluster: %f\n", get_cluster_number(), get_largest_cluster());
+            printf("\nClusters: %d\tLargest Cluster: %d\n", get_cluster_number(), get_largest_cluster());
             break;
     }
 }

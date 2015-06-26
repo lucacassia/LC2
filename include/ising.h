@@ -9,12 +9,9 @@
 #include <math.h>
 #include "cluster.h"
 
-unsigned int size = 32;
-unsigned int thermalization_time = 1000;
+int size = 32;
+double beta = 0.0f;
 spin **ising = NULL;
-double beta = 0;
-
-double beta_critical(){return log(1+sqrt(2))/2;}
 
 void clear()
 {
@@ -25,7 +22,7 @@ void clear()
     }
 }
 
-void init(double beta_value)
+void init(int lattice_size, double beta_value)
 {
     int i,j,k;
     seed_mersenne( (long)time(NULL) );
@@ -40,6 +37,7 @@ void init(double beta_value)
         ising[i][j].cl = &ising[i][j];
     }
 
+    size = lattice_size;
     beta = beta_value;
 }
 
@@ -91,28 +89,43 @@ void SW()
     }
 }
 
-double get_energy(){
+char *get_algorithm_string(void (*algorithm)())
+{
+    if( algorithm == MH ) return "MH";
+    if( algorithm == SW ) return "SW";
+    return NULL;
+}
+
+double get_beta_critical()
+{
+    return log( 1 + sqrt(2) ) / 2;
+}
+
+double get_energy()
+{
     double energy = 0.0f;
     int i,j; for(i = 0; i < size; i++) for(j = 0; j < size; j++)
         energy += - ( ising[(size+i-1)%size][j].s + ising[i][(size+j-1)%size].s ) * ising[i][j].s;
     return energy;
 }
 
-double get_magnetization_nofabs(){
+double get_magnetization_nofabs()
+{
     double magnetization = 0.0f;
     int i,j; for(i = 0; i < size; i++) for(j = 0; j < size; j++)
         magnetization += ising[i][j].s;
     return magnetization;
 }
 
-double get_magnetization(){
+double get_magnetization()
+{
     double magnetization = 0.0f;
     int i,j; for(i = 0; i < size; i++) for(j = 0; j < size; j++)
         magnetization += ising[i][j].s;
     return fabs(magnetization);
 }
 
-double get_largest_cluster()
+int get_largest_cluster()
 {
     int i,j,k,l;
     int cl_size_max = 0;
@@ -123,7 +136,7 @@ double get_largest_cluster()
             if(cl_size > cl_size_max) cl_size_max = cl_size;
         }
     }
-    return cl_size_max * 1.0f;
+    return cl_size_max;
 }
 
 int get_cluster_number()
@@ -142,23 +155,13 @@ void run(void (*algorithm)())
     else{ algorithm(); }
 }
 
+/*
+int thermalization_time = 1000;
+
 void thermalize(void (*algorithm)())
 {
     if( algorithm != MH && algorithm != SW ){ printf("\nInvalid Algorithm!\n"); }
     else{ int t; for(t = 0; t < thermalization_time; t++){ algorithm(); } }
-}
-
-double get_moment(int n, double* storage, int storage_size)
-{
-    double tmp = 0; int i; for(i = 0; i < storage_size; i++) tmp += pow(storage[i], n);
-    return tmp / storage_size;
-}
-
-char *get_algorithm_string(void (*algorithm)())
-{
-    if( algorithm == MH ) return "MH";
-    if( algorithm == SW ) return "SW";
-    return NULL;
 }
 
 int get_bin_size(void (*algorithm)())
@@ -186,7 +189,8 @@ double **get_binned_data(void (*algorithm)(), double beta_value, int bin_number)
         for(t = 0; t < bin_size; t++){
             algorithm();
             tmp[0] += get_energy() / (size * size);
-            tmp[1] += get_magnetization() / (size * size);
+            if(algorithm == MH){ tmp[1] += get_magnetization() / (size * size); }
+            if(algorithm == SW){ tmp[1] += get_largest_cluster() / (size * size); }
         }
         storage[0][i] = tmp[0] / bin_size;
         storage[1][i] = tmp[1] / bin_size;
@@ -228,5 +232,5 @@ double *bin_data(double *storage, int storage_size, int bin_size)
         binned_data[t] /= bin_size;
     return binned_data;
 }
-
+*/
 #endif
