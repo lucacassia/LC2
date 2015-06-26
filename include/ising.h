@@ -24,6 +24,9 @@ void clear()
 
 void init(int lattice_size, double beta_value)
 {
+    size = lattice_size;
+    beta = beta_value;
+
     int i,j,k;
     seed_mersenne( (long)time(NULL) );
     for(k = 0; k < 543210; k++) mersenne();
@@ -36,9 +39,6 @@ void init(int lattice_size, double beta_value)
         ising[i][j].s = 1;
         ising[i][j].cl = &ising[i][j];
     }
-
-    size = lattice_size;
-    beta = beta_value;
 }
 
 void MH()
@@ -149,10 +149,28 @@ int get_cluster_number()
     return n_clusters;
 }
 
-void run(void (*algorithm)())
+void dump_data(int lattice_size, double beta_value, void (*algorithm)(), int run_time)
 {
     if( algorithm != MH && algorithm != SW ){ printf("\nInvalid Algorithm!\n"); }
-    else{ algorithm(); }
+    else{
+        char filename[50];
+        sprintf(filename, "data/%d_%f_%s_%d.dat", lattice_size, beta_value, get_algorithm_string(algorithm), run_time);
+        FILE *f = fopen(filename, "w");
+        printf("\nExecuting %s : L = %d : β = %f : time = %d\n\n", get_algorithm_string(algorithm), lattice_size, beta_value, run_time);
+        init(lattice_size, beta_value);
+        printf("Gathering Data..."); fflush(stdout);
+        int t; for(t = 0; t < run_time; t++){
+            fprintf(f, "%d\t%d\t%f\t%s", t, lattice_size, beta_value, get_algorithm_string(algorithm));
+            fprintf(f, "\t%f", get_energy() / (lattice_size * lattice_size));
+            fprintf(f, "\t%f", get_magnetization() / (lattice_size * lattice_size));
+            fprintf(f, "\t%f", (get_largest_cluster() * 1.0f) / (lattice_size * lattice_size));
+            fprintf(f, "\n");
+            algorithm();
+        }
+        printf(" DONE!\n\n");
+        fclose(f);
+        clear();
+    }
 }
 
 /*

@@ -125,7 +125,7 @@ void displayF()
 
 void idleF()
 {
-    if(active){ run(algorithm); }
+    if(active){ algorithm(); }
     glutPostRedisplay();
 }
 
