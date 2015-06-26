@@ -7,6 +7,7 @@ typedef struct _spin{
     int s;
     struct _spin *cl;
     unsigned int l, u;
+    unsigned int count;
 }spin;
 
 spin *cl_find(spin *x) {

@@ -16,7 +16,10 @@ spin **ising = NULL;
 void clear()
 {
     if(ising != NULL){
-        int i; for(i = 0; i < size; i++){ if(ising[i] != NULL){ free(ising[i]); } }
+        int i;
+        for(i = 0; i < size; i++)
+            if(ising[i] != NULL)
+                free(ising[i]);
         free(ising);
         ising = NULL;
     }
@@ -55,7 +58,7 @@ void MH()
 
 void SW()
 {
-    int i,j,k,l;
+    int i,j;
     /* activate links */
     double prob = 1 - exp(- 2 * beta);
     for(i = 0; i < size; i++) for(j = 0; j < size; j++) {
@@ -81,11 +84,10 @@ void SW()
     }
     /* flip clusters */
     for(i = 0; i < size; i++) for(j = 0; j < size; j++){
-        if(ising[i][j].cl == &ising[i][j] && mersenne() < 0.5f){
-            for(k = 0; k < size; k++) for(l = 0; l < size; l++){
-                if(ising[k][l].cl == &ising[i][j]) ising[k][l].s *= -1;
-            }
-        }
+        ising[i][j].count = (ising[i][j].cl == &ising[i][j] && mersenne() < 0.5f);
+    }
+    for(i = 0; i < size; i++) for(j = 0; j < size; j++){
+        if(ising[i][j].cl->count) ising[i][j].s = -ising[i][j].s;
     }
 }
 
@@ -127,14 +129,16 @@ double get_magnetization()
 
 int get_largest_cluster()
 {
-    int i,j,k,l;
+    int i,j;
     int cl_size_max = 0;
     for(i = 0; i < size; i++) for(j = 0; j < size; j++){
-        if(ising[i][j].cl == &ising[i][j]){
-            int cl_size = 0;
-            for(k = 0; k < size; k++) for(l = 0; l < size; l++) if(ising[k][l].cl == &ising[i][j]) cl_size++;
-            if(cl_size > cl_size_max) cl_size_max = cl_size;
-        }
+        ising[i][j].count = 0;
+    }
+    for(i = 0; i < size; i++) for(j = 0; j < size; j++){
+        ising[i][j].cl->count++;
+    }
+    for(i = 0; i < size; i++) for(j = 0; j < size; j++){
+        if(ising[i][j].count > cl_size_max){ cl_size_max = ising[i][j].count; }
     }
     return cl_size_max;
 }
