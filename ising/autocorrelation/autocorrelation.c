@@ -1,8 +1,10 @@
 #include "ising.h"
 
-void get_autocorrelation(FILE *f){
+void get_autocorrelation(char *input){
 
+    FILE *f = fopen(input, "rb");
     raw storage = load_data(f,0);
+    fclose(f);
 
     int step = 1;
     if(!storage.id) step = 10;
@@ -21,9 +23,9 @@ void get_autocorrelation(FILE *f){
     printf("μ  = %f\nσ² = %f\n",mean,variance);
     printf("Computing Autocorrelations..."); fflush(stdout);
 
-    char filename[50];
-    sprintf(filename, "data/%d_%f_%s_autocorrelation_time.dat", storage.l, storage.b, storage.algorithm );
-    FILE *output = fopen(filename,"a");
+    char output[50];
+    sprintf(output, "data/%d_%f_%s_%d.acr", storage.l, storage.b, storage.algorithm, storage.size );
+    f = fopen(output,"a");
 
     double autocorrelation, autocorrelation_time;
     for(k_max = 0; k_max < 100 * step; k_max += step){
@@ -35,39 +37,21 @@ void get_autocorrelation(FILE *f){
             autocorrelation /= variance * (storage.size - k);
             autocorrelation_time += autocorrelation;
         }
-        fprintf(output, "%f\t%d\t%f\n", storage.b, k_max, autocorrelation_time);
+        fprintf(f, "%f\t%d\t%f\n", storage.b, k_max, autocorrelation_time);
     }
     printf(" DONE!\n");
-    printf("Written to: %s\n", filename);
+    printf("Written to: %s\n", output);
     raw_close(&storage);
-    fclose(output);
+    fclose(f);
 }
 
 int main(){
-/*
-    step = 10;
-    get_autocorrelation(MH,0.43);
-    step = 1;
-    get_autocorrelation(SW,0.43);
-*/
+
     char filename[50];
     sprintf(filename, "data/32_0.430000_MH_100000.bin");
     printf("\nReading from: %s\n", filename);
-    FILE *f = fopen(filename, "rb");
-    get_autocorrelation(f);
-    fclose(f);
 
-/*
-    step = 10;
+    get_autocorrelation(filename);
 
-    double x;
-    for(x=-0.1;x<=0.1;x+=0.004)
-        get_autocorrelation(MH,(x+1)*0.4406868);
-
-    step = 1;
-
-    for(x=-0.1;x<=0.1;x+=0.004)
-        get_autocorrelation(SW,(x+1)*0.4406868);
-*/
     return 0;
 }

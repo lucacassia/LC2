@@ -1,0 +1,21 @@
+generator.c:
+    This c program runs the MC simulation and stores the measurements in a
+    human readable .dat file and also a binary .bin file to be read by other
+    programs through the function load_data() in ../../include/ising.h.
+    For more infos about the writing method refer to the function dump_data()
+    also in ../../include/ising.h. The output files are found in /data.
+
+autocorrelation.c:
+    This c program reads data from the run of generator.c and computes the
+    autocorrelation time through the function get_autocorrelation(). The
+    output is written to a .acr file with the same name as the .bin input
+    file saved in /data.
+
+autocorrelation.py:
+    This python3 script reads the .acr files as input and computes the auto-
+    correlation times through a fit of these data. The fit parameters are   
+    stored in a .fit file in /data.
+
+autocorrelation.gnu:
+    This gnuplot script plots the data from the .acr and .fit files into .eps
+    images saved in /img.

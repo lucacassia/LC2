@@ -29,5 +29,5 @@ set terminal postscript eps size 4.5,4.5 enhanced color dashed lw 1 "DejaVuSans"
 set xrange[-0.1:0.1]
 
 set output 'img/autocorrelation_time.eps'
-plot 'data/MH_fit.dat'  pt 1 ps 0.8 lc rgb '#000000' title 'MH',\
-     'data/SW_fit.dat'  pt 7 ps 0.8 lc rgb '#000000' title 'SW'
+plot 'data/MH_fit.dat'  pt 1 ps 0.8 lc rgb '#000000' title 'MH 32x32',\
+     'data/SW_fit.dat'  pt 7 ps 0.8 lc rgb '#000000' title 'SW 32x32'
