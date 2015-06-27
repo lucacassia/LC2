@@ -3,7 +3,7 @@
 void get_autocorrelation(char *input){
 
     FILE *f = fopen(input, "rb");
-    raw storage = load_data(f,0);
+    raw storage = load_data(f,0,1000);
     fclose(f);
 
     int step = 1;
@@ -50,10 +50,10 @@ int main(){
     char filename[50];
     double x;
     for(x = -0.1; x <= 0.1; x += 0.004){
-        sprintf(filename, "data/32_%f_MH_100000.bin",(x+1) * get_beta_critical());
+        sprintf(filename, "data/32_%f_MH_100000.bin",(x+1) * BETA_CRITICAL);
         printf("\nReading from: %s\n", filename);
         get_autocorrelation(filename);
-        sprintf(filename, "data/32_%f_SW_100000.bin",(x+1) * get_beta_critical());
+        sprintf(filename, "data/32_%f_SW_100000.bin",(x+1) * BETA_CRITICAL);
         printf("\nReading from: %s\n", filename);
         get_autocorrelation(filename);
     }

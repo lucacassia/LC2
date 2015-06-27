@@ -9,6 +9,8 @@
 #include <math.h>
 #include "cluster.h"
 
+#define BETA_CRITICAL   (log(1+sqrt(2))/2)
+
 int size = 32;
 double beta = 0.0f;
 spin **ising = NULL;
@@ -100,7 +102,7 @@ char *get_algorithm_string(void (*algorithm)())
 
 double get_beta_critical()
 {
-    return log( 1 + sqrt(2) ) / 2;
+    return (log( 1 + sqrt(2) ) / 2);
 }
 
 double get_energy()
@@ -229,28 +231,31 @@ void raw_close(raw *obj)
     obj->data = NULL;
 }
 
-raw load_data(FILE *f, int column)
+raw load_data(FILE *f, int column, int skip)
 {
     raw content = { 0, 0.0f, 0, NULL, 0, NULL };
     int cols; fread(&cols, sizeof(int), 1, f );
-    if(column < 0 || column > cols) return content;
+    if(column < 0 || column > cols || skip < 0) return content;
     /* read lattice size */
-    fread(&content.l,sizeof(int),1,f);
+    fread(&content.l, sizeof(int), 1, f);
     /* read beta value */
-    fread(&content.b,sizeof(double),1,f);
+    fread(&content.b, sizeof(double), 1, f);
     /* read algorithm ad and name */
-    fread(&content.id,sizeof(int),1,f);
+    fread(&content.id, sizeof(int), 1, f);
     if(content.id == 0) content.algorithm = "MH";
     if(content.id == 1) content.algorithm = "SW";
     /* read size */
-    fread(&content.size,sizeof(int),1,f);
+    fread(&content.size, sizeof(int), 1, f);
+    /* skip initial data */
+    fseek(f, cols * sizeof(double) * skip, SEEK_CUR);
+    content.size -= skip;
     /* read data */
     content.data = (double*)malloc(content.size * sizeof(double));
     int t;
     for(t = 0; t < content.size; t++){
-        fseek(f,column*sizeof(double),SEEK_CUR);
-        fread(&content.data[t],sizeof(double),1,f);
-        fseek(f,((cols-1)-column)*sizeof(double),SEEK_CUR);
+        fseek(f, column * sizeof(double), SEEK_CUR);
+        fread(&content.data[t], sizeof(double), 1, f);
+        fseek(f, ((cols-1)-column) * sizeof(double), SEEK_CUR);
     }
     fseek(f, 0L, SEEK_SET);
     return content;
