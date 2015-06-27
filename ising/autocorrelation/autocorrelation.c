@@ -26,6 +26,7 @@ void get_autocorrelation(char *input){
     char output[50];
     sprintf(output, "data/%d_%f_%s_%d.acr", storage.l, storage.b, storage.algorithm, storage.size );
     f = fopen(output,"a");
+    fprintf(f, "#\t%d\t%f\t%s\t%d\n", storage.l, storage.b, storage.algorithm, storage.size );
 
     double autocorrelation, autocorrelation_time;
     for(k_max = 0; k_max < 100 * step; k_max += step){
@@ -37,7 +38,7 @@ void get_autocorrelation(char *input){
             autocorrelation /= variance * (storage.size - k);
             autocorrelation_time += autocorrelation;
         }
-        fprintf(f, "%f\t%d\t%f\n", storage.b, k_max, autocorrelation_time);
+        fprintf(f, "%d\t%f\n", k_max, autocorrelation_time);
     }
     printf(" DONE!\n");
     printf("Written to: %s\n", output);
