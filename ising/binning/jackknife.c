@@ -27,7 +27,7 @@ void get_variance_bin(char *input, int step){
     double *binned_data;
 
     for(k = 1; k < 100 * step; k += step){
-        binned_data = bin_data(storage.data, storage.size, k);
+        binned_data = jackknife_data(storage.data, storage.size, k);
         double mean = 0;
         for(t = 0; t < storage.size/k; t++)
             mean += binned_data[t];
