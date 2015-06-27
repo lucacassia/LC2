@@ -212,6 +212,7 @@ void dump_data(int lattice_size, double beta_value, void (*algorithm)(), int run
 typedef struct _raw{
     int l;              /* lattice size */
     double b;           /* beta */
+    int id;             /* algorithm id */
     char *algorithm;    /* algorithm name */
     int size;           /* number of samples */
     double *data;       /* samples */
@@ -222,6 +223,7 @@ void raw_close(raw *obj)
     if(obj->data != NULL) free(obj->data);
     obj->l = 0;
     obj->b = 0.0f;
+    obj->id = 0;
     obj->algorithm = NULL;
     obj->size = 0;
     obj->data = NULL;
@@ -229,18 +231,17 @@ void raw_close(raw *obj)
 
 raw load_data(FILE *f, int column)
 {
-    raw content = { 0, 0.0f, NULL, 0, NULL };
+    raw content = { 0, 0.0f, 0, NULL, 0, NULL };
     int cols; fread(&cols, sizeof(int), 1, f );
     if(column < 0 || column > cols) return content;
     /* read lattice size */
     fread(&content.l,sizeof(int),1,f);
     /* read beta value */
     fread(&content.b,sizeof(double),1,f);
-    /* read algorithm name */
-    int id;
-    fread(&id,sizeof(int),1,f);
-    if(id) content.algorithm = "MH";
-    else   content.algorithm = "SW";
+    /* read algorithm ad and name */
+    fread(&content.id,sizeof(int),1,f);
+    if(content.id == 0) content.algorithm = "MH";
+    if(content.id == 1) content.algorithm = "SW";
     /* read size */
     fread(&content.size,sizeof(int),1,f);
     /* read data */
