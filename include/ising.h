@@ -155,6 +155,35 @@ int get_cluster_number()
     return n_clusters;
 }
 
+double get_correlation(int dist)
+{
+    double *Sx = (double*)malloc(size * sizeof(double));
+    double *Sy = (double*)malloc(size * sizeof(double));
+    int i,j;
+    for(i = 0; i < size; i++)
+        Sx[i] = Sy[i] = 0.0f;
+
+    for(i = 0; i < size; i++) for(j = 0; j < size; j++){
+        Sx[j] += ising[i][j].s;
+        Sy[i] += ising[i][j].s;
+    }
+    for(i = 0; i < size; i++){
+        Sx[i] /= size;
+        Sy[i] /= size;
+    }
+
+    double correlation = 0.0f;
+    for(i = 0; i < size; i++){
+        correlation += Sx[i] * Sx[(i+dist)%size];
+        correlation += Sx[i] * Sx[(size+i-dist)%size];
+        correlation += Sy[i] * Sy[(i+dist)%size];
+        correlation += Sy[i] * Sy[(size+i-dist)%size];
+    }
+    free(Sx);
+    free(Sy);
+    return correlation / (4 * size);
+}
+
 void dump_data(int lattice_size, double beta_value, void (*algorithm)(), int run_time)
 {
     if( algorithm != MH && algorithm != SW ){ printf("\nInvalid Algorithm!\n"); }
@@ -179,7 +208,7 @@ void dump_data(int lattice_size, double beta_value, void (*algorithm)(), int run
         printf("\nExecuting %s : L = %d : β = %f : time = %d\n\n", get_algorithm_string(algorithm), lattice_size, beta_value, run_time);
         init(lattice_size, beta_value);
         printf("Gathering Data..."); fflush(stdout);
-        double tmp; int t;
+        double tmp; int t, dist;
         for(t = 0; t < run_time; t++){
             tmp = get_energy() / (lattice_size * lattice_size);
             fprintf(f_dat, "%f", tmp);
@@ -198,8 +227,11 @@ void dump_data(int lattice_size, double beta_value, void (*algorithm)(), int run
                 fprintf(f_dat, "\t%f", tmp);
                 fwrite(&tmp, sizeof(double), 1, f_bin);
             }
-
-            fwrite(&tmp, sizeof(double), 1, f_bin); /* correlation (todo) */
+            for(dist = 0; dist < size / 2; dist++){
+                tmp = get_correlation(dist);
+                fprintf(f_dat, "\t%f", tmp);
+                fwrite(&tmp, sizeof(double), 1, f_bin);
+            }
 
             fprintf(f_dat, "\n");
             algorithm();
@@ -261,69 +293,6 @@ raw load_data(FILE *f, int column, int skip)
     return content;
 }
 
-/*
-int thermalization_time = 1000;
-
-void thermalize(void (*algorithm)())
-{
-    if( algorithm != MH && algorithm != SW ){ printf("\nInvalid Algorithm!\n"); }
-    else{ int t; for(t = 0; t < thermalization_time; t++){ algorithm(); } }
-}
-
-int get_bin_size(void (*algorithm)())
-{
-    if( algorithm == MH ) return 1000;
-    if( algorithm == SW ) return 50;
-    return NULL;
-}
-
-double **get_binned_data(void (*algorithm)(), double beta_value, int bin_number)
-{
-    if( algorithm != MH && algorithm != SW ){ printf("\nInvalid Algorithm!\n"); return NULL; }
-    printf("\nExecuting %s @ β = %f\n\n", get_algorithm_string(algorithm), beta_value); init(beta_value);
-    printf("Thermalizing................"); fflush(stdout); thermalize(algorithm); printf("DONE!\n");
-
-    double **storage = (double**)malloc(2 * sizeof(double*));
-    storage[0] = (double*)malloc(bin_number * sizeof(double));
-    storage[1] = (double*)malloc(bin_number * sizeof(double));
-
-    printf("Gathering Binned Data......."); fflush(stdout);
-    int i, t, bin_size = get_bin_size(algorithm);
-    double tmp[2];
-    for(i = 0; i < bin_number; i++){
-        tmp[0] = tmp[1] = 0.0f;
-        for(t = 0; t < bin_size; t++){
-            algorithm();
-            tmp[0] += get_energy() / (size * size);
-            if(algorithm == MH){ tmp[1] += get_magnetization() / (size * size); }
-            if(algorithm == SW){ tmp[1] += get_largest_cluster() / (size * size); }
-        }
-        storage[0][i] = tmp[0] / bin_size;
-        storage[1][i] = tmp[1] / bin_size;
-    }
-    printf("DONE!\t%d Samples x %d Bin Gathered\n\n", bin_size, bin_number);
-    clear();
-    return storage;
-}
-
-double *get_data(void (*algorithm)(), double beta_value, int storage_size, double (*func)())
-{
-    if( algorithm != MH && algorithm != SW ){ printf("\nInvalid Algorithm!\n"); return NULL; }
-    printf("\nExecuting %s @ β = %f\n\n", get_algorithm_string(algorithm), beta_value); init(beta_value);
-    printf("Thermalizing................"); fflush(stdout); thermalize(algorithm); printf("DONE!\n");
-
-    double *storage = (double*)malloc(storage_size * sizeof(double));
-
-    printf("Gathering Data.............."); fflush(stdout);
-    int t; for(t = 0; t < storage_size; t++){
-        algorithm();
-        storage[t] = func() / (size * size);
-    }
-    printf("DONE!\t%d Samples Gathered\n\n", storage_size);
-    clear();
-    return storage;
-}
-
 double *bin_data(double *storage, int storage_size, int bin_size)
 {
     if (storage_size < bin_size) return NULL;
@@ -338,5 +307,24 @@ double *bin_data(double *storage, int storage_size, int bin_size)
         binned_data[t] /= bin_size;
     return binned_data;
 }
-*/
+
+double *jackknife_data(double *storage, int storage_size, int bin_size)
+{
+    if (storage_size < bin_size) return NULL;
+
+    int n_bins = storage_size / bin_size;
+    storage_size = bin_size * n_bins;
+
+    double *jackknife = (double*)malloc(n_bins * sizeof(double));
+    int t,k;
+    for(k = 0; k < n_bins; k++){
+        jackknife[k] = 0.0f;
+        for(t = 0; t < storage_size; t++) if(t / bin_size != k)
+            jackknife[k] += storage[t];
+        jackknife[k] /= (storage_size - bin_size);
+    }
+    return jackknife;
+}
+
+
 #endif
