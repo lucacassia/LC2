@@ -1,51 +1,64 @@
 #include"ising.h"
 
-void plot_observables(void (*algorithm)(), int bin_number, double start, double end, int n_points){
+int get_bin_size(int ID)
+{
+    if(ID == 0) return 1000;
+    if(ID == 1) return 50;
+    return 0;
+}
 
-    FILE *f[2];
-    char filename[2][50];
+int main ( int argc, char *argv[] ){
 
-    sprintf(filename[0],"data/%s_plot_e_%d.dat",get_algorithm_string(algorithm),bin_number);
-    sprintf(filename[1],"data/%s_plot_m_%d.dat",get_algorithm_string(algorithm),bin_number);
+    if( argc < 2 ){
+        printf( "usage: %s <input.bin> [<input.bin>]\n", argv[0] );
+        return 0;
+    }
+    int i;
+    for(i = 1; i < argc; i++){
+        raw storage[2];
+        FILE *fin, *fout;
 
-    f[0] = fopen(filename[0],"a");
-    f[1] = fopen(filename[1],"a");
+        if( !(fin = fopen(argv[i], "rb") ) ){
+            printf("Error opening file: %s\n", argv[i]);
+            break;
+        }
 
-    double beta_value, mean[2], std[2];
-    double **binned_data;
+        storage[0] = load_data(fin,0,1000);
+        storage[1] = load_data(fin,2,1000);
 
-    int t;
-    for(beta_value = start; beta_value <= end; beta_value += (end - start) / n_points){
+        char output[50];
+        sprintf(output, "data/%d_%s_%d.obs", storage[0].l, storage[0].algorithm, storage[0].size );
+        fout = fopen(output,"a");
 
-        binned_data = get_binned_data(algorithm, beta_value, bin_number);
+        int t;
+        double beta_value = storage[0].b;
+        double n_bins = storage[0].size / get_bin_size(storage[0].id);
+        double *binned_data[2];
+        binned_data[0] = jackknife(storage[0].data, storage[0].size, get_bin_size(storage[0].id) );  raw_close(&storage[0]);
+        binned_data[1] = jackknife(storage[1].data, storage[1].size, get_bin_size(storage[1].id) );  raw_close(&storage[1]);
 
-        mean[0] = mean[1] = std[0] = std[1] = 0.0f;
-        for(t = 0; t < bin_number; t++){
+        double mean[2], error[2];
+        mean[0] = mean[1] = error[0] = error[1] = 0.0f;
+        for(t = 0; t < n_bins; t++){
             mean[0] += binned_data[0][t];
             mean[1] += binned_data[1][t];
         }
-        mean[0] /= bin_number;
-        mean[1] /= bin_number;
-        for(t = 0; t < bin_number; t++){
-            std[0] += binned_data[0][t] * binned_data[0][t];
-            std[1] += binned_data[1][t] * binned_data[1][t];
+        mean[0] /= n_bins;
+        mean[1] /= n_bins;
+        for(t = 0; t < n_bins; t++){
+            error[0] += (binned_data[0][t]-mean[0])*(binned_data[0][t]-mean[0]);
+            error[1] += (binned_data[1][t]-mean[1])*(binned_data[1][t]-mean[1]);
         }
-        std[0] = sqrt( std[0] / bin_number - mean[0] * mean[0] );
-        std[1] = sqrt( std[1] / bin_number - mean[1] * mean[1] );
-        fprintf(f[0], "%f\t%f\t%f\n", beta_value, mean[0], std[0]);
-        fprintf(f[1], "%f\t%f\t%f\n", beta_value, mean[1], std[1]);
+        error[0] = sqrt( error[0] / ( n_bins * (n_bins-1)) );
+        error[1] = sqrt( error[1] / ( n_bins * (n_bins-1)) );
+        fprintf(fout, "%f\t%f\t%f\t%f\t%f\n", beta_value, mean[0], error[0], mean[1], error[1]);
 
         free(binned_data[0]);
         free(binned_data[1]);
-        free(binned_data);
-    }
-    fclose(f[0]);
-    fclose(f[1]);
-    printf("Written to: %s\n",filename[0]);
-    printf("            %s\n",filename[1]);
-}
 
-int main(){
-    plot_observables(SW,100,0.3f,0.6f,50);
+        fclose(fout);
+        printf("Written to: %s\tbeta = %f\n", output, beta_value);
+    }
     return 0;
 }
+
