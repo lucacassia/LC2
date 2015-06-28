@@ -253,6 +253,7 @@ void raw_close(raw *obj)
 
 raw load_data(FILE *f, int column, int skip)
 {
+    fseek(f, 0L, SEEK_SET);
     raw content = { 0, 0.0f, 0, NULL, 0, NULL };
     int cols; fread(&cols, sizeof(int), 1, f );
     if(column < 0 || column > cols || skip < 0) return content;
@@ -313,33 +314,39 @@ double *bin_data(double *storage, int storage_size, int bin_size)
 {
     if (storage_size < bin_size) return NULL;
 
-    double *binned_data = (double*)malloc((storage_size/bin_size)*sizeof(double));
+    int n_bins = storage_size / bin_size;
+    storage_size = bin_size * n_bins;
+
+    double *binned_data = (double*)malloc(n_bins * sizeof(double));
     int t;
-    for(t = 0; t < storage_size/bin_size; t++)
+    for(t = 0; t < n_bins; t++)
         binned_data[t] = 0.0f;
-    for(t = 0; t < bin_size*(storage_size/bin_size); t++)
+    for(t = 0; t < storage_size; t++)
         binned_data[t/bin_size] += storage[t];
-    for(t = 0; t < storage_size/bin_size; t++)
+    for(t = 0; t < n_bins; t++)
         binned_data[t] /= bin_size;
     return binned_data;
 }
 
-double *jackknife_data(double *storage, int storage_size, int bin_size)
+double *jackknife(double *storage, int storage_size, int bin_size)
 {
     if (storage_size < bin_size) return NULL;
 
     int n_bins = storage_size / bin_size;
     storage_size = bin_size * n_bins;
 
-    double *jackknife = (double*)malloc(n_bins * sizeof(double));
-    int t,k;
-    for(k = 0; k < n_bins; k++){
-        jackknife[k] = 0.0f;
-        for(t = 0; t < storage_size; t++) if(t / bin_size != k)
-            jackknife[k] += storage[t];
-        jackknife[k] /= (storage_size - bin_size);
-    }
-    return jackknife;
+    int t;
+    double sum = 0.0f;
+    double *binned_data = (double*)malloc(n_bins * sizeof(double));
+    for(t = 0; t < storage_size; t++)
+        sum += storage[t];
+    for(t = 0; t < n_bins; t++)
+        binned_data[t] = 0.0f;
+    for(t = 0; t < storage_size; t++)
+        binned_data[t/bin_size] += storage[t];
+    for(t = 0; t < n_bins; t++)
+        binned_data[t] = (sum - binned_data[t]) / ( storage_size - bin_size );
+    return binned_data;
 }
 
 
