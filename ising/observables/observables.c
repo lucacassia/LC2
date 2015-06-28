@@ -7,8 +7,8 @@ int get_bin_size(int ID)
     return 0;
 }
 
-int main ( int argc, char *argv[] ){
-
+int main ( int argc, char *argv[] )
+{
     if( argc < 2 ){
         printf( "usage: %s <input.bin> [<input.bin>]\n", argv[0] );
         return 0;
@@ -16,7 +16,7 @@ int main ( int argc, char *argv[] ){
     int i;
     for(i = 1; i < argc; i++){
         raw storage[2];
-        FILE *fin, *fout;
+        FILE *fin;
 
         if( !(fin = fopen(argv[i], "rb") ) ){
             printf("Error opening file: %s\n", argv[i]);
@@ -28,7 +28,7 @@ int main ( int argc, char *argv[] ){
 
         char output[50];
         sprintf(output, "data/%d_%s_%d.obs", storage[0].l, storage[0].algorithm, storage[0].size );
-        fout = fopen(output,"a");
+        FILE *fout = fopen(output,"a");
 
         int t;
         double beta_value = storage[0].b;
