@@ -189,16 +189,11 @@ void dump_data(int lattice_size, double beta_value, void (*algorithm)(), int run
     if( algorithm != MH && algorithm != SW ){ printf("\nInvalid Algorithm!\n"); }
     else{
         int id = (algorithm == SW);
-        /* .dat header */
-        char filename_dat[50];
-        sprintf(filename_dat, "data/%d_%f_%s_%d.dat", lattice_size, beta_value, get_algorithm_string(algorithm), run_time);
-        FILE *f_dat = fopen(filename_dat, "w");
-        fprintf(f_dat, "#\t%d\t%f\t%s\n", lattice_size, beta_value, get_algorithm_string(algorithm));
         /* .bin header */
         char filename_bin[50];
         sprintf(filename_bin, "data/%d_%f_%s_%d.bin", lattice_size, beta_value, get_algorithm_string(algorithm), run_time);
         FILE *f_bin = fopen(filename_bin, "wb");
-        int cols = 4;
+        int cols = 3+lattice_size/2;
         fwrite(&cols, sizeof(int), 1, f_bin);
         fwrite(&lattice_size, sizeof(int), 1, f_bin);
         fwrite(&beta_value, sizeof(double), 1, f_bin);
@@ -211,33 +206,26 @@ void dump_data(int lattice_size, double beta_value, void (*algorithm)(), int run
         double tmp; int t, dist;
         for(t = 0; t < run_time; t++){
             tmp = get_energy() / (lattice_size * lattice_size);
-            fprintf(f_dat, "%f", tmp);
             fwrite(&tmp, sizeof(double), 1, f_bin);
 
             tmp = get_magnetization() / (lattice_size * lattice_size);
-            fprintf(f_dat, "\t%f", tmp);
             fwrite(&tmp, sizeof(double), 1, f_bin);
 
             if(algorithm == MH){
-                fprintf(f_dat, "\t%f", tmp);
                 fwrite(&tmp, sizeof(double), 1, f_bin);
             }
             if(algorithm == SW){
                 tmp = (get_largest_cluster() * 1.0f) / (lattice_size * lattice_size);
-                fprintf(f_dat, "\t%f", tmp);
                 fwrite(&tmp, sizeof(double), 1, f_bin);
             }
             for(dist = 0; dist < size / 2; dist++){
                 tmp = get_correlation(dist);
-                fprintf(f_dat, "\t%f", tmp);
                 fwrite(&tmp, sizeof(double), 1, f_bin);
             }
 
-            fprintf(f_dat, "\n");
             algorithm();
         }
         printf(" DONE!\n\n");
-        fclose(f_dat);
         fclose(f_bin);
         clear();
     }
@@ -272,7 +260,7 @@ raw load_data(FILE *f, int column, int skip)
     fread(&content.l, sizeof(int), 1, f);
     /* read beta value */
     fread(&content.b, sizeof(double), 1, f);
-    /* read algorithm ad and name */
+    /* read algorithm id and name */
     fread(&content.id, sizeof(int), 1, f);
     if(content.id == 0) content.algorithm = "MH";
     if(content.id == 1) content.algorithm = "SW";
@@ -291,6 +279,34 @@ raw load_data(FILE *f, int column, int skip)
     }
     fseek(f, 0L, SEEK_SET);
     return content;
+}
+
+typedef struct _header{
+    int cols;           /* number of columns */
+    int l;              /* lattice size */
+    double b;           /* beta */
+    int id;             /* algorithm id */
+    char *algorithm;    /* algorithm name */
+    int size;           /* number of samples */
+}header;
+
+header get_header(FILE *f)
+{
+    header hdr;
+    fseek(f, 0L, SEEK_SET);
+    /* read number of columns */
+    fread(&hdr.cols, sizeof(int), 1, f );
+    /* read lattice size */
+    fread(&hdr.l, sizeof(int), 1, f);
+    /* read beta value */
+    fread(&hdr.b, sizeof(double), 1, f);
+    /* read algorithm id and name */
+    fread(&hdr.id, sizeof(int), 1, f);
+    if(hdr.id == 0) hdr.algorithm = "MH";
+    if(hdr.id == 1) hdr.algorithm = "SW";
+    /* read size */
+    fread(&hdr.size, sizeof(int), 1, f);
+    return hdr;
 }
 
 double *bin_data(double *storage, int storage_size, int bin_size)
