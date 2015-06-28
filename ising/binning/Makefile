@@ -19,7 +19,7 @@ all: rmxeq mkdep mkxeq rmpmk
 
 # main programs and required modules 
 
-MAIN = generator binning jackknife
+MAIN = generator binning
 
 RANDOM = mersenne
 
