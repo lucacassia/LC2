@@ -49,8 +49,8 @@ int main ( int argc, char *argv[] ){
             error[0] += (binned_data[0][t]-mean[0])*(binned_data[0][t]-mean[0]);
             error[1] += (binned_data[1][t]-mean[1])*(binned_data[1][t]-mean[1]);
         }
-        error[0] = sqrt( error[0] / ( n_bins * (n_bins-1)) );
-        error[1] = sqrt( error[1] / ( n_bins * (n_bins-1)) );
+        error[0] = sqrt( error[0] * (n_bins-1) / n_bins );
+        error[1] = sqrt( error[1] * (n_bins-1) / n_bins );
         fprintf(fout, "%e\t%e\t%e\t%e\t%e\n", beta_value, mean[0], error[0], mean[1], error[1]);
 
         free(binned_data[0]);
