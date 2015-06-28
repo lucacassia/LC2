@@ -51,7 +51,7 @@ int main ( int argc, char *argv[] ){
         }
         error[0] = sqrt( error[0] / ( n_bins * (n_bins-1)) );
         error[1] = sqrt( error[1] / ( n_bins * (n_bins-1)) );
-        fprintf(fout, "%f\t%f\t%f\t%f\t%f\n", beta_value, mean[0], error[0], mean[1], error[1]);
+        fprintf(fout, "%e\t%e\t%e\t%e\t%e\n", beta_value, mean[0], error[0], mean[1], error[1]);
 
         free(binned_data[0]);
         free(binned_data[1]);
