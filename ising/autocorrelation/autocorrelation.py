@@ -10,7 +10,7 @@ args = parser.parse_args()
 def func(x, a, b):
     return a*(1-(2*b/(2*b+1))*numpy.exp(-x/b))
 
-with open(args.output,"w") as output
+with open(args.output,"w") as output:
 
     for path in args.path:
         print("Fitting: "+path)
@@ -18,7 +18,7 @@ with open(args.output,"w") as output
             beta = float(f.readline().split()[2])
             data = numpy.loadtxt(f,unpack=True)
         popt, pcov = curve_fit(func, data[0], data[1])
-        output.write("{}\t{}\t{}\n".format( (beta-0.4406868)/0.4406868, popt[0], popt[1] ) )
+        output.write("{}\t{}\t{}\n".format( (beta-0.440687)/0.440687, popt[0], popt[1] ) )
 
 print("File saved to: "+args.output)
 
