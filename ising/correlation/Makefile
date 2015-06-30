@@ -19,7 +19,7 @@ all: rmxeq mkdep mkxeq rmpmk
 
 # main programs and required modules 
 
-MAIN = correlation
+MAIN = generator correlation
 
 RANDOM = mersenne
 

@@ -1,58 +1,61 @@
-#include"ising.h"
+#include "ising.h"
 
-void get_correlation(void (*algorithm)(), int bin_number, double beta_value){
-    int i, j, t, dist, bin_size = get_bin_size(algorithm);
-    char filename[50];
-    sprintf(filename, "data/%s_correlation_%f_%d.dat", get_algorithm_string(algorithm), beta_value, bin_number);
-
-    init(beta_value);
-    printf("\nExecuting %s @ β = %f\n\n", get_algorithm_string(algorithm), beta_value);
-    printf("Thermalizing................"); fflush(stdout); thermalize(algorithm); printf("DONE!\n");
-
-    double *Sx, *Sy;
-    double **correlation = (double**)malloc((size/2)*sizeof(double*));
-    for(dist = 0; dist < size / 2; dist++) correlation[dist] = (double*)malloc(bin_number * sizeof(double));
-
-    printf("Gathering Binned Data......."); fflush(stdout);
-    for(t = 0; t < bin_number * bin_size; t++){
-        algorithm();
-        Sx = (double*)malloc(size * sizeof(double));
-        Sy = (double*)malloc(size * sizeof(double));
-        for(i = 0; i < size; i++){ Sx[i] = Sy[i] = 0.0f; }
-        for(i = 0; i < size; i++) for(j = 0; j < size; j++){
-            Sx[j] += ising[i][j].s / size;
-            Sy[i] += ising[i][j].s / size;
-        }
-        for(dist = 0; dist < size / 2; dist++) for(i = 0; i < size; i++){
-            correlation[dist][t / bin_size] += Sx[i] * Sx[(i+dist)%size];
-            correlation[dist][t / bin_size] += Sx[i] * Sx[(size+i-dist)%size];
-            correlation[dist][t / bin_size] += Sy[i] * Sy[(i+dist)%size];
-            correlation[dist][t / bin_size] += Sy[i] * Sy[(size+i-dist)%size];
-            correlation[dist][t / bin_size] /= 4 * size * bin_size;
-        }
-        free(Sx);
-        free(Sy);
-    }printf("DONE!\t%d Samples x %d Bin Gathered\n\n", bin_size, bin_number);
-
-    FILE *f = fopen(filename,"w");
-    double mean, variance;
-    for(dist = 0; dist < size / 2; dist++){
-        variance = mean = 0.0f;
-        for(t = 0; t < bin_number; t++){
-            mean += correlation[dist][t];
-            variance += correlation[dist][t] * correlation[dist][t];
-        }
-        free(correlation[dist]);
-        mean /= bin_number;
-        variance = variance / bin_number - mean * mean;
-        fprintf(f,"%d\t%f\t%f\t\n", dist, mean, variance);
-    }
-    free(correlation);
-    fclose(f);
-}
-
-int main(){
-    size = 128;
-    get_correlation(MH,50,0.3);
+int get_bin_size(int ID)
+{
+    if(ID == 0) return 1000;
+    if(ID == 1) return 50;
     return 0;
 }
+
+int main ( int argc, char *argv[] )
+{
+    if( argc < 2 ){
+        printf( "usage: %s <input.bin> [<input.bin>]\n", argv[0] );
+        return 0;
+    }
+    int i;
+    for(i = 1; i < argc; i++){
+        FILE *fin;
+
+        if( !(fin = fopen(argv[i], "rb") ) ){
+            printf("Error opening file: %s\n", argv[i]);
+            break;
+        }
+        header hdr = get_header(fin);
+        printf( "\nReading: %s\n", argv[i]);
+        printf( "\nHeader:\n#\t%d\t%f\t%s\n\n", hdr.l, hdr.b, hdr.algorithm);
+        fseek(fin, 0L, SEEK_SET);
+
+        double **binned_data = (double**)malloc( (hdr.l/2) * sizeof(double*) );
+        int k; for(k = 0; k < hdr.l/2; k++){
+            raw storage = load_data( fin, 3+k, 1000 );
+            binned_data[k] = jackknife(storage.data, storage.size, get_bin_size(storage.id) );
+            raw_close(&storage);
+        }
+        fclose(fin);
+
+        char output[50];
+        sprintf(output, "data/%d_%f_%s_%d.cor", hdr.l, hdr.b, hdr.algorithm, hdr.size );
+        FILE *fout = fopen(output,"w");
+
+        int t;
+        int n_bins = hdr.size / get_bin_size(hdr.id);
+
+        fprintf(fout, "#\t%d\t%f\t%s\t%d\n", hdr.l, hdr.b, hdr.algorithm, n_bins );
+
+        for(k = 0; k < hdr.l/2; k++){
+            double sum = 0.0f;
+            fprintf(fout, "%d\t", k);
+            for(t = 0; t < n_bins; t++){
+                sum += binned_data[k][t];
+                fprintf(fout, "%e\t", binned_data[k][t]);
+            }
+            fprintf(fout, "%e\n", sum/n_bins);
+            free(binned_data[k]);
+        }
+        fclose(fout);
+        printf("Written to: %s\tbeta = %f\n", output, hdr.b);
+    }
+    return 0;
+}
+
