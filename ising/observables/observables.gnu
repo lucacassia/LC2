@@ -1,7 +1,7 @@
 ## observables
 
 set terminal postscript eps size 4.5,4.5 enhanced color dashed lw 1 "DejaVuSans" 12
-
+set samples 100000
 ## e
 
 set xlabel "{/Symbol b}"

@@ -48,7 +48,7 @@ int main ( int argc, char *argv[] )
 
         double *binned_data;
         for(k = 1; k < 100 * step; k += step){
-            binned_data = bin_data(storage.data, storage.size, k);
+            binned_data = jackknife(storage.data, storage.size, k);
             double mean = 0.0f;
             for(t = 0; t < storage.size/k; t++)
                 mean += binned_data[t];
@@ -56,8 +56,8 @@ int main ( int argc, char *argv[] )
             double variance = 0.0f;
             for(t = 0; t < storage.size/k; t++)
                 variance += (binned_data[t] - mean) * (binned_data[t] - mean);
-            variance /= (storage.size/k);
-            fprintf( fout, "%d\t%e\n", k, k * variance / old_variance );
+            variance *= (storage.size/k-1)/(storage.size/k-1);
+            fprintf( fout, "%d\t%e\n", k, variance / old_variance );
             free(binned_data);
         }
         printf( " DONE!\n" );

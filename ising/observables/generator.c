@@ -1,9 +1,9 @@
 #include"ising.h"
 
 int main(){
-    double b;
-    for(b = 0.0f; b <= 1.0f; b += 1.0f/100){
-        dump_data(32, b, SW, 100000);
+    double b, start = 0.3f, end = 0.6f;
+    for(b = start; b <= end; b += (end-start)/100){
+        dump_data(32, b, MH, 100000);
     }
     return 0;
 }
