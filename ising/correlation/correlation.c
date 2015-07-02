@@ -1,12 +1,5 @@
 #include "ising.h"
 
-int get_bin_size(int ID)
-{
-    if(ID == 0) return 1000;
-    if(ID == 1) return 50;
-    return 0;
-}
-
 int main ( int argc, char *argv[] )
 {
     if( argc < 2 ){
@@ -25,11 +18,12 @@ int main ( int argc, char *argv[] )
         printf( "\nReading: %s\n", argv[i]);
         printf( "\nHeader:\n#\t%d\t%f\t%s\n\n", hdr.l, hdr.b, hdr.algorithm);
         fseek(fin, 0L, SEEK_SET);
+        hdr.size -= 1000;
 
         double **binned_data = (double**)malloc( (hdr.l/2) * sizeof(double*) );
         int k; for(k = 0; k < hdr.l/2; k++){
             raw storage = load_data( fin, 3+k, 1000 );
-            binned_data[k] = jackknife(storage.data, storage.size, get_bin_size(storage.id) );
+            binned_data[k] = jackknife(storage.data, storage.size, 1000 );
             raw_close(&storage);
         }
         fclose(fin);
@@ -39,7 +33,7 @@ int main ( int argc, char *argv[] )
         FILE *fout = fopen(output,"w");
 
         int t;
-        int n_bins = hdr.size / get_bin_size(hdr.id);
+        int n_bins = hdr.size / 1000;
 
         fprintf(fout, "#\t%d\t%f\t%s\t%d\n", hdr.l, hdr.b, hdr.algorithm, n_bins );
 
@@ -53,6 +47,7 @@ int main ( int argc, char *argv[] )
             fprintf(fout, "%e\n", sum/n_bins);
             free(binned_data[k]);
         }
+        free(binned_data);
         fclose(fout);
         printf("Written to: %s\tbeta = %f\n", output, hdr.b);
     }

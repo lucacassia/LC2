@@ -8,16 +8,27 @@ parser.add_argument('-o', action="store", default="cor.fit", dest="output", type
 args = parser.parse_args()
 
 def func(x, a, b):
-    return a*numpy.exp(-x/b))
+    return a*(numpy.exp(-x/b)+numpy.exp((x-lattice_size)/b))
 
 with open(args.output,"w") as output:
     for path in args.path:
         print("Fitting: "+path)
         with open(path, 'r') as f:
-            beta = float(f.readline().split()[2])
-            data = numpy.loadtxt(f,unpack=True)
+            firstline = f.readline().split()
+            lattice_size = int(firstline[1])
+            beta = float(firstline[2])
+            n_bins = int(firstline[4])
+            data = numpy.loadtxt(f, usecols = (0, 1+n_bins), unpack=True)
         popt, pcov = curve_fit(func, data[0], data[1])
-        output.write("{}\t{}\t{}\n".format( (beta-0.440687)/0.440687, popt[0], popt[1] ) )
+        mean = popt[1]
+        error = 0.0
+        for k in range(n_bins):
+            with open(path, 'r') as f:
+                data = numpy.loadtxt(f, skiprows = 1, usecols = (0,1+k), unpack=True)
+            popt, pcov = curve_fit(func, data[0], data[1])
+            error += (popt[1]-mean)**2
+        error *= (n_bins - 1) / n_bins
+        output.write("{}\t{}\t{}\n".format( beta, mean, error ) )
 
 print("File saved to: "+args.output)
 
