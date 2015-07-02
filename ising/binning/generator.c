@@ -17,11 +17,12 @@ int main(){
     dump_data(32, 0.50, SW, 1000000);
 */
 
-    dump_data(8  , 0.435, SW, 1000000);
-    dump_data(16 , 0.435, SW, 1000000);
+/*
+    dump_data(8  , 0.41, MH, 1000000);
+    dump_data(16 , 0.43, SW, 1000000);
     dump_data(32 , 0.435, SW, 1000000);
     dump_data(64 , 0.435, SW, 1000000);
     dump_data(128, 0.435, SW, 1000000);
-
+*/
     return 0;
 }

@@ -8,8 +8,9 @@ int main ( int argc, char *argv[] )
     }
     int i;
     for(i = 1; i < argc; i++){
-        FILE *fin;
 
+        /*read from input */
+        FILE *fin;
         if( !(fin = fopen(argv[i], "rb") ) ){
             printf("Error opening file: %s\n", argv[i]);
             break;
@@ -19,6 +20,7 @@ int main ( int argc, char *argv[] )
         printf( "\nReading: %s\n", argv[i]);
         printf( "\nHeader:\n#\t%d\t%f\t%s\n\n", storage.l, storage.b, storage.algorithm);
 
+        /* reading k_max step */
         int step = 1;
         if( storage.id == 0 ){
             printf( "Insert <step> parameter: " );
@@ -29,6 +31,7 @@ int main ( int argc, char *argv[] )
             }
         }
 
+        /* global mean and variance */
         int t, k;
         double old_mean = 0.0f;
         for(t = 0; t < storage.size; t++)
@@ -39,13 +42,14 @@ int main ( int argc, char *argv[] )
             old_variance += (storage.data[t] - old_mean) * (storage.data[t] - old_mean);
         old_variance /= storage.size;
 
-        printf("Binning.............."); fflush(stdout);
-
+        /* open output file and write header */
         char output[50];
         sprintf(output, "data/%d_%f_%s_%d.var", storage.l, storage.b, storage.algorithm, storage.size );
         FILE *fout = fopen(output,"w");
         fprintf(fout , "#\t%d\t%f\t%s\t%d\n", storage.l, storage.b, storage.algorithm, storage.size );
 
+        /* binnin analysis */
+        printf("Binning.............."); fflush(stdout);
         double *binned_data;
         for(k = 1; k < 100 * step; k += step){
             binned_data = bin_data(storage.data, storage.size, k);
@@ -60,10 +64,11 @@ int main ( int argc, char *argv[] )
             fprintf( fout, "%d\t%e\n", k, k * variance / old_variance );
             free(binned_data);
         }
-        printf( " DONE!\n" );
-        printf( "Written to: %s\n", output );
+
+        /* close and clear memory */
         fclose(fout);
         raw_close(&storage);
+        printf( " DONE!\nWritten to: %s\n", output );
     }
     return 0;
 }

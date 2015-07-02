@@ -8,6 +8,8 @@ int main ( int argc, char *argv[] )
     }
     int i;
     for(i = 1; i < argc; i++){
+
+        /* read from input */
         FILE *fin;
         if( !(fin = fopen(argv[i], "rb") ) ){
             printf("Error opening file: %s\n", argv[i]);
@@ -61,7 +63,7 @@ int main ( int argc, char *argv[] )
         mean[1] /= n_bins;
 
         /* write to output */
-        FILE *fout = fopen(output,"w");
+        FILE *fout = fopen(output,"a");
         fprintf(fout, "%e\t", beta_value );
         fprintf(fout, "%e\t%e\t", mean[0], beta_value * beta_value * lattice_size * lattice_size * variance[0] );
         fprintf(fout, "%e\t%e\n", mean[1], beta_value * lattice_size * lattice_size * variance[1] );
