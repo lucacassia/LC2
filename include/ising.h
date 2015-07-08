@@ -7,20 +7,62 @@
 #include <time.h>
 #include <string.h>
 #include <math.h>
-#include "cluster.h"
 
-#define BETA_CRITICAL   (log(1+sqrt(2))/2)
+#define BETA_CRITICAL   (log(1.0f+sqrt(2.0f))/2.0f)
 
 int size = 32;
 double beta = 0.0f;
+
+typedef struct _spin{
+    int s;
+    struct _spin *cl;
+    int count;
+}spin;
+
 spin **ising = NULL;
+
+spin *cl_find(spin *x) {
+    while(x->cl != x)
+        x = x->cl;
+    return x;
+}
+
+void create_clusters()
+{
+    int i,j;
+    int left, above;
+    double prob = 1.0f - exp(- 2.0f * beta);
+    /* initialize every spin to be its own cluster */
+    for(i = 0; i < size; i++) for(j = 0; j < size; j++)
+        ising[i][j].cl = &(ising[i][j]);
+    for(i = 0; i < size; i++) for(j = 0; j < size; j++){
+        /* activate links */
+        left  = ( (ising[i][j].s == ising[i][(size+j-1)%size].s) && (mersenne() < prob) );
+        above = ( (ising[i][j].s == ising[(size+i-1)%size][j].s) && (mersenne() < prob) );
+        /* merge clusters if links are active */
+    	if( left && above )
+            ising[i][j].cl = cl_find( &(ising[(size+i-1)%size][j]) )->cl = cl_find( &(ising[i][(size+j-1)%size]) );
+        if( !left && above )
+            ising[i][j].cl = cl_find( &(ising[(size+i-1)%size][j]) );
+        if( left && !above )
+            ising[i][j].cl = cl_find( &(ising[i][(size+j-1)%size]) );
+    }
+    /* simplify clusters */
+    for(i = 0; i < size; i++) for(j = 0; j < size; j++)
+        ising[i][j].cl = cl_find( &(ising[i][j]) );
+    /* get clusters sizes */
+    for(i = 0; i < size; i++) for(j = 0; j < size; j++)
+        ising[i][j].count = 0;
+    for(i = 0; i < size; i++) for(j = 0; j < size; j++)
+        ising[i][j].cl->count++;
+}
 
 void clear()
 {
-    if(ising != NULL){
+    if(ising){
         int i;
         for(i = 0; i < size; i++)
-            if(ising[i] != NULL)
+            if(ising[i])
                 free(ising[i]);
         free(ising);
         ising = NULL;
@@ -38,59 +80,42 @@ void init(int lattice_size, double beta_value)
 
     clear();
     ising = (spin**)malloc(size * sizeof(spin*));
-    for(i = 0; i < size; i++) ising[i] = (spin*)malloc(size * sizeof(spin));
+    for(i = 0; i < size; i++)
+        ising[i] = (spin*)malloc(size * sizeof(spin));
 
-    for(i = 0; i < size; i++) for(j = 0; j < size; j++){
+    for(i = 0; i < size; i++) for(j = 0; j < size; j++)
         ising[i][j].s = 1;
-        ising[i][j].cl = &ising[i][j];
-    }
+    create_clusters();
 }
 
 void MH()
 {
-    int new_spin;
-    int i,j;
-    double delta_energy;
-    for(i = 0; i < size; i++) for(j = 0; j < size; j++) {
-        if( mersenne() < 0.5f ) new_spin = 1; else new_spin = -1;
-        delta_energy = -(ising[(i+1)%size][j].s+ising[(size+i-1)%size][j].s+ising[i][(j+1)%size].s+ising[i][(size+j-1)%size].s)*(new_spin-ising[i][j].s);
-        if( delta_energy <= 0 || mersenne() < exp(- beta * delta_energy) ) ising[i][j].s = new_spin;
-    }
+    int i,j,delta_energy;
+    for(i = 0; i < size; i++) for(j = 0; j < size; j++)
+        if( mersenne() < 0.5f ){
+            delta_energy = 2*(ising[(i+1)%size][j].s+ising[(size+i-1)%size][j].s+ising[i][(j+1)%size].s+ising[i][(size+j-1)%size].s)*ising[i][j].s;
+            if( delta_energy <= 0 || mersenne() < exp(- beta * delta_energy) )
+                ising[i][j].s = -ising[i][j].s;
+        }
 }
 
 void SW()
 {
     int i,j;
-    /* activate links */
-    double prob = 1 - exp(- 2 * beta);
-    for(i = 0; i < size; i++) for(j = 0; j < size; j++) {
-        ising[i][j].l = ( ising[i][j].s == ising[i][(size+j-1)%size].s && mersenne() < prob );
-        ising[i][j].u = ( ising[i][j].s == ising[(size+i-1)%size][j].s && mersenne() < prob );
-        ising[i][j].cl = &ising[i][j];
-    }
-    /* create clusters */
-    for(i = 0; i < size; i++) for(j = 0; j < size; j++){
-    	if( ising[i][j].l &&  ising[i][j].u){
-            ising[i][j].cl = cl_merge( ising[(size+i-1)%size][j].cl, ising[i][(size+j-1)%size].cl );
-        }
-        if(!ising[i][j].l &&  ising[i][j].u){
-            ising[i][j].cl = cl_find( ising[(size+i-1)%size][j].cl );
-        }
-        if( ising[i][j].l && !ising[i][j].u){
-            ising[i][j].cl = cl_find( ising[i][(size+j-1)%size].cl );
-        }
-    }
-    /* simplify clusters */
-    for(i = 0; i < size; i++) for(j = 0; j < size; j++){
-        ising[i][j].cl = cl_find(ising[i][j].cl);
-    }
-    /* flip clusters */
-    for(i = 0; i < size; i++) for(j = 0; j < size; j++){
-        ising[i][j].count = (ising[i][j].cl == &ising[i][j] && mersenne() < 0.5f);
-    }
-    for(i = 0; i < size; i++) for(j = 0; j < size; j++){
-        if(ising[i][j].cl->count) ising[i][j].s = -ising[i][j].s;
-    }
+    /* decide which clusters to flip */
+    for(i = 0; i < size; i++) for(j = 0; j < size; j++)
+        ising[i][j].count = (ising[i][j].cl == &(ising[i][j]) && mersenne() < 0.5f);
+    /* flip those clusters */
+    for(i = 0; i < size; i++) for(j = 0; j < size; j++)
+        if(ising[i][j].cl->count)
+            ising[i][j].s = -ising[i][j].s;
+    /* prepare new clusters */
+    create_clusters();
+}
+
+double get_beta_critical()
+{
+    return BETA_CRITICAL;
 }
 
 char *get_algorithm_string(void (*algorithm)())
@@ -100,48 +125,37 @@ char *get_algorithm_string(void (*algorithm)())
     return NULL;
 }
 
-double get_beta_critical()
-{
-    return (log( 1 + sqrt(2) ) / 2);
-}
-
 double get_energy()
 {
-    double energy = 0.0f;
+    int energy = 0;
     int i,j; for(i = 0; i < size; i++) for(j = 0; j < size; j++)
         energy += - ( ising[(size+i-1)%size][j].s + ising[i][(size+j-1)%size].s ) * ising[i][j].s;
-    return energy;
+    return 1.0f * energy;
 }
 
-double get_magnetization_nofabs()
+double get_signed_magnetization()
 {
-    double magnetization = 0.0f;
+    int magnetization = 0;
     int i,j; for(i = 0; i < size; i++) for(j = 0; j < size; j++)
         magnetization += ising[i][j].s;
-    return magnetization;
+    return 1.0f * magnetization;
 }
 
 double get_magnetization()
 {
-    double magnetization = 0.0f;
+    int magnetization = 0;
     int i,j; for(i = 0; i < size; i++) for(j = 0; j < size; j++)
         magnetization += ising[i][j].s;
-    return fabs(magnetization);
+    return 1.0f * abs(magnetization);
 }
 
 int get_largest_cluster()
 {
     int i,j;
     int cl_size_max = 0;
-    for(i = 0; i < size; i++) for(j = 0; j < size; j++){
-        ising[i][j].count = 0;
-    }
-    for(i = 0; i < size; i++) for(j = 0; j < size; j++){
-        ising[i][j].cl->count++;
-    }
-    for(i = 0; i < size; i++) for(j = 0; j < size; j++){
-        if(ising[i][j].count > cl_size_max){ cl_size_max = ising[i][j].count; }
-    }
+    for(i = 0; i < size; i++) for(j = 0; j < size; j++)
+        if(ising[i][j].count > cl_size_max)
+            cl_size_max = ising[i][j].count;
     return cl_size_max;
 }
 
@@ -150,7 +164,7 @@ int get_cluster_number()
     int i,j;
     int n_clusters = 0;
     for(i = 0; i < size; i++) for(j = 0; j < size; j++)
-        if(ising[i][j].cl == &ising[i][j])
+        if(ising[i][j].cl == &(ising[i][j]))
             n_clusters++;
     return n_clusters;
 }
@@ -218,7 +232,7 @@ void dump_data(int lattice_size, double beta_value, void (*algorithm)(), int run
                 tmp = (get_largest_cluster() * 1.0f) / (lattice_size * lattice_size);
                 fwrite(&tmp, sizeof(double), 1, f_bin);
             }
-            for(dist = 0; dist < size / 2; dist++){
+            for(dist = 0; dist < lattice_size / 2; dist++){
                 tmp = get_correlation(dist);
                 fwrite(&tmp, sizeof(double), 1, f_bin);
             }
@@ -256,7 +270,7 @@ raw load_data(FILE *f, int column, int skip)
     fseek(f, 0L, SEEK_SET);
     raw content = { 0, 0.0f, 0, NULL, 0, NULL };
     int cols; fread(&cols, sizeof(int), 1, f );
-    if(column < 0 || column > cols || skip < 0) return content;
+    if(column < 0 || column >= cols || skip < 0) return content;
     /* read lattice size */
     fread(&content.l, sizeof(int), 1, f);
     /* read beta value */
@@ -349,5 +363,17 @@ double *jackknife(double *storage, int storage_size, int bin_size)
     return binned_data;
 }
 
+int get_bin_size(int ID, int lattice_size)
+{
+    if(ID == 0){
+        if(lattice_size == 8  ) return 150;
+        if(lattice_size == 16 ) return 600;
+        if(lattice_size == 32 ) return 2400;
+        if(lattice_size == 64 ) return 9600;
+        if(lattice_size == 128) return 10000;
+    }
+    if(ID == 1) return 50;
+    return 1;
 
+}
 #endif
