@@ -214,9 +214,9 @@ void dump_data(int lattice_size, double beta_value, void (*algorithm)(), int run
         fwrite(&id, sizeof(int), 1, f_bin);
         fwrite(&run_time, sizeof(int), 1, f_bin);
         /* data gathering */
-        printf("\nExecuting %s : L = %d : β = %f : time = %d\n\n", get_algorithm_string(algorithm), lattice_size, beta_value, run_time);
+        printf("\nExecuting %s : L = %d : β = %f : time = %d\t", get_algorithm_string(algorithm), lattice_size, beta_value, run_time);
+        fflush(stdout);
         init(lattice_size, beta_value);
-        printf("Gathering Data..."); fflush(stdout);
         double tmp; int t, dist;
         for(t = 0; t < run_time; t++){
             tmp = get_energy() / (lattice_size * lattice_size);
