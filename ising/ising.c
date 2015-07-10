@@ -15,12 +15,12 @@ void savePPM()
     unsigned char white[3] = {255,255,255};
     unsigned char black[3] = {0,0,0};
     char filename[50];
-    sprintf(filename, "ising_%dx%d_%f.ppm", size, size, beta);
+    sprintf(filename, "ising_%dx%d_%f.ppm", SIZE, SIZE, BETA);
     FILE *f = fopen(filename, "wb");
-    fprintf(f, "P6\n%d %d\n255\n", 4*size, 4*size);
+    fprintf(f, "P6\n%d %d\n255\n", 4*SIZE, 4*SIZE);
     int i,j;
-    for(i = size-1; i >= 0; i--){
-        for(j = 0; j < size; j++){
+    for(i = SIZE-1; i >= 0; i--){
+        for(j = 0; j < SIZE; j++){
             if(ising[i][j].s == 1){
                 fwrite(white, sizeof(unsigned char), 3, f);
                 fwrite(white, sizeof(unsigned char), 3, f);
@@ -34,7 +34,7 @@ void savePPM()
                 fwrite(black, sizeof(unsigned char), 3, f);
             }
         }
-        for(j = 0; j < size; j++){
+        for(j = 0; j < SIZE; j++){
             if(ising[i][j].s == 1){
                 fwrite(white, sizeof(unsigned char), 3, f);
                 fwrite(white, sizeof(unsigned char), 3, f);
@@ -48,7 +48,7 @@ void savePPM()
                 fwrite(black, sizeof(unsigned char), 3, f);
             }
         }
-        for(j = 0; j < size; j++){
+        for(j = 0; j < SIZE; j++){
             if(ising[i][j].s == 1){
                 fwrite(white, sizeof(unsigned char), 3, f);
                 fwrite(white, sizeof(unsigned char), 3, f);
@@ -62,7 +62,7 @@ void savePPM()
                 fwrite(black, sizeof(unsigned char), 3, f);
             }
         }
-        for(j = 0; j < size; j++){
+        for(j = 0; j < SIZE; j++){
             if(ising[i][j].s == 1){
                 fwrite(white, sizeof(unsigned char), 3, f);
                 fwrite(white, sizeof(unsigned char), 3, f);
@@ -83,35 +83,35 @@ void savePPM()
 
 void GLInit()
 {
-    pixels = (float*)malloc(3 * 4 * size * 4 * size * sizeof(float));
+    pixels = (float*)malloc(3 * 4 * SIZE * 4 * SIZE * sizeof(float));
 
     glDisable(GL_DEPTH_TEST);
     glClearColor(0.0f ,0.0f, 0.0f, 0.0f);
     glClear(GL_COLOR_BUFFER_BIT);
-    glOrtho(0.0, 4*size, 0.0, 4*size, 0.0, 1.0);
-    init(size,0);
+    glOrtho(0.0, 4*SIZE, 0.0, 4*SIZE, 0.0, 1.0);
+    init(SIZE,0);
 }
 
 void displayF()
 {
     int i,j,k; k = 0;
-    for(i = 0; i < size; i++){
-        for(j = 0; j < size; j++){
+    for(i = 0; i < SIZE; i++){
+        for(j = 0; j < SIZE; j++){
             if(ising[i][j].s == 1){ pixels[k] = pixels[k+1] = pixels[k+2] = pixels[k+3] = 1; k += 4; }
             else                  { pixels[k] = pixels[k+1] = pixels[k+2] = pixels[k+3] = 0; k += 4; }
 
         }
-        for(j = 0; j < size; j++){
+        for(j = 0; j < SIZE; j++){
             if(ising[i][j].s == 1){ pixels[k] = pixels[k+1] = pixels[k+2] = pixels[k+3] = 1; k += 4; }
             else                  { pixels[k] = pixels[k+1] = pixels[k+2] = pixels[k+3] = 0; k += 4; }
 
         }
-        for(j = 0; j < size; j++){
+        for(j = 0; j < SIZE; j++){
             if(ising[i][j].s == 1){ pixels[k] = pixels[k+1] = pixels[k+2] = pixels[k+3] = 1; k += 4; }
             else                  { pixels[k] = pixels[k+1] = pixels[k+2] = pixels[k+3] = 0; k += 4; }
 
         }
-        for(j = 0; j < size; j++){
+        for(j = 0; j < SIZE; j++){
             if(ising[i][j].s == 1){ pixels[k] = pixels[k+1] = pixels[k+2] = pixels[k+3] = 1; k += 4; }
             else                  { pixels[k] = pixels[k+1] = pixels[k+2] = pixels[k+3] = 0; k += 4; }
 
@@ -119,7 +119,7 @@ void displayF()
     }
 
     glRasterPos2i(0,0);
-    glDrawPixels(4*size, 4*size, GL_LUMINANCE, GL_FLOAT, pixels);
+    glDrawPixels(4*SIZE, 4*SIZE, GL_LUMINANCE, GL_FLOAT, pixels);
     glutSwapBuffers();
 }
 
@@ -136,49 +136,46 @@ void keyboardF(unsigned char key, int mouseX, int mouseY)
         case 'q': case 'Q': case 27:
             clear();
             free(pixels);
-            printf("\nBye Bye!\n");
+            printf("\n[EXIT]\n");
             exit(EXIT_SUCCESS);
         case ' ':
             active =! active;
             if(active) printf("\n[ACTIVE]\n"); else printf("\n[PAUSED]\n");
             break;
         case '+':
-            beta += 0.01;
-            printf("\nBeta: %f\n",beta);
+            BETA += 0.01;
+            printf("\n[BETA = %f]\n",BETA);
             break;
         case '-':
-            beta -= 0.01;
-            printf("\nBeta: %f\n",beta);
+            BETA -= 0.01;
+            printf("\n[BETA = %f]\n",BETA);
             break;
         case 'i': case 'I':
-            init(size,beta);
-            printf("\nThe simulation has been reset!\n");
+            init(SIZE,BETA);
+            printf("\n[RESET]\n");
             break;
         case 'm': case 'M':
             if(algorithm == SW){
                 algorithm = MH;
-                printf("\nActivating Metropolis-Hasting Algorithm\n");
+                printf("\n[Metropolis-Hasting]\n");
             }
             else{
                 algorithm = SW;
-                printf("\nActivating Swendsen–Wang Algorithm\n");
+                printf("\n[Swendsen-Wang]\n");
             }
             break;
         case 'p': case 'P':
             savePPM();
-            break;
-        case 'c': case 'C':
-            printf("\nClusters: %d\tLargest Cluster: %d\n", get_cluster_number(), get_largest_cluster());
             break;
     }
 }
 
 int main(int argc, char *argv[])
 {
-    size = 128;
+    SIZE = 128;
 
     glutInit(&argc, argv);
-    glutInitWindowSize(4*size, 4*size); 
+    glutInitWindowSize(4*SIZE, 4*SIZE); 
     glutInitDisplayMode( GLUT_LUMINANCE );
     glutCreateWindow("ising"); 
     GLInit();
