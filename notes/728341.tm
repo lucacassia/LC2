@@ -22,7 +22,7 @@
     <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
     <no-break><pageref|auto-2>>
 
-    <with|par-left|1tab|1.2<space|2spc>Estimators and Autocorrelation Times
+    <with|par-left|1tab|1.2<space|2spc>Autocorrelation Times
     <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
     <no-break><pageref|auto-6>>
 
@@ -40,11 +40,11 @@
 
     <with|par-left|1tab|1.6<space|2spc>Spatial Correlations
     <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
-    <no-break><pageref|auto-21>>
+    <no-break><pageref|auto-22>>
 
     <with|par-left|1tab|1.7<space|2spc>Finite size scaling
     <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
-    <no-break><pageref|auto-23>>
+    <no-break><pageref|auto-24>>
   </table-of-contents>
 
   <section|Ising Model <math|2d>>
@@ -74,8 +74,8 @@
 
   which reproduces the integration measure of the functional integral. The
   obvious choice for numerical simulations is the second one, which we
-  implement through Monte Carlo algorithms. In particular we focus on the
-  Metropolis-Hastings (MH) and the Swendsen-Wang (SW) algorithms.
+  implement through Monte Carlo (MC) algorithms. In particular we focus on
+  the Metropolis-Hastings (MH) and the Swendsen-Wang (SW) algorithms.
 
   <subsection|Thermalization>
 
@@ -85,35 +85,38 @@
   process is usually called <with|font-shape|italic|thermalization>.
 
   After a few run we decided to opt for a cold start approach (i.e., all the
-  spins are initially aligned). The reason for this choice is that in
-  <math|2>-dimensional finite-size systems with periodic boundary conditions
-  the non trivial topology of the lattice allows the existence of stable
-  configurations of the type depicted in (Fig.<reference|fig:toruseffect>),
-  that often arise when the system is rapidly cooled from a disordered
-  configuration. Those configurations would invalidate the mixing process and
-  the sampling of relevant configurations at low temperatures. Therefore, by
-  using a cold start, we exclude this possibility.
+  spins are initially aligned). The reason for this choice is that, when
+  using MH in <math|2>-dimensional finite-size systems with periodic boundary
+  conditions, the non trivial topology of the lattice allows the existence of
+  stable configurations of the type depicted in
+  (Fig.<reference|fig:toruseffect>), that often arise when the system is
+  rapidly cooled from a disordered configuration. Those configurations would
+  invalidate the mixing process and the sampling of relevant configurations
+  at low temperatures. Therefore, by using a cold start, we exclude this
+  possibility.
 
   <big-figure|<image|../ising/ising_128x128_0.610000.ppm|0.35par|||><space|2em><image|../ising/ising_128x128_0.690000.ppm|0.35par|||>|<label|fig:toruseffect>Illustration
-  of two topologically non-trivial configurations on a lattice
-  <math|128\<times\>128>.>
+  of two topologically non-trivial configurations obtained with the MH
+  algorithm on a lattice <math|128\<times\>128>.>
 
   We expect the MH algorithm to be slower to thermalize because of the local
   update it employes as opposed to the cluster update of the SW algorithm.
 
   <\big-figure>
-    <image|../ising/thermalization/img/MH_thermalization_0.300000.eps|0.33par|||><image|../ising/thermalization/img/MH_thermalization_0.400000.eps|0.33par|||><image|../ising/thermalization/img/MH_thermalization_0.430000.eps|0.33par|||>
+    <image|../ising/thermalization/img/MH_thermalization_e_0.300000.eps|0.33par|||><image|../ising/thermalization/img/MH_thermalization_e_0.400000.eps|0.33par|||><image|../ising/thermalization/img/MH_thermalization_e_0.440687.eps|0.33par|||>
 
-    <image|../ising/thermalization/img/MH_thermalization_0.500000.eps|0.33par|||><image|../ising/thermalization/img/MH_thermalization_0.600000.eps|0.33par|||><image|../ising/thermalization/img/MH_thermalization_0.800000.eps|0.33par|||>
-  </big-figure|<label|fig:thermalizationMH>Plot of the energy density for the
-  MH markov process at different values of <math|\<beta\>> (<math|L=32>).>
+    <image|../ising/thermalization/img/MH_thermalization_m_0.300000.eps|0.33par|||><image|../ising/thermalization/img/MH_thermalization_m_0.400000.eps|0.33par|||><image|../ising/thermalization/img/MH_thermalization_m_0.440687.eps|0.33par|||>
+  </big-figure|<label|fig:thermalizationMH>Plot of the energy density and
+  magnetization for the MH markov process at different values of
+  <math|\<beta\>>.>
 
   <\big-figure>
-    <image|../ising/thermalization/img/SW_thermalization_0.300000.eps|0.33par|||><image|../ising/thermalization/img/SW_thermalization_0.400000.eps|0.33par|||><image|../ising/thermalization/img/SW_thermalization_0.430000.eps|0.33par|||>
+    <image|../ising/thermalization/img/SW_thermalization_e_0.300000.eps|0.33par|||><image|../ising/thermalization/img/SW_thermalization_e_0.400000.eps|0.33par|||><image|../ising/thermalization/img/SW_thermalization_e_0.440687.eps|0.33par|||>
 
-    <image|../ising/thermalization/img/SW_thermalization_0.500000.eps|0.33par|||><image|../ising/thermalization/img/SW_thermalization_0.600000.eps|0.33par|||><image|../ising/thermalization/img/SW_thermalization_0.800000.eps|0.33par|||>
-  </big-figure|<label|fig:thermalizationSW>Plot of the energy density for the
-  SW markov process at different values of <math|\<beta\>> (<math|L=32>).>
+    <image|../ising/thermalization/img/SW_thermalization_m_0.300000.eps|0.33par|||><image|../ising/thermalization/img/SW_thermalization_m_0.400000.eps|0.33par|||><image|../ising/thermalization/img/SW_thermalization_m_0.440687.eps|0.33par|||>
+  </big-figure|<label|fig:thermalizationSW>Plot of the energy density and
+  magnetization for the SW markov process at different values of
+  <math|\<beta\>>.>
 
   The MH algorithm reaches thermalization very rapidly for inverse
   temperatures <math|\<beta\>> far from the critical value
@@ -140,7 +143,8 @@
     \<tau\><rsub|\<cal-O\>,exp>\<propto\>L<rsup|z>
   </equation>
 
-  where <math|z\<approx\>2> for local dynamics (MH).
+  where <math|z\<approx\>2> for local dynamics (MH) and <math|z\<approx\>0>
+  for SW.
 
   We also remark that for smaller values of <math|\<beta\>>, the energy of
   the system can have larger fluctuations around its average and therfore
@@ -154,11 +158,11 @@
 
   \;
 
-  For the rest of the simulations we used a thermalization time
-  <math|t<rsub|thermalization>\<approx\>1000<rsup|>> both for MH and for SW.
+  For the rest of the simulations we considered the system to be at
+  equilibrium after a thermalization time <math|t\<approx\>1000<rsup|>> both
+  for MH and for SW.
 
-  <subsection|<label|sect:autocorrelation>Estimators and Autocorrelation
-  Times>
+  <subsection|<label|sect:autocorrelation>Autocorrelation Times>
 
   We now study the correlations present between consecutive configurations
   sampled by the two algorithms in order to obtain the characteristic time
@@ -191,21 +195,21 @@
 
   \;
 
-  We immediately see from (Fig.<reference|fig:autocorrelation1>) that the MH
+  We immediately see from (Fig.<reference|fig:autocorrelation1>) that the MC
   process is strongly correlated in time particularly near the phase
   transition:
 
-  <big-figure|<image|../ising/thermalization/img/MH_energy_0.43.eps|0.5par|||><image|../ising/thermalization/img/SW_energy_0.43.eps|0.5par|||>|<label|fig:autocorrelation1>Comparison
-  of the energy for the two algorithms at <math|\<beta\>=0.43>. (Left) MH
-  (Right) SW.>
+  <big-figure|<image|../ising/thermalization/img/MH_energy.eps|0.5par|||><image|../ising/thermalization/img/SW_energy.eps|0.5par|||>|<label|fig:autocorrelation1>Comparison
+  of the energy for the two algorithms at <math|\<beta\>=\<beta\><rsub|c>>
+  and <math|L=32>. (Left) MH (Right) SW.>
 
   We now compute the autocorrelation time <math|\<tau\><rsub|int>> for the
   observable <math|e=E/V> using formula (<reference|eq:tint>):
 
   <big-figure|<image|../ising/autocorrelation/img/MH_autocorrelation.eps|0.5par|||><image|../ising/autocorrelation/img/SW_autocorrelation.eps|0.5par|||>|Plot
   of the integrated autocorrelation time near the phase transition. (Left) MH
-  (Right) SW. The raw data was obtained from a simulation of <math|100000>
-  measurements.>
+  (Right) SW. The raw data was obtained from a simulation of
+  <math|10<rsup|5>> measurements on a lattice <math|L=32>.>
 
   The data is fitted using the function:
 
@@ -221,12 +225,13 @@
 
   <big-figure|<image|../ising/autocorrelation/img/autocorrelation_time.eps|0.5par|||>|<label|fig:autocorrelation_time>Plot
   of the integrated autocorrelation time as a function of
-  <math|x=<frac|\<beta\>-\<beta\><rsub|c>|\<beta\><rsub|c>>>.>
+  <math|x=<frac|\<beta\>-\<beta\><rsub|c>|\<beta\><rsub|c>>> for
+  <math|L=32>.>
 
   The points in (Fig.<reference|fig:autocorrelation_time>) were obtained
   averaging the fit parameters of <math|20> independent simulations. We
   remark that the peak is slightly off centered because of the finite size of
-  the lattice (<math|L=32>).
+  the lattice (pseudocritical point <math|\<beta\><rsub|c><around*|(|V|)>\<less\>\<beta\><rsub|c><around*|(|\<infty\>|)>>).
 
   <subsection|Binning Analysis>
 
@@ -292,6 +297,10 @@
     2*\<tau\><rsub|exp>*<around*|(|1-<frac|\<tau\><rsub|exp>|k>*<around*|(|1-\<mathe\><rsup|-k/\<tau\><rsub|exp>>|)>|)>
   </equation>
 
+  which is the exact solution for a bivariate gaussian process.
+
+  \;
+
   The lowest value of <math|k> for which we can consider the binned data to
   be uncorrelated is obtained by looking at the point for which the signal
   for <math|k*\<sigma\><rsup|2><rsub|B>/\<sigma\><rsup|2><rsub|\<cal-O\><rsub|i>>>
@@ -309,14 +318,8 @@
     <tformat|<table|<row|<cell|k<rsup|\<ast\>><rsub|MH>>|<cell|=>|<cell|1000>>|<row|<cell|k<rsup|\<ast\>><rsub|SW>>|<cell|=>|<cell|50>>>>
   </eqnarray>
 
-  we are now able to sample data without worrying about autocorrelation in
-  the signal.
-
-  <\big-figure>
-    <image|../ising/binning/img/magnetization_bin_1000_MH.eps|0.5par|||><image|../ising/binning/img/magnetization_bin_1000_SW.eps|0.5par|||>
-  </big-figure|<label|fig:energy_bin>Sampled data after the binning. MH on
-  the left and SW on the right. As we can see the signal loses almost all of
-  its autocorrelation after the binning.>
+  we are now able to sample data without having to worry about
+  autocorrelation in the signal.
 
   <subsection|Observables>
 
@@ -332,7 +335,7 @@
   </equation>
 
   Thanks to the analytical solution of the <math|2d> Ising model, first
-  obtained by Onsager, we are able to compare the estimators obtained by
+  obtained by Onsager, we are able to compare the estimators computed by
   numerical simulations with their exact values obtained analytically.
 
   The samples are collected employing the binning procedure of the previous
@@ -363,11 +366,11 @@
   \;
 
   We also plot the variance of <math|e> and <math|m> which are respectively
-  proportional to the heat capacity <math|c> and the magnetic susceptibility
+  proportional to the heat capacity <math|C> and the magnetic susceptibility
   <math|\<chi\>>:
 
   <\equation>
-    c=V*<around*|(|<around*|\<langle\>|<around*|(|<frac|\<cal-H\>|V>|)><rsup|2>|\<rangle\>>-<around*|\<langle\>|<around*|(|<frac|\<cal-H\>|V>|)>|\<rangle\>><rsup|2>|)>
+    C=V*<around*|(|<around*|\<langle\>|<around*|(|<frac|\<cal-H\>|V>|)><rsup|2>|\<rangle\>>-<around*|\<langle\>|<around*|(|<frac|\<cal-H\>|V>|)>|\<rangle\>><rsup|2>|)>
   </equation>
 
   <\equation>
@@ -384,16 +387,20 @@
 
   <subsection|Probability Distribution Functions>
 
-  We study the probability distribution of the magnetization:
+  We study the probability distribution of the magnetization for a lattice of
+  size <math|L=32>.
 
   <\big-figure>
-    <image|../ising/observables/img/pdf_m_0.30_MH.eps|0.33par|||><image|../ising/observables/img/pdf_m_0.42_MH.eps|0.33par|||><image|../ising/observables/img/pdf_m_0.43_MH.eps|0.33par|||>
+    <image|../ising/reweighting/img/histogram_m_0.375000_MH.eps|0.33par|||><image|../ising/reweighting/img/histogram_m_0.440687_MH.eps|0.33par|||><image|../ising/reweighting/img/histogram_m_0.475000_MH.eps|0.33par|||>
+  </big-figure|<label|fig:pdfMH>Probability distribution functions of
+  <math|m> obtained from three MH runs with <math|\<beta\>=0.375,
+  \<beta\><rsub|c>, 0.475>.>
 
-    \;
-
-    <image|../ising/observables/img/pdf_m_0.44_MH.eps|0.33par|||><image|../ising/observables/img/pdf_m_0.46_MH.eps|0.33par|||><image|../ising/observables/img/pdf_m_0.80_MH.eps|0.33par|||>
-  </big-figure|<label|fig:pdfMH>Probability distribution function of <math|m>
-  for various values of <math|\<beta\>> (<math|L=32>).>
+  <\big-figure>
+    <image|../ising/reweighting/img/histogram_m_0.375000_SW.eps|0.33par|||><image|../ising/reweighting/img/histogram_m_0.440687_SW.eps|0.33par|||><image|../ising/reweighting/img/histogram_m_0.475000_SW.eps|0.33par|||>
+  </big-figure|<label|fig:pdfSW>Probability distribution functions of
+  <math|m> obtained from three SW runs with <math|\<beta\>=0.375,
+  \<beta\><rsub|c>, 0.475>.>
 
   We see from (Fig.<reference|fig:pdfMH>) that the width of the distribution
   gets larger as <math|\<beta\>> approaches the critical value
@@ -405,15 +412,15 @@
   Correlation functions are defined as:
 
   <\equation>
-    G <around*|(|<wide|x|\<vect\>><rsub|i>-<wide|x|\<vect\>><rsub|j>|)>=<around*|\<langle\>|\<sigma\><rsub|i>*\<sigma\><rsub|j>|\<rangle\>><space|1em>\<sim\><space|1em>exp<around*|(|-<around*|\||<wide|x|\<vect\>><rsub|i>-<wide|x|\<vect\>><rsub|j>|\|>/\<xi\>|)><space|1em>for
-    large<space|1em><around*|\||<wide|x|\<vect\>><rsub|i>-<wide|x|\<vect\>><rsub|j>|\|>
+    G <around*|(|<wide|r|\<vect\>><rsub|i>-<wide|r|\<vect\>><rsub|j>|)>=<around*|\<langle\>|\<sigma\><rsub|i>*\<sigma\><rsub|j>|\<rangle\>><space|1em>\<sim\><space|1em>exp<around*|(|-<around*|\||<wide|r|\<vect\>><rsub|i>-<wide|r|\<vect\>><rsub|j>|\|>/\<xi\>|)><space|1em>for
+    large<space|1em><around*|\||<wide|r|\<vect\>><rsub|i>-<wide|r|\<vect\>><rsub|j>|\|>
   </equation>
 
   where <math|\<xi\>> is the correlation length of the system:
 
   <\equation>
-    \<xi\>=-lim<rsub|<around*|\||<wide|x|\<vect\>>|\|>\<rightarrow\>\<infty\>><around*|(|<around*|\||<wide|x|\<vect\>>|\|>/ln
-    G<around*|(|<wide|x|\<vect\>>|)>|)>
+    \<xi\>=-lim<rsub|<around*|\||<wide|r|\<vect\>>|\|>\<rightarrow\>\<infty\>><around*|(|<around*|\||<wide|r|\<vect\>>|\|>/ln
+    G<around*|(|<wide|r|\<vect\>>|)>|)>
   </equation>
 
   <\big-figure>
@@ -446,6 +453,7 @@
     <associate|page-odd-header|>
     <associate|page-screen-margin|false>
     <associate|page-width-margin|false>
+    <associate|preamble|false>
   </collection>
 </initial>
 
@@ -455,18 +463,20 @@
     <associate|auto-10|<tuple|1.3|6>>
     <associate|auto-11|<tuple|7|7>>
     <associate|auto-12|<tuple|8|8>>
-    <associate|auto-13|<tuple|9|9>>
-    <associate|auto-14|<tuple|1.4|9>>
+    <associate|auto-13|<tuple|1.4|9>>
+    <associate|auto-14|<tuple|9|9>>
     <associate|auto-15|<tuple|10|10>>
     <associate|auto-16|<tuple|11|10>>
     <associate|auto-17|<tuple|12|11>>
-    <associate|auto-18|<tuple|13|12>>
-    <associate|auto-19|<tuple|1.5|12>>
+    <associate|auto-18|<tuple|1.5|11>>
+    <associate|auto-19|<tuple|13|11>>
     <associate|auto-2|<tuple|1.1|1>>
     <associate|auto-20|<tuple|14|12>>
-    <associate|auto-21|<tuple|1.6|13>>
-    <associate|auto-22|<tuple|15|13>>
-    <associate|auto-23|<tuple|1.7|14>>
+    <associate|auto-21|<tuple|1.6|12>>
+    <associate|auto-22|<tuple|15|12>>
+    <associate|auto-23|<tuple|1.7|13>>
+    <associate|auto-24|<tuple|1.7|13>>
+    <associate|auto-25|<tuple|1.7|?>>
     <associate|auto-3|<tuple|1|2>>
     <associate|auto-4|<tuple|2|2>>
     <associate|auto-5|<tuple|3|3>>
@@ -481,14 +491,15 @@
     <associate|fig:autocorrelation2|<tuple|4|5>>
     <associate|fig:autocorrelation_time|<tuple|6|6>>
     <associate|fig:energy_bin|<tuple|9|9>>
-    <associate|fig:pdfMH|<tuple|14|12>>
+    <associate|fig:pdfMH|<tuple|13|12>>
+    <associate|fig:pdfSW|<tuple|14|12>>
     <associate|fig:termalization|<tuple|1|2>>
     <associate|fig:termalizationMH|<tuple|1|?>>
     <associate|fig:thermalizationMH|<tuple|2|2>>
     <associate|fig:thermalizationSW|<tuple|3|3>>
     <associate|fig:toruseffect|<tuple|1|2>>
     <associate|sect:autocorrelation|<tuple|1.2|4>>
-    <associate|sect:fss|<tuple|1.7|14>>
+    <associate|sect:fss|<tuple|1.7|13>>
   </collection>
 </references>
 
@@ -496,25 +507,29 @@
   <\collection>
     <\associate|figure>
       <tuple|normal|Illustration of two topologically non-trivial
-      configurations on a lattice <with|mode|<quote|math>|128\<times\>128>.|<pageref|auto-3>>
+      configurations obtained with the MH algorithm on a lattice
+      <with|mode|<quote|math>|128\<times\>128>.|<pageref|auto-3>>
 
-      <tuple|normal|Plot of the energy density for the MH markov process at
-      different values of <with|mode|<quote|math>|\<beta\>>
-      (<with|mode|<quote|math>|L=32>).|<pageref|auto-4>>
+      <tuple|normal|Plot of the energy density and magnetization for the MH
+      markov process at different values of
+      <with|mode|<quote|math>|\<beta\>>.|<pageref|auto-4>>
 
-      <tuple|normal|Plot of the energy density for the SW markov process at
-      different values of <with|mode|<quote|math>|\<beta\>>
-      (<with|mode|<quote|math>|L=32>).|<pageref|auto-5>>
+      <tuple|normal|Plot of the energy density and magnetization for the SW
+      markov process at different values of
+      <with|mode|<quote|math>|\<beta\>>.|<pageref|auto-5>>
 
       <tuple|normal|Comparison of the energy for the two algorithms at
-      <with|mode|<quote|math>|\<beta\>=0.43>. (Left) MH (Right)
-      SW.|<pageref|auto-7>>
+      <with|mode|<quote|math>|\<beta\>=\<beta\><rsub|c>> and
+      <with|mode|<quote|math>|L=32>. (Left) MH (Right) SW.|<pageref|auto-7>>
 
       <tuple|normal|Plot of the integrated autocorrelation time near the
-      phase transition. (Left) MH (Right) SW.|<pageref|auto-8>>
+      phase transition. (Left) MH (Right) SW. The raw data was obtained from
+      a simulation of <with|mode|<quote|math>|10<rsup|5>> measurements on a
+      lattice <with|mode|<quote|math>|L=32>.|<pageref|auto-8>>
 
       <tuple|normal|Plot of the integrated autocorrelation time as a function
-      of <with|mode|<quote|math>|x=<frac|\<beta\>-\<beta\><rsub|c>|\<beta\><rsub|c>>>.|<pageref|auto-9>>
+      of <with|mode|<quote|math>|x=<frac|\<beta\>-\<beta\><rsub|c>|\<beta\><rsub|c>>>
+      for <with|mode|<quote|math>|L=32>.|<pageref|auto-9>>
 
       <tuple|normal|Binning analysis for the MH algorithm at various values
       of <with|mode|<quote|math>|\<beta\>>.|<pageref|auto-11>>
@@ -544,15 +559,21 @@
       <with|mode|<quote|math>|\<beta\>>. MH on the left and SW on the
       right.|<pageref|auto-18>>
 
-      <tuple|normal|Probability distribution function of
-      <with|mode|<quote|math>|m> for various values of
-      <with|mode|<quote|math>|\<beta\>> (<with|mode|<quote|math>|L=32>).|<pageref|auto-20>>
+      <tuple|normal|Probability distribution functions of
+      <with|mode|<quote|math>|m> obtained from three MH runs with
+      <with|mode|<quote|math>|\<beta\>=0.375, \<beta\><rsub|c>,
+      0.475>.|<pageref|auto-20>>
+
+      <tuple|normal|Probability distribution functions of
+      <with|mode|<quote|math>|m> obtained from three SW runs with
+      <with|mode|<quote|math>|\<beta\>=0.375, \<beta\><rsub|c>,
+      0.475>.|<pageref|auto-21>>
 
       <\tuple|normal>
         Ilustration of the growth of spatial correlations when criticality is
         approached on a lattice <with|mode|<quote|math>|100\<times\>100> :
         <with|mode|<quote|math>|\<beta\>=0.22 , 0.31, 0.37, 0.39, 0.42, 0.43>
-      </tuple|<pageref|auto-22>>
+      </tuple|<pageref|auto-23>>
     </associate>
     <\associate|toc>
       <vspace*|1fn><with|font-series|<quote|bold>|math-font-series|<quote|bold>|1<space|2spc>Ising
@@ -563,8 +584,8 @@
       <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
       <no-break><pageref|auto-2>>
 
-      <with|par-left|<quote|1tab>|1.2<space|2spc>Estimators and
-      Autocorrelation Times <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
+      <with|par-left|<quote|1tab>|1.2<space|2spc>Autocorrelation Times
+      <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
       <no-break><pageref|auto-6>>
 
       <with|par-left|<quote|1tab>|1.3<space|2spc>Binning Analysis
@@ -581,11 +602,11 @@
 
       <with|par-left|<quote|1tab>|1.6<space|2spc>Spatial Correlations
       <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
-      <no-break><pageref|auto-21>>
+      <no-break><pageref|auto-22>>
 
       <with|par-left|<quote|1tab>|1.7<space|2spc>Finite size scaling
       <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
-      <no-break><pageref|auto-23>>
+      <no-break><pageref|auto-24>>
     </associate>
   </collection>
 </auxiliary>
