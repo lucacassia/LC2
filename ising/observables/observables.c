@@ -18,7 +18,7 @@ int main ( int argc, char *argv[] )
 
         raw storage[2];
         storage[0] = load_data(fin,0,1000);     /* e */
-        storage[1] = load_data(fin,2,1000);     /* m */
+        storage[1] = load_data(fin,1,1000);     /* m */
 
         int t;
         int lattice_size = storage[0].l;
@@ -59,9 +59,6 @@ int main ( int argc, char *argv[] )
         free(binned_data[0]);
         free(binned_data[1]);
 
-        mean[0] /= n_bins;
-        mean[1] /= n_bins;
-
         /* write to output */
         FILE *fout = fopen(output,"a");
         fprintf(fout, "%e\t", beta_value );
@@ -69,7 +66,7 @@ int main ( int argc, char *argv[] )
         fprintf(fout, "%e\t%e\n", mean[1], beta_value * lattice_size * lattice_size * variance[1] );
         fclose(fout);
 
-        printf("Written to: %s\tβ -> %f\n", output, beta_value);
+        printf("Written to: %s\t\tβ -> %f\n", output, beta_value);
     }
     return 0;
 }
