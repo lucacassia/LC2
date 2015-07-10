@@ -18,7 +18,6 @@ int main ( int argc, char *argv[] )
         raw storage = load_data(fin,0,1000);
         fclose(fin);
         printf( "\nReading: %s\n", argv[i]);
-        printf( "\nHeader:\n#\t%d\t%f\t%s\n\n", storage.l, storage.b, storage.algorithm);
 
         /* reading k_max step */
         int step = 1;
@@ -49,7 +48,6 @@ int main ( int argc, char *argv[] )
         fprintf(fout , "#\t%d\t%f\t%s\t%d\n", storage.l, storage.b, storage.algorithm, storage.size );
 
         /* binnin analysis */
-        printf("Binning.............."); fflush(stdout);
         double *binned_data;
         for(k = 1; k < 100 * step; k += step){
             binned_data = bin_data(storage.data, storage.size, k);
@@ -68,7 +66,7 @@ int main ( int argc, char *argv[] )
         /* close and clear memory */
         fclose(fout);
         raw_close(&storage);
-        printf( " DONE!\nWritten to: %s\n", output );
+        printf( "Written to: %s\n", output );
     }
     return 0;
 }
