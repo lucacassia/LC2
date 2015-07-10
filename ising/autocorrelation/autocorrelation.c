@@ -17,7 +17,6 @@ int main ( int argc, char *argv[] )
         raw storage = load_data(fin,0,1000);
         fclose(fin);
         printf( "\nReading: %s\n", argv[i]);
-        printf( "\nHeader:\n#\t%d\t%f\t%s\n\n", storage.l, storage.b, storage.algorithm);
 
         int step = 1;
         if(!storage.id) step = 10;
@@ -33,8 +32,6 @@ int main ( int argc, char *argv[] )
         for(t = 0; t < storage.size; t++)
             variance += storage.data[t] * storage.data[t];
         variance /= storage.size;
-
-        printf("Computing Autocorrelations..."); fflush(stdout);
 
         char output[50];
         sprintf(output, "data/%d_%f_%s_%d.acr", storage.l, storage.b, storage.algorithm, storage.size );
@@ -53,7 +50,6 @@ int main ( int argc, char *argv[] )
             }
             fprintf(fout, "%d\t%e\n", k_max, autocorrelation_time);
         }
-        printf(" DONE!\n");
         printf("Written to: %s\n", output);
         raw_close(&storage);
         fclose(fout);
