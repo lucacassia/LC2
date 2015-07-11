@@ -1,6 +1,6 @@
 #!/usr/bin/gnuplot
 
-set terminal postscript eps size 4.5,4.5 enhanced color dashed lw 1 "DejaVuSans" 12
+set terminal postscript eps size 3,4.5 enhanced color dashed lw 1 "DejaVuSans" 12
 
 ## integrated autocorrelation time as a function of k_max
 
@@ -13,7 +13,7 @@ f(x)=a*(1-(2*t/(2*t+1))*exp(-x/t))
 do for [i=0:9] {
     beta_value = 0.39+i*0.01
     ## MH
-    unset yrange
+    set yrange[0:100]
     set output sprintf('img/32_%.6f_MH.eps', beta_value )
     inputfile = sprintf('data/32_%.6f_MH_999000.acr', beta_value )
     fit f(x) inputfile via t,a
@@ -30,6 +30,8 @@ do for [i=0:9] {
 
 
 ## autocorrelation time as a function of x
+
+set terminal postscript eps size 4.5,4.5 enhanced color dashed lw 1 "DejaVuSans" 12
 
 set xlabel "x"
 set ylabel "{/Symbol t}_{int}"

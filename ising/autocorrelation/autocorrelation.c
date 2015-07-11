@@ -19,7 +19,7 @@ int main ( int argc, char *argv[] )
         printf( "\nReading: %s\n", argv[i]);
 
         int step = 1;
-        if(!storage.id) step = 10;
+        if(!storage.id) step = 20;
 
         double mean = 0.0f;
         int t, k, k_max;
