@@ -28,7 +28,7 @@
 
     <with|par-left|1tab|1.3<space|2spc>Binning Analysis
     <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
-    <no-break><pageref|auto-10>>
+    <no-break><pageref|auto-11>>
 
     <with|par-left|1tab|1.4<space|2spc>Observables
     <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
@@ -36,24 +36,24 @@
 
     <with|par-left|1tab|1.5<space|2spc>Probability Distribution Functions
     <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
-    <no-break><pageref|auto-19>>
+    <no-break><pageref|auto-20>>
 
     <with|par-left|1tab|1.6<space|2spc>Spatial Correlations
     <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
-    <no-break><pageref|auto-22>>
+    <no-break><pageref|auto-23>>
 
     <with|par-left|1tab|1.7<space|2spc>Finite size scaling
     <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
-    <no-break><pageref|auto-24>>
+    <no-break><pageref|auto-27>>
   </table-of-contents>
 
   <section|Ising Model <math|2d>>
 
   In this section we study the statistical properties of a <math|2d> Ising
   Model. We consider a system of <math|L\<times\>L> spins situated on the
-  points of a regular square lattice with periodic boundary conditions in
-  both directions. Each spin interacts with its nearest neighbours inside the
-  lattice, with an Hamiltonian:
+  points of a regular square lattice with periodic boundary conditions (PBC)
+  in both directions. Each spin interacts with its nearest neighbours inside
+  the lattice, with an Hamiltonian:
 
   <\equation>
     H=<big|sum><rsub|<around*|\<langle\>|i,j|\<rangle\>>>\<sigma\><rsub|i>*\<sigma\><rsub|j>
@@ -206,16 +206,33 @@
   We now compute the autocorrelation time <math|\<tau\><rsub|int>> for the
   observable <math|e=E/V> using formula (<reference|eq:tint>):
 
-  <big-figure|<image|../ising/autocorrelation/img/MH_autocorrelation.eps|0.5par|||><image|../ising/autocorrelation/img/SW_autocorrelation.eps|0.5par|||>|Plot
-  of the integrated autocorrelation time near the phase transition. (Left) MH
-  (Right) SW. The raw data was obtained from a simulation of
-  <math|10<rsup|5>> measurements on a lattice <math|L=32>.>
+  <\big-figure>
+    <image|../ising/autocorrelation/img/32_0.410000_MH.eps|0.33par|||><image|../ising/autocorrelation/img/32_0.430000_MH.eps|0.33par|||><image|../ising/autocorrelation/img/32_0.450000_MH.eps|0.33par|||>
+  </big-figure|Plot of the integrated autocorrelation time near the phase
+  transition for the MH algorithm. The raw data was obtained from a
+  simulation of <math|10<rsup|6>> measurements on a lattice
+  <math|32\<times\>32>. The fit in the center and the one on the right are
+  not very accurate because at those values of <math|\<beta\>> the
+  autocorrelation time becomes very large and the interval
+  <math|<around*|[|0,1000|]>> becomes too small for a reliable estimate of
+  <math|\<tau\><rsub|int>>. As a consequence we see that
+  <math|\<tau\><rsub|exp>> and <math|\<tau\><rsub|int>> become very
+  different.>
+
+  <\big-figure>
+    <image|../ising/autocorrelation/img/32_0.410000_SW.eps|0.33par|||><image|../ising/autocorrelation/img/32_0.430000_SW.eps|0.33par|||><image|../ising/autocorrelation/img/32_0.450000_SW.eps|0.33par|||>
+  </big-figure|Plot of the integrated autocorrelation time near the phase
+  transition for the SW algorithm. The raw data was obtained from a
+  simulation of <math|10<rsup|5>> measurements on a lattice
+  <math|32\<times\>32>.>
 
   The data is fitted using the function:
 
   <\equation>
     \<tau\><rsub|int><around*|(|k<rsub|max>|)>=\<tau\><rsub|int><around*|[|1-<frac|2*\<tau\><rsub|exp>|2*\<tau\><rsub|exp>+1>*\<mathe\><rsup|-k<rsub|max>/\<tau\><rsub|exp>>|]>
   </equation>
+
+  which is the exact solution for a bivariate gaussian process.
 
   As we can see, near the phase transition the autocorrelation time for the
   MH process becomes very large compared to the autocorrelation time of the
@@ -228,10 +245,8 @@
   <math|x=<frac|\<beta\>-\<beta\><rsub|c>|\<beta\><rsub|c>>> for
   <math|L=32>.>
 
-  The points in (Fig.<reference|fig:autocorrelation_time>) were obtained
-  averaging the fit parameters of <math|20> independent simulations. We
-  remark that the peak is slightly off centered because of the finite size of
-  the lattice (pseudocritical point <math|\<beta\><rsub|c><around*|(|V|)>\<less\>\<beta\><rsub|c><around*|(|\<infty\>|)>>).
+  We remark that the peak is slightly off centered because of the finite size
+  of the lattice (pseudocritical point <math|\<beta\><rsub|c><around*|(|V|)>\<less\>\<beta\><rsub|c><around*|(|\<infty\>|)>>).
 
   <subsection|Binning Analysis>
 
@@ -279,7 +294,7 @@
 
     <image|../ising/binning/img/binning_MH_0.45.eps|0.5par|||><image|../ising/binning/img/binning_MH_0.50.eps|0.5par|||>
   </big-figure|Binning analysis for the MH algorithm at various values of
-  <math|\<beta\>>.>
+  <math|\<beta\>> (<math|L=32>).>
 
   <\big-figure>
     <image|../ising/binning/img/binning_SW_0.35.eps|0.5par|||><image|../ising/binning/img/binning_SW_0.40.eps|0.5par|||>
@@ -288,7 +303,7 @@
 
     <image|../ising/binning/img/binning_SW_0.45.eps|0.5par|||><image|../ising/binning/img/binning_SW_0.50.eps|0.5par|||>
   </big-figure|Binning analysis for the SW algorithm at various values of
-  <math|\<beta\>>.>
+  <math|\<beta\>> (<math|L=32>).>
 
   Where we fitted the data using the formula:
 
@@ -318,7 +333,7 @@
     <tformat|<table|<row|<cell|k<rsup|\<ast\>><rsub|MH>>|<cell|=>|<cell|1000>>|<row|<cell|k<rsup|\<ast\>><rsub|SW>>|<cell|=>|<cell|50>>>>
   </eqnarray>
 
-  we are now able to sample data without having to worry about
+  we should now able to sample data without having to worry about
   autocorrelation in the signal.
 
   <subsection|Observables>
@@ -344,7 +359,7 @@
   <big-figure|<image|../ising/observables/img/energy_plot_MH.eps|0.5par|||><image|../ising/observables/img/energy_plot_SW.eps|0.5par|||>|Energy
   density as a function of <math|\<beta\>>. MH on the left and SW on the
   right. The energy and the errors are computed from a sample of <math|100>
-  blocks of binned data on a <math|32\<times\>32> lattice.>
+  blocks of binned data.>
 
   <big-figure|<image|../ising/observables/img/magnetization_plot_MH.eps|0.5par|||><image|../ising/observables/img/magnetization_plot_SW.eps|0.5par|||>|Magnetization
   as a function of <math|\<beta\>>. MH on the left and SW on the right.>
@@ -365,42 +380,77 @@
 
   \;
 
-  We also plot the variance of <math|e> and <math|m> which are respectively
-  proportional to the heat capacity <math|C> and the magnetic susceptibility
-  <math|\<chi\>>:
+  We also plot the variance of <math|e> which is proportional to the heat
+  capacity <math|C>:
 
   <\equation>
     C=V*<around*|(|<around*|\<langle\>|<around*|(|<frac|\<cal-H\>|V>|)><rsup|2>|\<rangle\>>-<around*|\<langle\>|<around*|(|<frac|\<cal-H\>|V>|)>|\<rangle\>><rsup|2>|)>
   </equation>
 
+  <big-figure|<image|../ising/observables/img/variance_e_plot_MH.eps|0.5par|||><image|../ising/observables/img/variance_e_plot_SW.eps|0.5par|||>|<label|fig:heatcapacity>Heat
+  capacity as a function of <math|\<beta\>>. MH on the left and SW on the
+  right.>
+
+  \ and the variance of <math|m>, which is proportional to the magnetic
+  susceptibility <math|\<chi\>>:
+
   <\equation>
     \<chi\>=V*<around*|(|<around*|\<langle\>|\<mu\><rsup|2>|\<rangle\>>-<around*|\<langle\>|<around*|\||\<mu\>|\|>|\<rangle\>><rsup|2>|)>
   </equation>
 
-  <big-figure|<image|../ising/observables/img/variance_e_plot_MH.eps|0.5par|||><image|../ising/observables/img/variance_e_plot_SW.eps|0.5par|||>|Heat
-  capacity as a function of <math|\<beta\>>. MH on the left and SW on the
-  right.>
-
-  <big-figure|<image|../ising/observables/img/variance_m_plot_MH.eps|0.5par|||><image|../ising/observables/img/variance_m_plot_SW.eps|0.5par|||>|Magnetic
+  <big-figure|<image|../ising/observables/img/variance_m_plot_MH.eps|0.5par|||><image|../ising/observables/img/variance_m_plot_SW.eps|0.5par|||>|<label|fig:susceptibility>Magnetic
   susceptibility as a function of <math|\<beta\>>. MH on the left and SW on
   the right.>
+
+  As we immediately see from (Fig.<reference|fig:heatcapacity>) and
+  (Fig.<reference|fig:susceptibility>) the peak of the curve is progressively
+  shifted to the infinite-size limit value <math|\<beta\><rsub|c>> as we
+  approach larger and larger sizes of the lattice:
+
+  <\equation>
+    lim<rsub|L\<rightarrow\>\<infty\>>\<beta\><rsub|c><around*|(|L|)>=\<beta\><rsub|c>=ln<around*|(|1+<sqrt|2>|)>/2
+  </equation>
+
+  From a power law fit of the points near the peak of each dataset we obtain
+  estimates for the pseudocritical <math|\<beta\>> values at finite sizes
+  <math|L=8,16,32,64>.
+
+  <big-table|<tabular|<tformat|<cwith|1|-1|1|-1|cell-halign|c>|<table|<row|<cell|L>|<cell|<math|\<beta\><rsub|c><around*|(|C|)>>>|<cell|<math|\<beta\><rsub|c><around*|(|\<chi\>|)>>>>|<row|<cell|8>|<cell|\<pm\>>|<cell|\<pm\>>>|<row|<cell|16>|<cell|\<pm\>>|<cell|\<pm\>>>|<row|<cell|32>|<cell|\<pm\>>|<cell|\<pm\>>>|<row|<cell|64>|<cell|\<pm\>>|<cell|\<pm\>>>>>>|>
 
   <subsection|Probability Distribution Functions>
 
   We study the probability distribution of the magnetization for a lattice of
-  size <math|L=32>.
+  size <math|L=8>. The energy and magnetization levels of a discrete system
+  are quantized. In particular, for an Ising model on a square lattice of
+  size <math|L<rsup|2>> with PBC, there are exactly <math|L<rsup|2>+1>
+  magnetization levels equidistributed in the interval
+  <math|<around*|[|-1,+1|]>>.
+
+  With this consideration one can construct the probability distribution
+  function of the magnetization just by counting the number of samples in
+  each level (for <math|L> not too large). In (Fig.<reference|fig:pdfMH>) and
+  (Fig.<reference|fig:pdfSW>) we show the PDFs of <math|m> for both of the
+  algorithms and for various values of <math|\<beta\>>:
 
   <\big-figure>
-    <image|../ising/reweighting/img/histogram_m_0.375000_MH.eps|0.33par|||><image|../ising/reweighting/img/histogram_m_0.440687_MH.eps|0.33par|||><image|../ising/reweighting/img/histogram_m_0.475000_MH.eps|0.33par|||>
+    <image|../ising/histograms/img/8_0.350000_MH_histogram.eps|0.33par|||><image|../ising/histograms/img/8_0.355000_MH_histogram.eps|0.33par|||><image|../ising/histograms/img/8_0.360000_MH_histogram.eps|0.33par|||>
+
+    <image|../ising/histograms/img/8_0.365000_MH_histogram.eps|0.33par|||><image|../ising/histograms/img/8_0.370000_MH_histogram.eps|0.33par|||><image|../ising/histograms/img/8_0.375000_MH_histogram.eps|0.33par|||>
+
+    <image|../ising/histograms/img/8_0.380000_MH_histogram.eps|0.33par|||><image|../ising/histograms/img/8_0.385000_MH_histogram.eps|0.33par|||><image|../ising/histograms/img/8_0.390000_MH_histogram.eps|0.33par|||>
   </big-figure|<label|fig:pdfMH>Probability distribution functions of
-  <math|m> obtained from three MH runs with <math|\<beta\>=0.375,
-  \<beta\><rsub|c>, 0.475>.>
+  <math|m> obtained from <math|10<rsup|6>> sweeps of MH on a lattice
+  <math|8\<times\>8>.>
 
   <\big-figure>
-    <image|../ising/reweighting/img/histogram_m_0.375000_SW.eps|0.33par|||><image|../ising/reweighting/img/histogram_m_0.440687_SW.eps|0.33par|||><image|../ising/reweighting/img/histogram_m_0.475000_SW.eps|0.33par|||>
+    <image|../ising/histograms/img/8_0.350000_SW_histogram.eps|0.33par|||><image|../ising/histograms/img/8_0.355000_SW_histogram.eps|0.33par|||><image|../ising/histograms/img/8_0.360000_SW_histogram.eps|0.33par|||>
+
+    <image|../ising/histograms/img/8_0.365000_SW_histogram.eps|0.33par|||><image|../ising/histograms/img/8_0.370000_SW_histogram.eps|0.33par|||><image|../ising/histograms/img/8_0.375000_SW_histogram.eps|0.33par|||>
+
+    <image|../ising/histograms/img/8_0.380000_SW_histogram.eps|0.33par|||><image|../ising/histograms/img/8_0.385000_SW_histogram.eps|0.33par|||><image|../ising/histograms/img/8_0.390000_SW_histogram.eps|0.33par|||>
   </big-figure|<label|fig:pdfSW>Probability distribution functions of
-  <math|m> obtained from three SW runs with <math|\<beta\>=0.375,
-  \<beta\><rsub|c>, 0.475>.>
+  <math|m> obtained from <math|10<rsup|6>> sweeps of SW on a lattice
+  <math|8\<times\>8>.>
 
   We see from (Fig.<reference|fig:pdfMH>) that the width of the distribution
   gets larger as <math|\<beta\>> approaches the critical value
@@ -436,8 +486,91 @@
   <|big-figure>
     Ilustration of the growth of spatial correlations when criticality is
     approached on a lattice <math|100\<times\>100> : <math|\<beta\>=0.22 ,
-    0.31, 0.37, 0.39, 0.42, 0.43>
+    0.31, 0.37, 0.39, 0.42, 0.43>.
   </big-figure>
+
+  Since our system is finite and lives on a lattice, the rotational symmetry
+  <math|SO<around*|(|2|)>> of <math|\<bbb-R\><rsup|2>> is broken down to the
+  discrete subgroup <math|\<bbb-Z\><rsub|4>> of <math|90<rsup|\<circ\>>>
+  rotations. We take advantage of this and the translational symmetry of the
+  system to compute an improved version of the correlation function
+  <math|G<around*|(|<wide|r|\<vect\>>|)>> by defining the observables:
+
+  <\equation>
+    S<rsub|x>\<equiv\><frac|1|L>*<big|sum><rsub|y=1><rsup|L>\<sigma\><around*|(|x,y|)>
+  </equation>
+
+  <\equation>
+    S<rsub|y>\<equiv\><frac|1|L>*<big|sum><rsub|x=1><rsup|L>\<sigma\><around*|(|x,y|)>
+  </equation>
+
+  where <math|x> and <math|y> are the two orthogonal directions in the
+  lattice.
+
+  We can now compute the correlation function as:
+
+  <\equation>
+    G<around*|(|r|)>=<frac|1|2>*<around*|(|<frac|1|L>*<big|sum><rsup|L><rsub|x=1>S<rsub|x>*S<rsub|x+r>+<frac|1|L>*<big|sum><rsup|L><rsub|y=1>S<rsub|y>*S<rsub|y+r>|)>
+  </equation>
+
+  Because of the periodic boundary conditions on the lattice we also have
+  that:
+
+  <\equation>
+    \<sigma\><around*|(|x+a*L,y+b*L|)>=\<sigma\><around*|(|x,y|)><space|2em>\<forall\>
+    <around*|(|a,b|)>\<in\>\<bbb-Z\><rsup|2>
+  </equation>
+
+  therefore, the exponential form of <math|G> is modified to that of a
+  hyperbolic cosine:
+
+  <\equation>
+    <label|eq:cosh>G<around*|(|r|)>\<sim\><frac|1|2>*<around*|(|\<mathe\><rsup|<frac|r|\<xi\>>>+\<mathe\><rsup|<frac|L-r|\<xi\>>>|)>\<sim\>cosh<around*|(|<frac|r-<frac|L|2>|\<xi\>>|)>
+  </equation>
+
+  In (Fig.<reference|fig:corr>) we can see the exponential decay of the
+  correlation function at large distances.\ 
+
+  <big-figure|<image|../ising/correlation/img/green_MH.eps|0.5par|||><image|../ising/correlation/img/green_SW.eps|0.5par|||>|<label|fig:corr>Correlation
+  functions for various values of <math|\<beta\>>. The lattice size used is
+  <math|128\<times\>128> in order to reduce finite-size effects. As a
+  precaution, we considers an interval in <math|\<beta\>>-space such that the
+  correlation length is much smaller that the size of the lattice
+  (approximately one order of magnitude smaller). >
+
+  The correlation length diverges at the critical point as:
+
+  <\equation>
+    \<xi\>\<sim\><around*|\||x|\|><rsup|-\<nu\>>
+  </equation>
+
+  where <math|\<nu\>> is an example of critical exponent of the model. We
+  plot the data obained from the previous fit using logarithmic scales on
+  both axis. This way we can easily obtain the critical exponent
+  <math|\<nu\>> from a linear fit:
+
+  <\equation>
+    log<around*|(|\<xi\>|)>=log<around*|(|\<xi\><rsub|1>|)>-\<nu\>*log<around*|(|<around*|\||x|\|>|)>
+  </equation>
+
+  <big-figure|<image|../ising/correlation/img/correlation_MH.eps|0.5par|||><image|../ising/correlation/img/correlation_SW.eps|0.5par|||>|Plot
+  of the correlation length dependence on the parameter
+  <math|x=<frac|\<beta\>-\<beta\><rsub|c>|\<beta\><rsub|c>>> for a lattice of
+  size <math|128\<times\>128>. MH on the left and SW on the right. The errors
+  are computed by jackknife binning of the fit data from
+  (Fig.<reference|fig:corr>) through (<reference|eq:cosh>).>
+
+  The results are:
+
+  <\equation>
+    \<nu\><rsub|MH>=1.017\<pm\>0.029
+  </equation>
+
+  <\equation>
+    \<nu\><rsub|SW>=1.045\<pm\>0.014
+  </equation>
+
+  Both results are compatible with the known exact value <math|\<nu\>=1>.
 
   <subsection|Finite size scaling><label|sect:fss>
 
@@ -460,23 +593,26 @@
 <\references>
   <\collection>
     <associate|auto-1|<tuple|1|1>>
-    <associate|auto-10|<tuple|1.3|6>>
-    <associate|auto-11|<tuple|7|7>>
+    <associate|auto-10|<tuple|7|6>>
+    <associate|auto-11|<tuple|1.3|7>>
     <associate|auto-12|<tuple|8|8>>
-    <associate|auto-13|<tuple|1.4|9>>
-    <associate|auto-14|<tuple|9|9>>
+    <associate|auto-13|<tuple|9|9>>
+    <associate|auto-14|<tuple|1.4|9>>
     <associate|auto-15|<tuple|10|10>>
     <associate|auto-16|<tuple|11|10>>
     <associate|auto-17|<tuple|12|11>>
-    <associate|auto-18|<tuple|1.5|11>>
-    <associate|auto-19|<tuple|13|11>>
+    <associate|auto-18|<tuple|13|11>>
+    <associate|auto-19|<tuple|1|11>>
     <associate|auto-2|<tuple|1.1|1>>
-    <associate|auto-20|<tuple|14|12>>
-    <associate|auto-21|<tuple|1.6|12>>
+    <associate|auto-20|<tuple|1.5|12>>
+    <associate|auto-21|<tuple|14|12>>
     <associate|auto-22|<tuple|15|12>>
-    <associate|auto-23|<tuple|1.7|13>>
-    <associate|auto-24|<tuple|1.7|13>>
-    <associate|auto-25|<tuple|1.7|?>>
+    <associate|auto-23|<tuple|1.6|13>>
+    <associate|auto-24|<tuple|16|13>>
+    <associate|auto-25|<tuple|17|?>>
+    <associate|auto-26|<tuple|18|?>>
+    <associate|auto-27|<tuple|1.7|?>>
+    <associate|auto-28|<tuple|1.7|?>>
     <associate|auto-3|<tuple|1|2>>
     <associate|auto-4|<tuple|2|2>>
     <associate|auto-5|<tuple|3|3>>
@@ -485,19 +621,26 @@
     <associate|auto-8|<tuple|5|5>>
     <associate|auto-9|<tuple|6|6>>
     <associate|eq:MC|<tuple|2|?>>
+    <associate|eq:cosh|<tuple|24|?>>
     <associate|eq:scalingtau|<tuple|3|4>>
     <associate|eq:tint|<tuple|5|4>>
     <associate|fig:autocorrelation1|<tuple|4|5>>
     <associate|fig:autocorrelation2|<tuple|4|5>>
-    <associate|fig:autocorrelation_time|<tuple|6|6>>
+    <associate|fig:autocorrelation_time|<tuple|7|6>>
+    <associate|fig:corr|<tuple|17|?>>
     <associate|fig:energy_bin|<tuple|9|9>>
-    <associate|fig:pdfMH|<tuple|13|12>>
-    <associate|fig:pdfSW|<tuple|14|12>>
+    <associate|fig:heatcapacity|<tuple|12|?>>
+    <associate|fig:pdfMH|<tuple|14|12>>
+    <associate|fig:pdfSW|<tuple|15|12>>
+    <associate|fig:susceptibility|<tuple|13|?>>
     <associate|fig:termalization|<tuple|1|2>>
     <associate|fig:termalizationMH|<tuple|1|?>>
     <associate|fig:thermalizationMH|<tuple|2|2>>
     <associate|fig:thermalizationSW|<tuple|3|3>>
     <associate|fig:toruseffect|<tuple|1|2>>
+    <associate|footnote-1|<tuple|1|?>>
+    <associate|footnr-1|<tuple|1|?>>
+    <associate|result_box|<tuple|5|?>>
     <associate|sect:autocorrelation|<tuple|1.2|4>>
     <associate|sect:fss|<tuple|1.7|13>>
   </collection>
@@ -523,29 +666,39 @@
       <with|mode|<quote|math>|L=32>. (Left) MH (Right) SW.|<pageref|auto-7>>
 
       <tuple|normal|Plot of the integrated autocorrelation time near the
-      phase transition. (Left) MH (Right) SW. The raw data was obtained from
-      a simulation of <with|mode|<quote|math>|10<rsup|5>> measurements on a
-      lattice <with|mode|<quote|math>|L=32>.|<pageref|auto-8>>
+      phase transition for the MH algorithm. The raw data was obtained from a
+      simulation of <with|mode|<quote|math>|10<rsup|6>> measurements on a
+      lattice <with|mode|<quote|math>|32\<times\>32>. The fit in the center
+      and the one on the right are not very accurate because at those values
+      of <with|mode|<quote|math>|\<beta\>> the autocorrelation time becomes
+      very large and the interval <with|mode|<quote|math>|<around*|[|0,1000|]>>
+      becomes too small for a reliable estimate of
+      <with|mode|<quote|math>|\<tau\><rsub|int>>. As a consequence we see
+      that <with|mode|<quote|math>|\<tau\><rsub|exp>> and
+      <with|mode|<quote|math>|\<tau\><rsub|int>> become very
+      different.|<pageref|auto-8>>
+
+      <tuple|normal|Plot of the integrated autocorrelation time near the
+      phase transition for the SW algorithm. The raw data was obtained from a
+      simulation of <with|mode|<quote|math>|10<rsup|5>> measurements on a
+      lattice <with|mode|<quote|math>|32\<times\>32>.|<pageref|auto-9>>
 
       <tuple|normal|Plot of the integrated autocorrelation time as a function
       of <with|mode|<quote|math>|x=<frac|\<beta\>-\<beta\><rsub|c>|\<beta\><rsub|c>>>
-      for <with|mode|<quote|math>|L=32>.|<pageref|auto-9>>
+      for <with|mode|<quote|math>|L=32>.|<pageref|auto-10>>
 
       <tuple|normal|Binning analysis for the MH algorithm at various values
-      of <with|mode|<quote|math>|\<beta\>>.|<pageref|auto-11>>
+      of <with|mode|<quote|math>|\<beta\>>
+      (<with|mode|<quote|math>|L=32>).|<pageref|auto-12>>
 
       <tuple|normal|Binning analysis for the SW algorithm at various values
-      of <with|mode|<quote|math>|\<beta\>>.|<pageref|auto-12>>
-
-      <tuple|normal|Sampled data after the binning. MH on the left and SW on
-      the right. As we can see the signal loses almost all of its
-      autocorrelation after the binning.|<pageref|auto-13>>
+      of <with|mode|<quote|math>|\<beta\>>
+      (<with|mode|<quote|math>|L=32>).|<pageref|auto-13>>
 
       <tuple|normal|Energy density as a function of
       <with|mode|<quote|math>|\<beta\>>. MH on the left and SW on the right.
       The energy and the errors are computed from a sample of
-      <with|mode|<quote|math>|100> blocks of binned data on a
-      <with|mode|<quote|math>|32\<times\>32> lattice.|<pageref|auto-15>>
+      <with|mode|<quote|math>|100> blocks of binned data.|<pageref|auto-15>>
 
       <tuple|normal|Magnetization as a function of
       <with|mode|<quote|math>|\<beta\>>. MH on the left and SW on the
@@ -560,20 +713,39 @@
       right.|<pageref|auto-18>>
 
       <tuple|normal|Probability distribution functions of
-      <with|mode|<quote|math>|m> obtained from three MH runs with
-      <with|mode|<quote|math>|\<beta\>=0.375, \<beta\><rsub|c>,
-      0.475>.|<pageref|auto-20>>
+      <with|mode|<quote|math>|m> obtained from
+      <with|mode|<quote|math>|10<rsup|6>> sweeps of MH on a lattice
+      <with|mode|<quote|math>|8\<times\>8>.|<pageref|auto-21>>
 
       <tuple|normal|Probability distribution functions of
-      <with|mode|<quote|math>|m> obtained from three SW runs with
-      <with|mode|<quote|math>|\<beta\>=0.375, \<beta\><rsub|c>,
-      0.475>.|<pageref|auto-21>>
+      <with|mode|<quote|math>|m> obtained from
+      <with|mode|<quote|math>|10<rsup|6>> sweeps of SW on a lattice
+      <with|mode|<quote|math>|8\<times\>8>.|<pageref|auto-22>>
 
       <\tuple|normal>
         Ilustration of the growth of spatial correlations when criticality is
         approached on a lattice <with|mode|<quote|math>|100\<times\>100> :
-        <with|mode|<quote|math>|\<beta\>=0.22 , 0.31, 0.37, 0.39, 0.42, 0.43>
-      </tuple|<pageref|auto-23>>
+        <with|mode|<quote|math>|\<beta\>=0.22 , 0.31, 0.37, 0.39, 0.42,
+        0.43>.
+      </tuple|<pageref|auto-24>>
+
+      <tuple|normal|Correlation functions for various values of
+      <with|mode|<quote|math>|\<beta\>>. The lattice size used is
+      <with|mode|<quote|math>|128\<times\>128> in order to reduce finite-size
+      effects. As a precaution, we considers an interval in
+      <with|mode|<quote|math>|\<beta\>>-space such that the correlation
+      length is much smaller that the size of the lattice (approximately one
+      order of magnitude smaller). |<pageref|auto-25>>
+
+      <tuple|normal|Plot of the correlation length dependence on the
+      parameter <with|mode|<quote|math>|x=<frac|\<beta\>-\<beta\><rsub|c>|\<beta\><rsub|c>>>
+      for a lattice of size <with|mode|<quote|math>|128\<times\>128>. MH on
+      the left and SW on the right. The errors are computed by jackknife
+      binning of the fit data from (Fig.<reference|fig:corr>) through
+      (<reference|eq:cosh>).|<pageref|auto-26>>
+    </associate>
+    <\associate|table>
+      <tuple|normal||<pageref|auto-19>>
     </associate>
     <\associate|toc>
       <vspace*|1fn><with|font-series|<quote|bold>|math-font-series|<quote|bold>|1<space|2spc>Ising
@@ -590,7 +762,7 @@
 
       <with|par-left|<quote|1tab>|1.3<space|2spc>Binning Analysis
       <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
-      <no-break><pageref|auto-10>>
+      <no-break><pageref|auto-11>>
 
       <with|par-left|<quote|1tab>|1.4<space|2spc>Observables
       <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
@@ -598,15 +770,15 @@
 
       <with|par-left|<quote|1tab>|1.5<space|2spc>Probability Distribution
       Functions <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
-      <no-break><pageref|auto-19>>
+      <no-break><pageref|auto-20>>
 
       <with|par-left|<quote|1tab>|1.6<space|2spc>Spatial Correlations
       <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
-      <no-break><pageref|auto-22>>
+      <no-break><pageref|auto-23>>
 
       <with|par-left|<quote|1tab>|1.7<space|2spc>Finite size scaling
       <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
-      <no-break><pageref|auto-24>>
+      <no-break><pageref|auto-27>>
     </associate>
   </collection>
 </auxiliary>
