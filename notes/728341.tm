@@ -452,14 +452,28 @@
   <math|m> obtained from <math|10<rsup|6>> sweeps of SW on a lattice
   <math|8\<times\>8>.>
 
-  We see from (Fig.<reference|fig:pdfMH>) that the width of the distribution
-  gets larger as <math|\<beta\>> approaches the critical value
-  <math|\<beta\><rsub|c>>. This is in fact what we expect, knowing that the
-  susceptibility diverges at a second order phase transition.
+  By looking at the PDFs of <math|m> we can witness the formation of a 2-fold
+  degeneracy of the ground state of the system for
+  <math|\<beta\>\<gtr\>\<beta\><rsub|c>>. Moreover, if we get close to the
+  phase transition, we see that the distribution
+  <math|P<around*|(|m,\<beta\>|)>> becomes almost flat at <math|m=0> before
+  ``splitting'' into the sum of two PDFs for the two degenerate vacua. This
+  implies that near <math|\<beta\><rsub|c>> the distribution does not have a
+  well defined second cumulant, which is precisely the magnetic
+  susceptibility.
+
+  \;
+
+  Since we used a cold start initialization, all our simulations at
+  temperatures lower than <math|T<rsub|c>> spontaneously broke the
+  <math|\<bbb-Z\><rsub|2>> symmetry of the ground state to some value
+  <math|m<rsub|0>\<gtr\>0>. Having used a hot start initialization instead,
+  we would have ended up with <math|m<rsub|0>=\<pm\><around*|\||m<rsub|0>|\|>>
+  with probability <math|<frac|1|2>> each.
 
   <subsection|Spatial Correlations>
 
-  Correlation functions are defined as:
+  The two-point correlation function is defined as:
 
   <\equation>
     G <around*|(|<wide|r|\<vect\>><rsub|i>-<wide|r|\<vect\>><rsub|j>|)>=<around*|\<langle\>|\<sigma\><rsub|i>*\<sigma\><rsub|j>|\<rangle\>><space|1em>\<sim\><space|1em>exp<around*|(|-<around*|\||<wide|r|\<vect\>><rsub|i>-<wide|r|\<vect\>><rsub|j>|\|>/\<xi\>|)><space|1em>for
@@ -491,7 +505,7 @@
 
   Since our system is finite and lives on a lattice, the rotational symmetry
   <math|SO<around*|(|2|)>> of <math|\<bbb-R\><rsup|2>> is broken down to the
-  discrete subgroup <math|\<bbb-Z\><rsub|4>> of <math|90<rsup|\<circ\>>>
+  discrete subgroup <math|\<bbb-Z\><rsub|4>> of <math|<frac|\<pi\>|2>>
   rotations. We take advantage of this and the translational symmetry of the
   system to compute an improved version of the correlation function
   <math|G<around*|(|<wide|r|\<vect\>>|)>> by defining the observables:
@@ -507,7 +521,9 @@
   where <math|x> and <math|y> are the two orthogonal directions in the
   lattice.
 
-  We can now compute the correlation function as:
+  \;
+
+  We can compute the correlation function as:
 
   <\equation>
     G<around*|(|r|)>=<frac|1|2>*<around*|(|<frac|1|L>*<big|sum><rsup|L><rsub|x=1>S<rsub|x>*S<rsub|x+r>+<frac|1|L>*<big|sum><rsup|L><rsub|y=1>S<rsub|y>*S<rsub|y+r>|)>
@@ -521,11 +537,12 @@
     <around*|(|a,b|)>\<in\>\<bbb-Z\><rsup|2>
   </equation>
 
-  therefore, the exponential form of <math|G> is modified to that of a
+  and therefore, the exponential form of <math|G> is modified to that of a
   hyperbolic cosine:
 
   <\equation>
-    <label|eq:cosh>G<around*|(|r|)>\<sim\><frac|1|2>*<around*|(|\<mathe\><rsup|<frac|r|\<xi\>>>+\<mathe\><rsup|<frac|L-r|\<xi\>>>|)>\<sim\>cosh<around*|(|<frac|r-<frac|L|2>|\<xi\>>|)>
+    <label|eq:cosh>G<around*|(|r|)>\<sim\><frac|1|2>*<around*|(|\<mathe\><rsup|<frac|r|\<xi\>>>+\<mathe\><rsup|<frac|L-r|\<xi\>>>|)>\<sim\>cosh
+    <around*|(|<frac|r-<frac|L|2>|\<xi\>>|)>
   </equation>
 
   In (Fig.<reference|fig:corr>) we can see the exponential decay of the
@@ -594,45 +611,45 @@
   <\collection>
     <associate|auto-1|<tuple|1|1>>
     <associate|auto-10|<tuple|7|6>>
-    <associate|auto-11|<tuple|1.3|7>>
-    <associate|auto-12|<tuple|8|8>>
-    <associate|auto-13|<tuple|9|9>>
+    <associate|auto-11|<tuple|1.3|6>>
+    <associate|auto-12|<tuple|8|7>>
+    <associate|auto-13|<tuple|9|8>>
     <associate|auto-14|<tuple|1.4|9>>
-    <associate|auto-15|<tuple|10|10>>
+    <associate|auto-15|<tuple|10|9>>
     <associate|auto-16|<tuple|11|10>>
-    <associate|auto-17|<tuple|12|11>>
+    <associate|auto-17|<tuple|12|10>>
     <associate|auto-18|<tuple|13|11>>
     <associate|auto-19|<tuple|1|11>>
     <associate|auto-2|<tuple|1.1|1>>
-    <associate|auto-20|<tuple|1.5|12>>
+    <associate|auto-20|<tuple|1.5|11>>
     <associate|auto-21|<tuple|14|12>>
-    <associate|auto-22|<tuple|15|12>>
-    <associate|auto-23|<tuple|1.6|13>>
-    <associate|auto-24|<tuple|16|13>>
-    <associate|auto-25|<tuple|17|?>>
-    <associate|auto-26|<tuple|18|?>>
-    <associate|auto-27|<tuple|1.7|?>>
+    <associate|auto-22|<tuple|15|13>>
+    <associate|auto-23|<tuple|1.6|14>>
+    <associate|auto-24|<tuple|16|14>>
+    <associate|auto-25|<tuple|17|15>>
+    <associate|auto-26|<tuple|18|16>>
+    <associate|auto-27|<tuple|1.7|16>>
     <associate|auto-28|<tuple|1.7|?>>
     <associate|auto-3|<tuple|1|2>>
     <associate|auto-4|<tuple|2|2>>
     <associate|auto-5|<tuple|3|3>>
     <associate|auto-6|<tuple|1.2|4>>
-    <associate|auto-7|<tuple|4|5>>
+    <associate|auto-7|<tuple|4|4>>
     <associate|auto-8|<tuple|5|5>>
-    <associate|auto-9|<tuple|6|6>>
+    <associate|auto-9|<tuple|6|5>>
     <associate|eq:MC|<tuple|2|?>>
-    <associate|eq:cosh|<tuple|24|?>>
-    <associate|eq:scalingtau|<tuple|3|4>>
+    <associate|eq:cosh|<tuple|24|15>>
+    <associate|eq:scalingtau|<tuple|3|3>>
     <associate|eq:tint|<tuple|5|4>>
-    <associate|fig:autocorrelation1|<tuple|4|5>>
+    <associate|fig:autocorrelation1|<tuple|4|4>>
     <associate|fig:autocorrelation2|<tuple|4|5>>
     <associate|fig:autocorrelation_time|<tuple|7|6>>
-    <associate|fig:corr|<tuple|17|?>>
+    <associate|fig:corr|<tuple|17|15>>
     <associate|fig:energy_bin|<tuple|9|9>>
-    <associate|fig:heatcapacity|<tuple|12|?>>
+    <associate|fig:heatcapacity|<tuple|12|10>>
     <associate|fig:pdfMH|<tuple|14|12>>
-    <associate|fig:pdfSW|<tuple|15|12>>
-    <associate|fig:susceptibility|<tuple|13|?>>
+    <associate|fig:pdfSW|<tuple|15|13>>
+    <associate|fig:susceptibility|<tuple|13|11>>
     <associate|fig:termalization|<tuple|1|2>>
     <associate|fig:termalizationMH|<tuple|1|?>>
     <associate|fig:thermalizationMH|<tuple|2|2>>
@@ -642,7 +659,7 @@
     <associate|footnr-1|<tuple|1|?>>
     <associate|result_box|<tuple|5|?>>
     <associate|sect:autocorrelation|<tuple|1.2|4>>
-    <associate|sect:fss|<tuple|1.7|13>>
+    <associate|sect:fss|<tuple|1.7|16>>
   </collection>
 </references>
 
