@@ -20,21 +20,19 @@ int main ( int argc, char *argv[] )
         storage = load_data(fin,1,1000);     /* m */
 
         /* bin data */
-        int i, e, n_bins = 100;
+        int i, m, n_bins = storage.l*storage.l/2+1;
         int *histogram = (int*)malloc(n_bins*sizeof(int));
-        for(e = 0; e < n_bins; e++)
-            histogram[e] = 0;
+        for(m = 0; m < n_bins; m++)
+            histogram[m] = 0;
         for(i = 0; i < storage.size; i++)
-            for(e = 0; e < n_bins; e++)
-                if((storage.data[i]>-2.0+e*2.0f/n_bins)&&(storage.data[i]<=-2.0+(e+1)*2.0f/n_bins))
-                    histogram[i]++;
+            histogram[(int)(storage.data[i]*(n_bins-1))]++;
 
         /* write to output */
         char output[50];
-        sprintf(output, "data/%d_%s_%d.hist", storage.l, storage.algorithm, storage.size );
+        sprintf(output, "data/%d_%f_%s_%d.hist", storage.l, storage.b, storage.algorithm, storage.size );
         FILE *fout = fopen(output,"w");
-        for(e = 0; e < n_bins; e++)
-            fprintf(fout, "%e\t%d\n", -2.0+(e+0.5f)*2.0f/n_bins, histogram[e] );
+        for(m = 0; m < n_bins; m++)
+            fprintf(fout, "%e\t%d\n", m*1.0f/(n_bins-1), histogram[m] );
         fclose(fout);
 
         printf("Written to: %s\t\tβ -> %f\n", output, storage.b);
