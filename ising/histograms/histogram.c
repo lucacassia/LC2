@@ -26,6 +26,7 @@ int main ( int argc, char *argv[] )
             histogram[m] = 0;
         for(i = 0; i < storage.size; i++)
             histogram[(int)(storage.data[i]*(n_bins-1))]++;
+        histogram[0] *= 2;
 
         /* write to output */
         char output[50];
