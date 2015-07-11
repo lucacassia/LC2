@@ -20,15 +20,15 @@ with open(args.output,"w") as output:
             n_bins = int(firstline[4])
             data = numpy.loadtxt(f, usecols = (0, 1+n_bins), unpack=True)
         popt, pcov = curve_fit(func, data[0], data[1])
-        mean = popt[1]
+        mean = numpy.log(popt[1])
         error = 0.0
         for k in range(n_bins):
             with open(path, 'r') as f:
                 data = numpy.loadtxt(f, skiprows = 1, usecols = (0,1+k), unpack=True)
             popt, pcov = curve_fit(func, data[0], data[1])
-            error += (popt[1]-mean)**2
+            error += (numpy.log(popt[1])-mean)**2
         error *= (n_bins - 1) / n_bins
-        output.write("{}\t{}\t{}\n".format( beta, mean, error ) )
+        output.write("{}\t{}\t{}\n".format( numpy.log((0.44-beta)/0.44), mean, error ) )
 
 print("File saved to: "+args.output)
 

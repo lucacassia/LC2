@@ -1,8 +1,10 @@
 #include"ising.h"
 
 int main(){
-    double b;
-    for(b = 0.42f; b < 0.43f; b += 0.01f/15)
-        dump_data(128, b, SW, 100000);
+    double x;
+    double start = -3.75;
+    double  end  = -0.25;
+    for(x = start; x <= end; x += (end-start)/10)
+        dump_data(128, (1-exp(x))*BETA_CRITICAL, MH, 100000);
     return 0;
 }

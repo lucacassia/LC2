@@ -16,11 +16,10 @@ int main ( int argc, char *argv[] )
         }
         header hdr = get_header(fin);
         printf( "\nReading: %s\n", argv[i]);
-        printf( "\nHeader:\n#\t%d\t%f\t%s\n\n", hdr.l, hdr.b, hdr.algorithm);
         fseek(fin, 0L, SEEK_SET);
         hdr.size -= 1000;
 
-        int bin_size = 1000;
+        int bin_size = 500;
         double **binned_data = (double**)malloc( (hdr.l/2) * sizeof(double*) );
         int k; for(k = 0; k < hdr.l/2; k++){
             raw storage = load_data( fin, 3+k, 1000 );
@@ -52,7 +51,7 @@ int main ( int argc, char *argv[] )
         }
         free(binned_data);
         fclose(fout);
-        printf("Written to: %s\tbeta = %f\n", output, hdr.b);
+        printf("Written to: %s\n", output);
     }
     return 0;
 }
