@@ -211,13 +211,10 @@
   </big-figure|Plot of the integrated autocorrelation time near the phase
   transition for the MH algorithm. The raw data was obtained from a
   simulation of <math|10<rsup|6>> measurements on a lattice
-  <math|32\<times\>32>. The fit in the center and the one on the right are
-  not very accurate because at those values of <math|\<beta\>> the
-  autocorrelation time becomes very large and the interval
-  <math|<around*|[|0,1000|]>> becomes too small for a reliable estimate of
-  <math|\<tau\><rsub|int>>. As a consequence we see that
-  <math|\<tau\><rsub|exp>> and <math|\<tau\><rsub|int>> become very
-  different.>
+  <math|32\<times\>32>. The fit in the center is not very accurate because
+  near <math|\<beta\><rsub|c>> the autocorrelation time becomes very large
+  and the interval <math|<around*|[|0,2000|]>> becomes too small for a
+  reliable estimate of <math|\<tau\><rsub|int>>.>
 
   <\big-figure>
     <image|../ising/autocorrelation/img/32_0.410000_SW.eps|0.33par|||><image|../ising/autocorrelation/img/32_0.430000_SW.eps|0.33par|||><image|../ising/autocorrelation/img/32_0.450000_SW.eps|0.33par|||>
@@ -234,11 +231,14 @@
 
   which is the exact solution for a bivariate gaussian process.
 
+  \;
+
   As we can see, near the phase transition the autocorrelation time for the
   MH process becomes very large compared to the autocorrelation time of the
-  SW process. In fact due to the critical slowing down of the MH algorithm,
-  we have <math|\<tau\><rsub|int><rsup|MH>\<sim\>100> compared to an
-  autocorrelation time <math|\<tau\><rsub|int><rsup|SW>\<sim\>5> for SW.
+  SW process (Fig.<reference|fig:autocorrelation_time>). In fact due to the
+  critical slowing down of the MH algorithm, we have
+  <math|\<tau\><rsub|int><rsup|MH>\<sim\>100> compared to an autocorrelation
+  time <math|\<tau\><rsub|int><rsup|SW>\<sim\>5> for SW.
 
   <big-figure|<image|../ising/autocorrelation/img/autocorrelation_time.eps|0.5par|||>|<label|fig:autocorrelation_time>Plot
   of the integrated autocorrelation time as a function of
@@ -312,10 +312,6 @@
     2*\<tau\><rsub|exp>*<around*|(|1-<frac|\<tau\><rsub|exp>|k>*<around*|(|1-\<mathe\><rsup|-k/\<tau\><rsub|exp>>|)>|)>
   </equation>
 
-  which is the exact solution for a bivariate gaussian process.
-
-  \;
-
   The lowest value of <math|k> for which we can consider the binned data to
   be uncorrelated is obtained by looking at the point for which the signal
   for <math|k*\<sigma\><rsup|2><rsub|B>/\<sigma\><rsup|2><rsub|\<cal-O\><rsub|i>>>
@@ -346,15 +342,15 @@
   </equation>
 
   <\equation>
-    m=M/V=<around*|\<langle\>|<around*|\||\<mu\>|\|>|\<rangle\>>,<space|2em>\<mu\>=<big|sum><rsub|i>\<sigma\><rsub|i>/V
+    m=M/V,<space|2em>M=<around*|\<langle\>|\<cal-M\>|\<rangle\>>,<space|2em>\<cal-M\>=<around*|\||<big|sum><rsub|i>\<sigma\><rsub|i>|\|>
   </equation>
 
   Thanks to the analytical solution of the <math|2d> Ising model, first
   obtained by Onsager, we are able to compare the estimators computed by
   numerical simulations with their exact values obtained analytically.
 
-  The samples are collected employing the binning procedure of the previous
-  section.
+  The samples and the errors are collected employing the binning procedure of
+  the previous section.
 
   <big-figure|<image|../ising/observables/img/energy_plot_MH.eps|0.5par|||><image|../ising/observables/img/energy_plot_SW.eps|0.5par|||>|Energy
   density as a function of <math|\<beta\>>. MH on the left and SW on the
@@ -372,30 +368,26 @@
   function. This is imputable to the finite size of the lattice used for the
   simulation. It is indeed a well known fact that discontinuities and
   divergences only appear in the thermodinamic limit of infinite size, which
-  is precisely the premise of Onsager's solution.
-
-  In section (<reference|sect:fss>) we will see that as we scale the size of
-  the lattice the numerical solution will approach more and more the exact
-  one.
+  is precisely the premise of Onsager's solution. In fact, the numerical
+  solution approaches more and more the exact one as the size of the lattice
+  increases.
 
   \;
 
-  We also plot the variance of <math|e> which is proportional to the heat
-  capacity <math|C>:
+  We also plot the heat capacity:
 
   <\equation>
-    C=V*<around*|(|<around*|\<langle\>|<around*|(|<frac|\<cal-H\>|V>|)><rsup|2>|\<rangle\>>-<around*|\<langle\>|<around*|(|<frac|\<cal-H\>|V>|)>|\<rangle\>><rsup|2>|)>
+    C=\<beta\>*<rsup|2>*V*<around*|\<langle\>|<around*|(|<frac|\<cal-H\>|V>-<around*|\<langle\>|<frac|\<cal-H\>|V>|\<rangle\>>|)><rsup|2>|\<rangle\>>
   </equation>
 
   <big-figure|<image|../ising/observables/img/variance_e_plot_MH.eps|0.5par|||><image|../ising/observables/img/variance_e_plot_SW.eps|0.5par|||>|<label|fig:heatcapacity>Heat
   capacity as a function of <math|\<beta\>>. MH on the left and SW on the
   right.>
 
-  \ and the variance of <math|m>, which is proportional to the magnetic
-  susceptibility <math|\<chi\>>:
+  \ and the magnetic susceptibility:
 
   <\equation>
-    \<chi\>=V*<around*|(|<around*|\<langle\>|\<mu\><rsup|2>|\<rangle\>>-<around*|\<langle\>|<around*|\||\<mu\>|\|>|\<rangle\>><rsup|2>|)>
+    \<chi\>=\<beta\>*V*<around*|\<langle\>|<around*|(|<frac|\<cal-M\>|V>-<around*|\<langle\>|<frac|\<cal-M\>|V>|\<rangle\>>|)><rsup|2>|\<rangle\>>
   </equation>
 
   <big-figure|<image|../ising/observables/img/variance_m_plot_MH.eps|0.5par|||><image|../ising/observables/img/variance_m_plot_SW.eps|0.5par|||>|<label|fig:susceptibility>Magnetic
@@ -412,10 +404,11 @@
   </equation>
 
   From a power law fit of the points near the peak of each dataset we obtain
-  estimates for the pseudocritical <math|\<beta\>> values at finite sizes
+  estimates for the pseudocritical <math|\<beta\>>-values at finite sizes
   <math|L=8,16,32,64>.
 
-  <big-table|<tabular|<tformat|<cwith|1|-1|1|-1|cell-halign|c>|<table|<row|<cell|L>|<cell|<math|\<beta\><rsub|c><around*|(|C|)>>>|<cell|<math|\<beta\><rsub|c><around*|(|\<chi\>|)>>>>|<row|<cell|8>|<cell|\<pm\>>|<cell|\<pm\>>>|<row|<cell|16>|<cell|\<pm\>>|<cell|\<pm\>>>|<row|<cell|32>|<cell|\<pm\>>|<cell|\<pm\>>>|<row|<cell|64>|<cell|\<pm\>>|<cell|\<pm\>>>>>>|>
+  <big-table|<tabular|<tformat|<cwith|1|-1|1|-1|cell-halign|c>|<table|<row|<cell|<math|L>>|<cell|<math|\<beta\><rsub|c><around*|(|C|)>>>|<cell|<math|\<beta\><rsub|c><around*|(|\<chi\>|)>>>>|<row|<cell|8>|<cell|\<pm\>>|<cell|\<pm\>>>|<row|<cell|16>|<cell|\<pm\>>|<cell|\<pm\>>>|<row|<cell|32>|<cell|\<pm\>>|<cell|\<pm\>>>|<row|<cell|64>|<cell|\<pm\>>|<cell|\<pm\>>>>>>|Pseudocritical
+  <math|\<beta\>>-values.>
 
   <subsection|Probability Distribution Functions>
 
@@ -433,23 +426,11 @@
   algorithms and for various values of <math|\<beta\>>:
 
   <\big-figure>
-    <image|../ising/histograms/img/8_0.350000_MH_histogram.eps|0.33par|||><image|../ising/histograms/img/8_0.355000_MH_histogram.eps|0.33par|||><image|../ising/histograms/img/8_0.360000_MH_histogram.eps|0.33par|||>
+    <image|../ising/histograms/img/8_0.340000_MH_histogram.eps|0.33par|||><image|../ising/histograms/img/8_0.350000_MH_histogram.eps|0.33par|||><image|../ising/histograms/img/8_0.360000_MH_histogram.eps|0.33par|||>
 
-    <image|../ising/histograms/img/8_0.365000_MH_histogram.eps|0.33par|||><image|../ising/histograms/img/8_0.370000_MH_histogram.eps|0.33par|||><image|../ising/histograms/img/8_0.375000_MH_histogram.eps|0.33par|||>
-
-    <image|../ising/histograms/img/8_0.380000_MH_histogram.eps|0.33par|||><image|../ising/histograms/img/8_0.385000_MH_histogram.eps|0.33par|||><image|../ising/histograms/img/8_0.390000_MH_histogram.eps|0.33par|||>
+    <image|../ising/histograms/img/8_0.370000_MH_histogram.eps|0.33par|||><image|../ising/histograms/img/8_0.380000_MH_histogram.eps|0.33par|||><image|../ising/histograms/img/8_0.390000_MH_histogram.eps|0.33par|||>
   </big-figure|<label|fig:pdfMH>Probability distribution functions of
   <math|m> obtained from <math|10<rsup|6>> sweeps of MH on a lattice
-  <math|8\<times\>8>.>
-
-  <\big-figure>
-    <image|../ising/histograms/img/8_0.350000_SW_histogram.eps|0.33par|||><image|../ising/histograms/img/8_0.355000_SW_histogram.eps|0.33par|||><image|../ising/histograms/img/8_0.360000_SW_histogram.eps|0.33par|||>
-
-    <image|../ising/histograms/img/8_0.365000_SW_histogram.eps|0.33par|||><image|../ising/histograms/img/8_0.370000_SW_histogram.eps|0.33par|||><image|../ising/histograms/img/8_0.375000_SW_histogram.eps|0.33par|||>
-
-    <image|../ising/histograms/img/8_0.380000_SW_histogram.eps|0.33par|||><image|../ising/histograms/img/8_0.385000_SW_histogram.eps|0.33par|||><image|../ising/histograms/img/8_0.390000_SW_histogram.eps|0.33par|||>
-  </big-figure|<label|fig:pdfSW>Probability distribution functions of
-  <math|m> obtained from <math|10<rsup|6>> sweeps of SW on a lattice
   <math|8\<times\>8>.>
 
   By looking at the PDFs of <math|m> we can witness the formation of a 2-fold
@@ -462,7 +443,13 @@
   well defined second cumulant, which is precisely the magnetic
   susceptibility.
 
-  \;
+  <\big-figure>
+    <image|../ising/histograms/img/8_0.340000_SW_histogram.eps|0.33par|||><image|../ising/histograms/img/8_0.350000_SW_histogram.eps|0.33par|||><image|../ising/histograms/img/8_0.360000_SW_histogram.eps|0.33par|||>
+
+    <image|../ising/histograms/img/8_0.370000_SW_histogram.eps|0.33par|||><image|../ising/histograms/img/8_0.380000_SW_histogram.eps|0.33par|||><image|../ising/histograms/img/8_0.390000_SW_histogram.eps|0.33par|||>
+  </big-figure|<label|fig:pdfSW>Probability distribution functions of
+  <math|m> obtained from <math|10<rsup|6>> sweeps of SW on a lattice
+  <math|8\<times\>8>.>
 
   Since we used a cold start initialization, all our simulations at
   temperatures lower than <math|T<rsub|c>> spontaneously broke the
@@ -470,6 +457,11 @@
   <math|m<rsub|0>\<gtr\>0>. Having used a hot start initialization instead,
   we would have ended up with <math|m<rsub|0>=\<pm\><around*|\||m<rsub|0>|\|>>
   with probability <math|<frac|1|2>> each.
+
+  <big-figure|<image|../ising/histograms/img/8_MH_histogram3d.eps||||>|3d
+  plot of <math|P<around*|(|m,\<beta\>|)>> as computed from <math|10<rsup|6>>
+  measurements of <math|m> obtained on a <math|8\<times\>8> lattice with the
+  MH algorithm.>
 
   <subsection|Spatial Correlations>
 
@@ -615,20 +607,20 @@
     <associate|auto-12|<tuple|8|7>>
     <associate|auto-13|<tuple|9|8>>
     <associate|auto-14|<tuple|1.4|9>>
-    <associate|auto-15|<tuple|10|9>>
+    <associate|auto-15|<tuple|10|10>>
     <associate|auto-16|<tuple|11|10>>
-    <associate|auto-17|<tuple|12|10>>
+    <associate|auto-17|<tuple|12|11>>
     <associate|auto-18|<tuple|13|11>>
-    <associate|auto-19|<tuple|1|11>>
+    <associate|auto-19|<tuple|1|12>>
     <associate|auto-2|<tuple|1.1|1>>
-    <associate|auto-20|<tuple|1.5|11>>
+    <associate|auto-20|<tuple|1.5|12>>
     <associate|auto-21|<tuple|14|12>>
     <associate|auto-22|<tuple|15|13>>
-    <associate|auto-23|<tuple|1.6|14>>
-    <associate|auto-24|<tuple|16|14>>
+    <associate|auto-23|<tuple|16|14>>
+    <associate|auto-24|<tuple|1.6|14>>
     <associate|auto-25|<tuple|17|15>>
     <associate|auto-26|<tuple|18|16>>
-    <associate|auto-27|<tuple|1.7|16>>
+    <associate|auto-27|<tuple|19|16>>
     <associate|auto-28|<tuple|1.7|?>>
     <associate|auto-3|<tuple|1|2>>
     <associate|auto-4|<tuple|2|2>>
@@ -644,9 +636,9 @@
     <associate|fig:autocorrelation1|<tuple|4|4>>
     <associate|fig:autocorrelation2|<tuple|4|5>>
     <associate|fig:autocorrelation_time|<tuple|7|6>>
-    <associate|fig:corr|<tuple|17|15>>
+    <associate|fig:corr|<tuple|18|15>>
     <associate|fig:energy_bin|<tuple|9|9>>
-    <associate|fig:heatcapacity|<tuple|12|10>>
+    <associate|fig:heatcapacity|<tuple|12|11>>
     <associate|fig:pdfMH|<tuple|14|12>>
     <associate|fig:pdfSW|<tuple|15|13>>
     <associate|fig:susceptibility|<tuple|13|11>>
@@ -686,14 +678,10 @@
       phase transition for the MH algorithm. The raw data was obtained from a
       simulation of <with|mode|<quote|math>|10<rsup|6>> measurements on a
       lattice <with|mode|<quote|math>|32\<times\>32>. The fit in the center
-      and the one on the right are not very accurate because at those values
-      of <with|mode|<quote|math>|\<beta\>> the autocorrelation time becomes
-      very large and the interval <with|mode|<quote|math>|<around*|[|0,1000|]>>
-      becomes too small for a reliable estimate of
-      <with|mode|<quote|math>|\<tau\><rsub|int>>. As a consequence we see
-      that <with|mode|<quote|math>|\<tau\><rsub|exp>> and
-      <with|mode|<quote|math>|\<tau\><rsub|int>> become very
-      different.|<pageref|auto-8>>
+      is not very accurate because near <with|mode|<quote|math>|\<beta\><rsub|c>>
+      the autocorrelation time becomes very large and the interval
+      <with|mode|<quote|math>|<around*|[|0,2000|]>> becomes too small for a
+      reliable estimate of <with|mode|<quote|math>|\<tau\><rsub|int>>.|<pageref|auto-8>>
 
       <tuple|normal|Plot of the integrated autocorrelation time near the
       phase transition for the SW algorithm. The raw data was obtained from a
@@ -762,7 +750,7 @@
       (<reference|eq:cosh>).|<pageref|auto-26>>
     </associate>
     <\associate|table>
-      <tuple|normal||<pageref|auto-19>>
+      <tuple|normal|Pseudocritical <with|mode|<quote|math>|\<beta\>>-values.|<pageref|auto-19>>
     </associate>
     <\associate|toc>
       <vspace*|1fn><with|font-series|<quote|bold>|math-font-series|<quote|bold>|1<space|2spc>Ising
