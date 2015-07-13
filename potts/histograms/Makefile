@@ -19,7 +19,7 @@ all: rmxeq mkdep mkxeq rmpmk
 
 # main programs and required modules 
 
-MAIN = generator histogram
+MAIN = generator histogram example
 
 RANDOM = mersenne
 
