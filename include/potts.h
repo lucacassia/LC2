@@ -155,21 +155,13 @@ double get_energy()
     return 1.0f * energy;
 }
 
-double get_magnetization_re()
+int get_magnetization(int p)
 {
     int i, j;
-    double magnetization = 0;
+    int magnetization = 0;
     for(i = 0; i < SIZE; i++) for(j = 0; j < SIZE; j++)
-        magnetization += cos(potts[CENTER].s*6.28318530718f/STATES);
-    return magnetization;
-}
-
-double get_magnetization_im()
-{
-    int i, j;
-    double magnetization = 0;
-    for(i = 0; i < SIZE; i++) for(j = 0; j < SIZE; j++)
-        magnetization += sin(potts[CENTER].s*6.28318530718f/STATES);
+        if(potts[CENTER].s == p)
+            magnetization++;
     return magnetization;
 }
 
@@ -222,35 +214,39 @@ void dump_data(int lattice_size, double beta_value, void (*algorithm)(), int run
     if( (algorithm != MH) && (algorithm != SW) ){ printf("\nInvalid Algorithm!\n"); }
     else{
         int id = (algorithm == SW);
+
         /* .bin header */
         char filename_bin[50];
         sprintf(filename_bin, "data/%d_%f_%s_%d.bin", lattice_size, beta_value, get_algorithm_string(algorithm), run_time);
         FILE *f_bin = fopen(filename_bin, "wb");
-        int cols = 3+lattice_size/2;
+        int cols = 1 + STATES;/* + lattice_size/2;*/
+
         fwrite(&cols, sizeof(int), 1, f_bin);
+        fwrite(&STATES, sizeof(int), 1, f_bin);
         fwrite(&lattice_size, sizeof(int), 1, f_bin);
         fwrite(&beta_value, sizeof(double), 1, f_bin);
         fwrite(&id, sizeof(int), 1, f_bin);
         fwrite(&run_time, sizeof(int), 1, f_bin);
+
         /* data gathering */
         printf("\nExecuting %s : L = %d : β = %f : time = %d\n", get_algorithm_string(algorithm), lattice_size, beta_value, run_time);
         init(lattice_size, beta_value);
-        double tmp; int t, dist;
+        double tmp;
+        int t, k;
         for(t = 0; t < run_time; t++){
             tmp = get_energy() / (lattice_size * lattice_size);
             fwrite(&tmp, sizeof(double), 1, f_bin);
 
-            tmp = get_magnetization_re() / (lattice_size * lattice_size);
-            fwrite(&tmp, sizeof(double), 1, f_bin);
-
-            tmp = get_magnetization_im() / (lattice_size * lattice_size);
-            fwrite(&tmp, sizeof(double), 1, f_bin);
-
-            for(dist = 0; dist < lattice_size / 2; dist++){
-                tmp = get_correlation(dist);
+            for(k = 0; k < STATES; k++){
+                tmp = 1.0f * get_magnetization(k);
                 fwrite(&tmp, sizeof(double), 1, f_bin);
             }
-
+/*
+            for(k = 0; k < lattice_size / 2; k++){
+                tmp = get_correlation(k);
+                fwrite(&tmp, sizeof(double), 1, f_bin);
+            }
+*/
             algorithm();
         }
         fclose(f_bin);
@@ -258,59 +254,9 @@ void dump_data(int lattice_size, double beta_value, void (*algorithm)(), int run
     }
 }
 
-typedef struct _raw{
-    int l;              /* lattice size */
-    double b;           /* beta */
-    int id;             /* algorithm id */
-    char *algorithm;    /* algorithm name */
-    int size;           /* number of samples */
-    double *data;       /* samples */
-}raw;
-
-void raw_close(raw *obj)
-{
-    if(obj->data != NULL) free(obj->data);
-    obj->l = 0;
-    obj->b = 0.0f;
-    obj->id = 0;
-    obj->algorithm = NULL;
-    obj->size = 0;
-    obj->data = NULL;
-}
-
-raw load_data(FILE *f, int column, int skip)
-{
-    fseek(f, 0L, SEEK_SET);
-    raw content = { 0, 0.0f, 0, NULL, 0, NULL };
-    int cols; fread(&cols, sizeof(int), 1, f );
-    if((column < 0)||(column >= cols)||(skip < 0)) return content;
-    /* read lattice size */
-    fread(&content.l, sizeof(int), 1, f);
-    /* read beta value */
-    fread(&content.b, sizeof(double), 1, f);
-    /* read algorithm id and name */
-    fread(&content.id, sizeof(int), 1, f);
-    if(content.id == 0) content.algorithm = "MH";
-    if(content.id == 1) content.algorithm = "SW";
-    /* read size */
-    fread(&content.size, sizeof(int), 1, f);
-    /* skip initial data */
-    fseek(f, cols * sizeof(double) * skip, SEEK_CUR);
-    content.size -= skip;
-    /* read data */
-    content.data = (double*)malloc(content.size * sizeof(double));
-    int t;
-    for(t = 0; t < content.size; t++){
-        fseek(f, column * sizeof(double), SEEK_CUR);
-        fread(&content.data[t], sizeof(double), 1, f);
-        fseek(f, ((cols-1)-column) * sizeof(double), SEEK_CUR);
-    }
-    fseek(f, 0L, SEEK_SET);
-    return content;
-}
-
 typedef struct _header{
     int cols;           /* number of columns */
+    int q;              /* number of states */
     int l;              /* lattice size */
     double b;           /* beta */
     int id;             /* algorithm id */
@@ -318,12 +264,33 @@ typedef struct _header{
     int size;           /* number of samples */
 }header;
 
+typedef struct _raw{
+    header hdr;         /* header containing infos */
+    double *data;       /* samples */
+}raw;
+
+void raw_close(raw *obj)
+{
+    obj->hdr.cols = 0;
+    obj->hdr.q = 0;
+    obj->hdr.l = 0;
+    obj->hdr.b = 0.0f;
+    obj->hdr.id = 0;
+    obj->hdr.algorithm = NULL;
+    obj->hdr.size = 0;
+    if(obj->data != NULL)
+        free(obj->data);
+    obj->data = NULL;
+}
+
 header get_header(FILE *f)
 {
     header hdr;
     fseek(f, 0L, SEEK_SET);
     /* read number of columns */
     fread(&hdr.cols, sizeof(int), 1, f );
+    /* read number of states */
+    fread(&hdr.q, sizeof(int), 1, f);
     /* read lattice size */
     fread(&hdr.l, sizeof(int), 1, f);
     /* read beta value */
@@ -335,6 +302,30 @@ header get_header(FILE *f)
     /* read size */
     fread(&hdr.size, sizeof(int), 1, f);
     return hdr;
+}
+
+raw load_data(FILE *f, int column, int skip)
+{
+    raw content;
+    content.hdr = get_header(f);
+    content.data = NULL;
+    if((column >= 0)&&(column < content.hdr.cols)&&(skip >= 0)){
+        /* skip initial data */
+        fseek(f, content.hdr.cols * sizeof(double) * skip, SEEK_CUR);
+        content.hdr.size -= skip;
+        /* read data */
+        content.data = (double*)malloc(content.hdr.size * sizeof(double));
+        int t;
+        for(t = 0; t < content.hdr.size; t++){
+            fseek(f, column * sizeof(double), SEEK_CUR);
+            fread(&content.data[t], sizeof(double), 1, f);
+            fseek(f, ((content.hdr.cols-1)-column) * sizeof(double), SEEK_CUR);
+        }
+        /* set number of columns to 1 */
+        content.hdr.cols = 1;
+    }
+    fseek(f, 0L, SEEK_SET);
+    return content;
 }
 
 double *bin_data(double *storage, int storage_size, int bin_size)
