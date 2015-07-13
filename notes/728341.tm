@@ -34,17 +34,21 @@
     <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
     <no-break><pageref|auto-14>>
 
-    <with|par-left|1tab|1.5<space|2spc>Probability Distribution Functions
+    <with|par-left|1tab|1.5<space|2spc><with|mode|math|\<beta\>> Critical
     <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
-    <no-break><pageref|auto-20>>
+    <no-break><pageref|auto-19>>
 
-    <with|par-left|1tab|1.6<space|2spc>Spatial Correlations
+    <with|par-left|1tab|1.6<space|2spc>Probability Distribution Functions
     <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
-    <no-break><pageref|auto-23>>
+    <no-break><pageref|auto-25>>
 
-    <with|par-left|1tab|1.7<space|2spc>Finite size scaling
+    <with|par-left|1tab|1.7<space|2spc>Spatial Correlations
     <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
-    <no-break><pageref|auto-27>>
+    <no-break><pageref|auto-29>>
+
+    <with|par-left|1tab|1.8<space|2spc>Finite Size Scaling
+    <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
+    <no-break><pageref|auto-33>>
   </table-of-contents>
 
   <section|Ising Model <math|2d>>
@@ -350,47 +354,48 @@
   numerical simulations with their exact values obtained analytically.
 
   The samples and the errors are collected employing the binning procedure of
-  the previous section.
+  the previous section. For each inverse temperature we compute the estimate
+  of the generic observable <math|\<cal-O\>> from <math|10<rsup|5>>
+  measurements for MH and <math|10<rsup|4>> for SW.
 
-  <big-figure|<image|../ising/observables/img/energy_plot_MH.eps|0.5par|||><image|../ising/observables/img/energy_plot_SW.eps|0.5par|||>|Energy
+  <big-figure|<image|../ising/observables/img/energy_MH.eps|0.5par|||><image|../ising/observables/img/energy_SW.eps|0.5par|||>|Energy
   density as a function of <math|\<beta\>>. MH on the left and SW on the
-  right. The energy and the errors are computed from a sample of <math|100>
-  blocks of binned data.>
+  right.>
 
-  <big-figure|<image|../ising/observables/img/magnetization_plot_MH.eps|0.5par|||><image|../ising/observables/img/magnetization_plot_SW.eps|0.5par|||>|Magnetization
+  <big-figure|<image|../ising/observables/img/magnetization_MH.eps|0.5par|||><image|../ising/observables/img/magnetization_SW.eps|0.5par|||>|Magnetization
   as a function of <math|\<beta\>>. MH on the left and SW on the right.>
 
   We find that the simulation data are remarkably close to the exact solution
-  both for the energy density and for the magnetization. The only departure
-  from Onsager's solution is in the paramagnetic phase of the magnetization
-  plot: there we observe that the exact solution goes abruptly to zero before
-  the critical point, while the numerical data seems to interpolate a smooth
-  function. This is imputable to the finite size of the lattice used for the
-  simulation. It is indeed a well known fact that discontinuities and
-  divergences only appear in the thermodinamic limit of infinite size, which
-  is precisely the premise of Onsager's solution. In fact, the numerical
-  solution approaches more and more the exact one as the size of the lattice
-  increases.
+  both for the energy density and for the magnetization expecially for large
+  sizes of the lattice. The only departure from Onsager's solution is in the
+  paramagnetic phase of the magnetization plot: there we observe that the
+  exact solution goes abruptly to zero before the critical point, while the
+  numerical data seems to interpolate a smooth function. This is imputable to
+  the finite size of the lattice used for the simulation. It is indeed a well
+  known fact that discontinuities and divergences only appear in the
+  thermodinamic limit of infinite size, which is precisely the premise of
+  Onsager's solution. In fact, the numerical solution approaches more and
+  more the exact one as the size of the lattice increases.
 
   \;
 
   We also plot the heat capacity:
 
   <\equation>
-    C=\<beta\>*<rsup|2>*V*<around*|\<langle\>|<around*|(|<frac|\<cal-H\>|V>-<around*|\<langle\>|<frac|\<cal-H\>|V>|\<rangle\>>|)><rsup|2>|\<rangle\>>
+    C=<frac|\<beta\><rsup|2>|V>*<around*|\<langle\>|<around*|(|\<cal-H\>-<around*|\<langle\>|\<cal-H\>|\<rangle\>>|)><rsup|2>|\<rangle\>>
   </equation>
 
-  <big-figure|<image|../ising/observables/img/variance_e_plot_MH.eps|0.5par|||><image|../ising/observables/img/variance_e_plot_SW.eps|0.5par|||>|<label|fig:heatcapacity>Heat
+  <big-figure|<image|../ising/observables/img/heat_capacity_MH.eps|0.5par|||><image|../ising/observables/img/heat_capacity_SW.eps|0.5par|||>|<label|fig:heatcapacity>Heat
   capacity as a function of <math|\<beta\>>. MH on the left and SW on the
   right.>
 
   \ and the magnetic susceptibility:
 
   <\equation>
-    \<chi\>=\<beta\>*V*<around*|\<langle\>|<around*|(|<frac|\<cal-M\>|V>-<around*|\<langle\>|<frac|\<cal-M\>|V>|\<rangle\>>|)><rsup|2>|\<rangle\>>
+    \<chi\>=<frac|\<beta\>|V>*<around*|\<langle\>|<around*|(|\<cal-M\>-<around*|\<langle\>|\<cal-M\>|\<rangle\>>|)><rsup|2>|\<rangle\>>
   </equation>
 
-  <big-figure|<image|../ising/observables/img/variance_m_plot_MH.eps|0.5par|||><image|../ising/observables/img/variance_m_plot_SW.eps|0.5par|||>|<label|fig:susceptibility>Magnetic
+  <big-figure|<image|../ising/observables/img/susceptibility_MH.eps|0.5par|||><image|../ising/observables/img/susceptibility_SW.eps|0.5par|||>|<label|fig:susceptibility>Magnetic
   susceptibility as a function of <math|\<beta\>>. MH on the left and SW on
   the right.>
 
@@ -400,15 +405,91 @@
   approach larger and larger sizes of the lattice:
 
   <\equation>
-    lim<rsub|L\<rightarrow\>\<infty\>>\<beta\><rsub|c><around*|(|L|)>=\<beta\><rsub|c>=ln<around*|(|1+<sqrt|2>|)>/2
+    lim<rsub|L\<rightarrow\>\<infty\>>\<beta\><rsub|max><around*|(|L|)>=\<beta\><rsub|c>=ln<around*|(|1+<sqrt|2>|)>/2
   </equation>
+
+  <subsection|<math|\<beta\>> Critical><label|sec:betafss>
 
   From a power law fit of the points near the peak of each dataset we obtain
   estimates for the pseudocritical <math|\<beta\>>-values at finite sizes
   <math|L=8,16,32,64>.
 
-  <big-table|<tabular|<tformat|<cwith|1|-1|1|-1|cell-halign|c>|<table|<row|<cell|<math|L>>|<cell|<math|\<beta\><rsub|c><around*|(|C|)>>>|<cell|<math|\<beta\><rsub|c><around*|(|\<chi\>|)>>>>|<row|<cell|8>|<cell|\<pm\>>|<cell|\<pm\>>>|<row|<cell|16>|<cell|\<pm\>>|<cell|\<pm\>>>|<row|<cell|32>|<cell|\<pm\>>|<cell|\<pm\>>>|<row|<cell|64>|<cell|\<pm\>>|<cell|\<pm\>>>>>>|Pseudocritical
-  <math|\<beta\>>-values.>
+  <\big-figure>
+    <image|../ising/observables/img/8MH1.eps|0.5par|||><image|../ising/observables/img/8MH2.eps|0.5par|||>
+
+    <image|../ising/observables/img/16MH1.eps|0.5par|||><image|../ising/observables/img/16MH2.eps|0.5par|||>
+
+    <image|../ising/observables/img/32MH1.eps|0.5par|||><image|../ising/observables/img/32MH2.eps|0.5par|||>
+
+    <image|../ising/observables/img/64MH1.eps|0.5par|||><image|../ising/observables/img/64MH2.eps|0.5par|||>
+  </big-figure|Fit of the heat capacity and susceptibility peaks (MH).>
+
+  <big-table|<block|<tformat|<cwith|1|-1|1|-1|cell-halign|c>|<table|<row|<cell|<math|L>>|<cell|<math|\<beta\><rsub|max><around*|(|C|)>>>|<cell|<math|\<beta\><rsub|max><around*|(|\<chi\>|)>>>>|<row|<cell|<math|8>>|<cell|<math|0.42400\<pm\>0.00043>>|<cell|<math|0.39448\<pm\>0.00051>>>|<row|<cell|<math|16>>|<cell|<math|0.43086\<pm\>0.00086>>|<cell|<math|0.41541\<pm\>0.00055>>>|<row|<cell|<math|32>>|<cell|<math|0.43613\<pm\>0.00103>>|<cell|<math|0.42620\<pm\>0.00141>>>|<row|<cell|<math|64>>|<cell|<math|0.43718\<pm\>0.00065>>|<cell|<math|0.43405\<pm\>0.00075>>>>>>|Pseudocritical
+  <math|\<beta\>>-values obtained by polynomial fit of the peaks of <math|C>
+  and <math|\<chi\>> (MH).>
+
+  The polynomial function we used for the fit is:
+
+  <\equation>
+    f<around*|(|\<beta\>|)>=A+B*<around*|(|\<beta\>-\<beta\><rsub|max>|)><rsup|2>+C*<around*|(|\<beta\>-\<beta\><rsub|max>|)><rsup|3>
+  </equation>
+
+  where we omitted the term of order one since it should be zero near the
+  maximum of the function.
+
+  <\big-figure>
+    <image|../ising/observables/img/8SW1.eps|0.5par|||><image|../ising/observables/img/8SW2.eps|0.5par|||>
+
+    <image|../ising/observables/img/16SW1.eps|0.5par|||><image|../ising/observables/img/16SW2.eps|0.5par|||>
+
+    <image|../ising/observables/img/32SW1.eps|0.5par|||><image|../ising/observables/img/32SW2.eps|0.5par|||>
+
+    <image|../ising/observables/img/64SW1.eps|0.5par|||><image|../ising/observables/img/64SW2.eps|0.5par|||>
+  </big-figure|Fit of the heat capacity and susceptibility peaks (SW).>
+
+  <big-table|<block|<tformat|<cwith|1|-1|1|-1|cell-halign|c>|<table|<row|<cell|<math|L>>|<cell|<math|\<beta\><rsub|max><around*|(|C|)>>>|<cell|<math|\<beta\><rsub|max><around*|(|\<chi\>|)>>>>|<row|<cell|<math|8>>|<cell|<math|0.42296\<pm\>0.00073>>|<cell|<math|0.39295\<pm\>0.00059>>>|<row|<cell|<math|16>>|<cell|<math|0.43174\<pm\>0.00090>>|<cell|<math|0.41729\<pm\>0.00061>>>|<row|<cell|<math|32>>|<cell|<math|0.43524\<pm\>0.00078>>|<cell|<math|0.42686\<pm\>0.00078>>>|<row|<cell|<math|64>>|<cell|<math|0.43788\<pm\>0.00040>>|<cell|<math|0.43481\<pm\>0.00042>>>>>>|Pseudocritical
+  <math|\<beta\>>-values obtained by polynomial fit of the peaks of <math|C>
+  and <math|\<chi\>> (SW).>
+
+  <with|font-shape|italic|Remark:> the estimates of the heat capacity and
+  magnetic susceptibility of the MH algorithm are very accurate for small
+  values of <math|L> where we employed a large dataset of <math|10<rsup|5>>
+  measurements and the autocorrelation time is relatively small. For large
+  values of <math|L> the autocorrelation time grows very large compared to
+  the size of the dataset and the estimates become less accurate.
+
+  The situation for the SW algorithm is different since the autocorrelation
+  time in this case is always under control. However the smaller size of the
+  dataset results in less accurate estimates expecially at small lattice
+  sizes where the MH algorithm is most efficient.
+
+  \;
+
+  We can now obtain an estimate of <math|\<beta\><rsub|c>> from a power law
+  fit to the location of the maxima <math|\<beta\><rsub|max>>:
+
+  <\equation>
+    \<beta\><rsub|max>=\<beta\><rsub|c>-c*L<rsup|-\<nu\>>
+  </equation>
+
+  <big-figure|<image|../ising/fss/img/beta_MH.eps|0.5par|||><image|../ising/fss/img/beta_SW.eps|0.5par|||>|Pseudocritical
+  inverse temperature fit. MH on the left, SW on the right. The purple lines
+  are relative to the heat capacity <math|C> while the green ones to the
+  magnetic susceptibility <math|\<chi\>>.>
+
+  The result of the fit are:
+
+  \;
+
+  <center|<block*|<tformat|<table|<row|<cell|>|<cell|<math|\<beta\><rsub|c><around*|(|C|)>>>|<cell|<math|\<beta\><rsub|c><around*|(|\<chi\>|)>>>>|<row|<cell|MH>|<cell|<math|0.43986\<pm\>0.00234>>|<cell|<math|0.44287\<pm\>0.00173>>>|<row|<cell|SW>|<cell|<math|0.44007\<pm\>0.00105>>|<cell|<math|0.44071\<pm\>0.00322>>>>>>>
+
+  \;
+
+  \;
+
+  These results are very close to the exact solution but still they could be
+  greatly improved by taking more points expecially at larger values of
+  <math|L> for which <math|C> and <math|\<chi\>> are more peaked.
 
   <subsection|Probability Distribution Functions>
 
@@ -463,7 +544,7 @@
   measurements of <math|m> obtained on a <math|8\<times\>8> lattice with the
   MH algorithm.>
 
-  <subsection|Spatial Correlations>
+  <subsection|Spatial Correlations><label|sec:corr>
 
   The two-point correlation function is defined as:
 
@@ -550,7 +631,7 @@
   The correlation length diverges at the critical point as:
 
   <\equation>
-    \<xi\>\<sim\><around*|\||x|\|><rsup|-\<nu\>>
+    \<xi\>\<sim\>A*<around*|\||x|\|><rsup|-\<nu\>>
   </equation>
 
   where <math|\<nu\>> is an example of critical exponent of the model. We
@@ -559,7 +640,7 @@
   <math|\<nu\>> from a linear fit:
 
   <\equation>
-    log<around*|(|\<xi\>|)>=log<around*|(|\<xi\><rsub|1>|)>-\<nu\>*log<around*|(|<around*|\||x|\|>|)>
+    log<around*|(|\<xi\>|)>=log<around*|(|A|)>-\<nu\>*log<around*|(|<around*|\||x|\|>|)>
   </equation>
 
   <big-figure|<image|../ising/correlation/img/correlation_MH.eps|0.5par|||><image|../ising/correlation/img/correlation_SW.eps|0.5par|||>|Plot
@@ -581,9 +662,76 @@
 
   Both results are compatible with the known exact value <math|\<nu\>=1>.
 
-  <subsection|Finite size scaling><label|sect:fss>
+  <subsection|Finite Size Scaling><label|sect:fss>
+
+  The main results of the finite size scaling (FSS) study are usually
+  estimates of the critical temperature and the critical exponents
+  characterizing the universality class of the transition. In the
+  infinite-volume limit most of the expectation values one can compute from
+  <math|e> and <math|m> exhibit singularities at the transition point. In
+  finite systems, though, the singularities are smeared out and the standard
+  observables scale according to:
+
+  <\equation>
+    m=L<rsup|-\<beta\>/\<nu\>>*f<rsub|m> <around*|(|y|)>+\<ldots\>
+  </equation>
+
+  <\equation>
+    C=C<rsub|reg>+L<rsup|\<alpha\>/\<nu\>>f<rsub|C> <around*|(|y|)>+\<ldots\>
+  </equation>
+
+  <\equation>
+    \<chi\>=L<rsup|\<gamma\>/\<nu\>>*f<rsub|\<chi\>><around*|(|y|)>+\<ldots\>
+  </equation>
+
+  where <math|\<alpha\>,\<beta\>,\<gamma\>> and <math|\<nu\>> are the
+  critical exponents, <math|f<rsub|i>(x)> are FSS functions and <math|y> is
+  the scaling variable. Near the phase transition the correlation length
+  <math|\<xi\>\<sim\>x<rsup|-\<nu\>>> is the only length scale with which to
+  describe the physics of the system, therefore the only adimensional
+  quantity we can contruct from it is:
+
+  <\equation>
+    y=L/\<xi\>\<sim\>L*x<rsup|\<nu\>>=<around*|(|L<rsup|1/\<nu\>>*x|)><rsup|\<nu\>>=L*x
+  </equation>
+
+  We now can remove any dependence on the scale of the system by rescaling
+  the observables by the appropriate power of <math|L> given by the relative
+  critical exponent. This way we expect each observable, expressed as
+  functions of the scaling variable <math|y>, to collapses on the same curve
+  <math|f<rsub|i> <around*|(|y|)>> regardless of the value of <math|L> (at
+  least in the vicinity of <math|\<beta\><rsub|c>>).
+
+  <big-table|<block|<tformat|<cwith|1|-1|1|-1|cell-halign|c>|<table|<row|<cell|<math|\<nu\>>>|<cell|<math|1>>>|<row|<cell|<math|\<alpha\>>>|<cell|<math|0>>>|<row|<cell|<math|\<beta\>>>|<cell|<math|1/8>>>|<row|<cell|<math|\<gamma\>>>|<cell|<math|7/4>>>>>>|Exact
+  critical exponents for the Ising model in <math|2d>.>
+
+  With a precedure completely analogous to that of
+  (Sect.<reference|sec:betafss>), one could also obtain estimates for the
+  crtical exponents <math|\<alpha\>,\<beta\>,\<gamma\>> and <math|\<nu\>> by
+  extrapolating the infinite size limit.
 
   \;
+
+  <with|font-shape|italic|Remark:> we observe that since the exact value of
+  exponent <math|\<alpha\>> of the model is zero, the quantity <math|C>
+  should, in principle, not scale with the lattice size. In reality <math|C>
+  has a logarithmic divergence at the critical point, hence we adopt the
+  scaling law:
+
+  <\equation>
+    C\<sim\>log <around*|(|L<rsup|1/\<nu\>>|)>
+  </equation>
+
+  <\big-figure>
+    <image|../ising/fss/img/magnetization_MH.eps|0.5par|||><image|../ising/fss/img/magnetization_SW.eps|0.5par|||>
+
+    <image|../ising/fss/img/susceptibility_MH.eps|0.5par|||><image|../ising/fss/img/susceptibility_SW.eps|0.5par|||>
+
+    <image|../ising/fss/img/heat_capacity_MH.eps|0.5par|||><image|../ising/fss/img/heat_capacity_SW.eps|0.5par|||>
+  </big-figure|Finite Size Scaling study for the lattice sizes
+  <math|8<rsup|2>,16<rsup|2>,32<rsup|2>,64<rsup|2>>. Left MH, right SW. The
+  top plot represents the scaling of the magnetization, the center one the
+  magnetic susceptibility and the bottom one the heat capacity.>
 </body>
 
 <\initial>
@@ -611,18 +759,26 @@
     <associate|auto-16|<tuple|11|10>>
     <associate|auto-17|<tuple|12|11>>
     <associate|auto-18|<tuple|13|11>>
-    <associate|auto-19|<tuple|1|12>>
+    <associate|auto-19|<tuple|1.5|11>>
     <associate|auto-2|<tuple|1.1|1>>
-    <associate|auto-20|<tuple|1.5|12>>
-    <associate|auto-21|<tuple|14|12>>
-    <associate|auto-22|<tuple|15|13>>
-    <associate|auto-23|<tuple|16|14>>
-    <associate|auto-24|<tuple|1.6|14>>
-    <associate|auto-25|<tuple|17|15>>
-    <associate|auto-26|<tuple|18|16>>
-    <associate|auto-27|<tuple|19|16>>
-    <associate|auto-28|<tuple|1.7|?>>
+    <associate|auto-20|<tuple|14|12>>
+    <associate|auto-21|<tuple|1|13>>
+    <associate|auto-22|<tuple|15|14>>
+    <associate|auto-23|<tuple|2|15>>
+    <associate|auto-24|<tuple|16|15>>
+    <associate|auto-25|<tuple|1.6|16>>
+    <associate|auto-26|<tuple|17|16>>
+    <associate|auto-27|<tuple|18|17>>
+    <associate|auto-28|<tuple|19|18>>
+    <associate|auto-29|<tuple|1.7|19>>
     <associate|auto-3|<tuple|1|2>>
+    <associate|auto-30|<tuple|20|19>>
+    <associate|auto-31|<tuple|21|20>>
+    <associate|auto-32|<tuple|22|21>>
+    <associate|auto-33|<tuple|1.8|22>>
+    <associate|auto-34|<tuple|3|22>>
+    <associate|auto-35|<tuple|23|23>>
+    <associate|auto-36|<tuple|23|?>>
     <associate|auto-4|<tuple|2|2>>
     <associate|auto-5|<tuple|3|3>>
     <associate|auto-6|<tuple|1.2|4>>
@@ -630,17 +786,17 @@
     <associate|auto-8|<tuple|5|5>>
     <associate|auto-9|<tuple|6|5>>
     <associate|eq:MC|<tuple|2|?>>
-    <associate|eq:cosh|<tuple|24|15>>
+    <associate|eq:cosh|<tuple|26|20>>
     <associate|eq:scalingtau|<tuple|3|3>>
     <associate|eq:tint|<tuple|5|4>>
     <associate|fig:autocorrelation1|<tuple|4|4>>
     <associate|fig:autocorrelation2|<tuple|4|5>>
     <associate|fig:autocorrelation_time|<tuple|7|6>>
-    <associate|fig:corr|<tuple|18|15>>
+    <associate|fig:corr|<tuple|21|20>>
     <associate|fig:energy_bin|<tuple|9|9>>
     <associate|fig:heatcapacity|<tuple|12|11>>
-    <associate|fig:pdfMH|<tuple|14|12>>
-    <associate|fig:pdfSW|<tuple|15|13>>
+    <associate|fig:pdfMH|<tuple|17|16>>
+    <associate|fig:pdfSW|<tuple|18|17>>
     <associate|fig:susceptibility|<tuple|13|11>>
     <associate|fig:termalization|<tuple|1|2>>
     <associate|fig:termalizationMH|<tuple|1|?>>
@@ -650,8 +806,10 @@
     <associate|footnote-1|<tuple|1|?>>
     <associate|footnr-1|<tuple|1|?>>
     <associate|result_box|<tuple|5|?>>
+    <associate|sec:betafss|<tuple|1.5|11>>
+    <associate|sec:corr|<tuple|1.7|19>>
     <associate|sect:autocorrelation|<tuple|1.2|4>>
-    <associate|sect:fss|<tuple|1.7|16>>
+    <associate|sect:fss|<tuple|1.8|22>>
   </collection>
 </references>
 
@@ -701,9 +859,8 @@
       (<with|mode|<quote|math>|L=32>).|<pageref|auto-13>>
 
       <tuple|normal|Energy density as a function of
-      <with|mode|<quote|math>|\<beta\>>. MH on the left and SW on the right.
-      The energy and the errors are computed from a sample of
-      <with|mode|<quote|math>|100> blocks of binned data.|<pageref|auto-15>>
+      <with|mode|<quote|math>|\<beta\>>. MH on the left and SW on the
+      right.|<pageref|auto-15>>
 
       <tuple|normal|Magnetization as a function of
       <with|mode|<quote|math>|\<beta\>>. MH on the left and SW on the
@@ -717,22 +874,39 @@
       <with|mode|<quote|math>|\<beta\>>. MH on the left and SW on the
       right.|<pageref|auto-18>>
 
+      <tuple|normal|Fit of the heat capacity and susceptibility peaks
+      (MH).|<pageref|auto-20>>
+
+      <tuple|normal|Fit of the heat capacity and susceptibility peaks
+      (SW).|<pageref|auto-22>>
+
+      <tuple|normal|Pseudocritical inverse temperature fit. MH on the left,
+      SW on the right. The purple lines are relative to the heat capacity
+      <with|mode|<quote|math>|C> while the green ones to the magnetic
+      susceptibility <with|mode|<quote|math>|\<chi\>>.|<pageref|auto-24>>
+
       <tuple|normal|Probability distribution functions of
       <with|mode|<quote|math>|m> obtained from
       <with|mode|<quote|math>|10<rsup|6>> sweeps of MH on a lattice
-      <with|mode|<quote|math>|8\<times\>8>.|<pageref|auto-21>>
+      <with|mode|<quote|math>|8\<times\>8>.|<pageref|auto-26>>
 
       <tuple|normal|Probability distribution functions of
       <with|mode|<quote|math>|m> obtained from
       <with|mode|<quote|math>|10<rsup|6>> sweeps of SW on a lattice
-      <with|mode|<quote|math>|8\<times\>8>.|<pageref|auto-22>>
+      <with|mode|<quote|math>|8\<times\>8>.|<pageref|auto-27>>
+
+      <tuple|normal|3d plot of <with|mode|<quote|math>|P<around*|(|m,\<beta\>|)>>
+      as computed from <with|mode|<quote|math>|10<rsup|6>> measurements of
+      <with|mode|<quote|math>|m> obtained on a
+      <with|mode|<quote|math>|8\<times\>8> lattice with the MH
+      algorithm.|<pageref|auto-28>>
 
       <\tuple|normal>
         Ilustration of the growth of spatial correlations when criticality is
         approached on a lattice <with|mode|<quote|math>|100\<times\>100> :
         <with|mode|<quote|math>|\<beta\>=0.22 , 0.31, 0.37, 0.39, 0.42,
         0.43>.
-      </tuple|<pageref|auto-24>>
+      </tuple|<pageref|auto-30>>
 
       <tuple|normal|Correlation functions for various values of
       <with|mode|<quote|math>|\<beta\>>. The lattice size used is
@@ -740,17 +914,32 @@
       effects. As a precaution, we considers an interval in
       <with|mode|<quote|math>|\<beta\>>-space such that the correlation
       length is much smaller that the size of the lattice (approximately one
-      order of magnitude smaller). |<pageref|auto-25>>
+      order of magnitude smaller). |<pageref|auto-31>>
 
       <tuple|normal|Plot of the correlation length dependence on the
       parameter <with|mode|<quote|math>|x=<frac|\<beta\>-\<beta\><rsub|c>|\<beta\><rsub|c>>>
       for a lattice of size <with|mode|<quote|math>|128\<times\>128>. MH on
       the left and SW on the right. The errors are computed by jackknife
       binning of the fit data from (Fig.<reference|fig:corr>) through
-      (<reference|eq:cosh>).|<pageref|auto-26>>
+      (<reference|eq:cosh>).|<pageref|auto-32>>
+
+      <tuple|normal|Finite Size Scaling study for the lattice sizes
+      <with|mode|<quote|math>|8<rsup|2>,16<rsup|2>,32<rsup|2>,64<rsup|2>>.
+      Left MH, right SW. The top plot represents the scaling of the
+      magnetization, the center one the magnetic susceptibility and the
+      bottom one the heat capacity.|<pageref|auto-35>>
     </associate>
     <\associate|table>
-      <tuple|normal|Pseudocritical <with|mode|<quote|math>|\<beta\>>-values.|<pageref|auto-19>>
+      <tuple|normal|Pseudocritical <with|mode|<quote|math>|\<beta\>>-values
+      obtained by polynomial fit of the peaks of <with|mode|<quote|math>|C>
+      and <with|mode|<quote|math>|\<chi\>> (MH).|<pageref|auto-21>>
+
+      <tuple|normal|Pseudocritical <with|mode|<quote|math>|\<beta\>>-values
+      obtained by polynomial fit of the peaks of <with|mode|<quote|math>|C>
+      and <with|mode|<quote|math>|\<chi\>> (SW).|<pageref|auto-23>>
+
+      <tuple|normal|Exact critical exponents for the Ising model in
+      <with|mode|<quote|math>|2d>.|<pageref|auto-34>>
     </associate>
     <\associate|toc>
       <vspace*|1fn><with|font-series|<quote|bold>|math-font-series|<quote|bold>|1<space|2spc>Ising
@@ -773,17 +962,21 @@
       <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
       <no-break><pageref|auto-14>>
 
-      <with|par-left|<quote|1tab>|1.5<space|2spc>Probability Distribution
+      <with|par-left|<quote|1tab>|1.5<space|2spc><with|mode|<quote|math>|\<beta\>>
+      Critical <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
+      <no-break><pageref|auto-19>>
+
+      <with|par-left|<quote|1tab>|1.6<space|2spc>Probability Distribution
       Functions <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
-      <no-break><pageref|auto-20>>
+      <no-break><pageref|auto-25>>
 
-      <with|par-left|<quote|1tab>|1.6<space|2spc>Spatial Correlations
+      <with|par-left|<quote|1tab>|1.7<space|2spc>Spatial Correlations
       <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
-      <no-break><pageref|auto-23>>
+      <no-break><pageref|auto-29>>
 
-      <with|par-left|<quote|1tab>|1.7<space|2spc>Finite size scaling
+      <with|par-left|<quote|1tab>|1.8<space|2spc>Finite Size Scaling
       <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
-      <no-break><pageref|auto-27>>
+      <no-break><pageref|auto-33>>
     </associate>
   </collection>
 </auxiliary>
