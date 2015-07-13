@@ -75,9 +75,10 @@ void SW()
     spin *tmp;
     /* flip clusters */
     for(k = 0; k < SIZE * SIZE; k++)
-        if( cluster[k]->s != (new_spin = rand()%STATES) )
-            for( tmp = cluster[k]; tmp != NULL; tmp = tmp->next )
-                tmp->s = new_spin;
+        if(cluster[k])
+            if( cluster[k]->s != (new_spin = rand()%STATES) )
+                for( tmp = cluster[k]; tmp != NULL; tmp = tmp->next )
+                    tmp->s = new_spin;
     create_clusters();
 }
 
