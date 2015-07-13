@@ -8,7 +8,7 @@
 #include <string.h>
 #include <math.h>
 
-#define BETA_CRITICAL   (log(1.0f+sqrt(2.0f))/2.0f)
+#define BETA_CRITICAL   (log(1.0f+sqrt(3.0f)))
 
 #define RIGHT  i][(j+1)%SIZE
 #define LEFT   i][(SIZE+j-1)%SIZE
@@ -16,6 +16,7 @@
 #define DOWN   (i+1)%SIZE][j
 #define CENTER i][j
 
+int STATES = 3;
 int SIZE = 32;
 double BETA = 0.0f;
 
@@ -62,32 +63,35 @@ void create_clusters()
     /* merge linked clusters */
     for(i = 0; i < SIZE; i++) for(j = 0; j < SIZE; j++){
 /*        if( ising[CENTER].link[0] ) merge_clusters(ising[CENTER].cl, ising[RIGHT].cl);*/
-        if( ising[CENTER].link[1] ) merge_clusters(ising[CENTER].cl, ising[UP].cl);
-        if( ising[CENTER].link[2] ) merge_clusters(ising[CENTER].cl, ising[LEFT].cl);
+        if( ising[CENTER].link[1] ) merge_clusters(ising[CENTER].cl, ising[UP   ].cl);
+        if( ising[CENTER].link[2] ) merge_clusters(ising[CENTER].cl, ising[LEFT ].cl);
 /*        if( ising[CENTER].link[3] ) merge_clusters(ising[CENTER].cl, ising[DOWN ].cl);*/
     }
 }
 
 void SW()
 {
-    int k;
+    int k, new_spin;
     spin *tmp;
     /* flip clusters */
     for(k = 0; k < SIZE * SIZE; k++)
-        if( mersenne() < 0.5f )
-            for( tmp = cluster[k]; tmp != NULL; tmp = tmp->next )
-                tmp->s *= -1;
+        if( cluster[k]->s != (new_spin = rand()%STATES) )
+            for( tmp = cluster[k]; tmp != NULL; tmp = tmp->next ){
+                tmp->s = new_spin;
     create_clusters();
 }
 
 void MH()
 {
-    int i,j,delta_energy;
+    int i, j, tmp, delta_energy;
     for(i = 0; i < SIZE; i++) for(j = 0; j < SIZE; j++)
-        if( mersenne() < 0.5f ){
-            delta_energy = 2*(ising[RIGHT].s+ising[UP].s+ising[LEFT].s+ising[DOWN].s)*ising[CENTER].s;
+        if( ising[CENTER].s != (new_spin = rand()%STATES) ){
+            delta_energy  = (ising[RIGHT].s == ising[CENTER].s) - (ising[RIGHT].s == new_spin);
+            delta_energy += (ising[UP   ].s == ising[CENTER].s) - (ising[UP   ].s == new_spin);
+            delta_energy += (ising[LEFT ].s == ising[CENTER].s) - (ising[LEFT ].s == new_spin);
+            delta_energy += (ising[DOWN ].s == ising[CENTER].s) - (ising[DOWN ].s == new_spin);
             if( (delta_energy <= 0)||(mersenne() < exp(- BETA * delta_energy)) )
-                ising[CENTER].s = -ising[CENTER].s;
+                ising[CENTER].s = new_spin;
         }
 }
 
@@ -115,6 +119,7 @@ void init(int lattice_size, double beta_value)
     int i,j,k;
     seed_mersenne( (long)time(NULL) );
     for(k = 0; k < 543210; k++) mersenne();
+    srand(time(NULL));
 
     clear();
     cluster = (spin**)malloc(SIZE*SIZE*sizeof(spin*));
@@ -122,7 +127,7 @@ void init(int lattice_size, double beta_value)
     for(i = 0; i < SIZE; i++){
         ising[i] = (spin*)malloc(SIZE * sizeof(spin));
         for(j = 0; j < SIZE; j++)
-            ising[i][j].s = 1;
+            ising[CENTER].s = 0;
     }
 
     create_clusters();
