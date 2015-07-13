@@ -3,123 +3,54 @@
 #include <stdio.h>
 #include <GL/freeglut.h>
 
-#define SPIN_UP     1
-#define SPIN_DOWN   0
-
 unsigned int active = 0;
 void (*algorithm)() = MH;
 float *pixels = NULL;
+int zoom = 4;
+unsigned char color[2][3] = {{237,248,177}, {44,127,184}};
 
 void savePPM()
 {
-    unsigned char white[3] = {255,255,255};
-    unsigned char black[3] = {0,0,0};
     char filename[50];
     sprintf(filename, "ising_%dx%d_%f.ppm", SIZE, SIZE, BETA);
     FILE *f = fopen(filename, "wb");
-    fprintf(f, "P6\n%d %d\n255\n", 4*SIZE, 4*SIZE);
-    int i,j;
-    for(i = SIZE-1; i >= 0; i--){
-        for(j = 0; j < SIZE; j++){
-            if(ising[i][j].s == 1){
-                fwrite(white, sizeof(unsigned char), 3, f);
-                fwrite(white, sizeof(unsigned char), 3, f);
-                fwrite(white, sizeof(unsigned char), 3, f);
-                fwrite(white, sizeof(unsigned char), 3, f);
-            }
-            if(ising[i][j].s == -1){
-                fwrite(black, sizeof(unsigned char), 3, f);
-                fwrite(black, sizeof(unsigned char), 3, f);
-                fwrite(black, sizeof(unsigned char), 3, f);
-                fwrite(black, sizeof(unsigned char), 3, f);
-            }
-        }
-        for(j = 0; j < SIZE; j++){
-            if(ising[i][j].s == 1){
-                fwrite(white, sizeof(unsigned char), 3, f);
-                fwrite(white, sizeof(unsigned char), 3, f);
-                fwrite(white, sizeof(unsigned char), 3, f);
-                fwrite(white, sizeof(unsigned char), 3, f);
-            }
-            if(ising[i][j].s == -1){
-                fwrite(black, sizeof(unsigned char), 3, f);
-                fwrite(black, sizeof(unsigned char), 3, f);
-                fwrite(black, sizeof(unsigned char), 3, f);
-                fwrite(black, sizeof(unsigned char), 3, f);
-            }
-        }
-        for(j = 0; j < SIZE; j++){
-            if(ising[i][j].s == 1){
-                fwrite(white, sizeof(unsigned char), 3, f);
-                fwrite(white, sizeof(unsigned char), 3, f);
-                fwrite(white, sizeof(unsigned char), 3, f);
-                fwrite(white, sizeof(unsigned char), 3, f);
-            }
-            if(ising[i][j].s == -1){
-                fwrite(black, sizeof(unsigned char), 3, f);
-                fwrite(black, sizeof(unsigned char), 3, f);
-                fwrite(black, sizeof(unsigned char), 3, f);
-                fwrite(black, sizeof(unsigned char), 3, f);
-            }
-        }
-        for(j = 0; j < SIZE; j++){
-            if(ising[i][j].s == 1){
-                fwrite(white, sizeof(unsigned char), 3, f);
-                fwrite(white, sizeof(unsigned char), 3, f);
-                fwrite(white, sizeof(unsigned char), 3, f);
-                fwrite(white, sizeof(unsigned char), 3, f);
-            }
-            if(ising[i][j].s == -1){
-                fwrite(black, sizeof(unsigned char), 3, f);
-                fwrite(black, sizeof(unsigned char), 3, f);
-                fwrite(black, sizeof(unsigned char), 3, f);
-                fwrite(black, sizeof(unsigned char), 3, f);
-            }
-        }
-    }
+    fprintf(f, "P6\n%d %d\n255\n", zoom*SIZE, zoom*SIZE);
+    int i,j,k,l;
+    for(i = SIZE-1; i >= 0; i--)
+        for( k = 0; k < zoom; k++)
+            for(j = 0; j < SIZE; j++)
+                for( l = 0; l < zoom; l++)
+                    fwrite(color[(ising[CENTER].s+1)/2], sizeof(unsigned char), 3, f);
     fclose(f);
     printf("\nPPM file saved to %s\n",filename);
 }
 
 void GLInit()
 {
-    pixels = (float*)malloc(3 * 4 * SIZE * 4 * SIZE * sizeof(float));
+    pixels = (float*)malloc(3 * zoom * SIZE * zoom * SIZE * sizeof(float));
 
     glDisable(GL_DEPTH_TEST);
     glClearColor(0.0f ,0.0f, 0.0f, 0.0f);
     glClear(GL_COLOR_BUFFER_BIT);
-    glOrtho(0.0, 4*SIZE, 0.0, 4*SIZE, 0.0, 1.0);
+    glOrtho(0.0, zoom*SIZE, 0.0, zoom*SIZE, 0.0, 1.0);
     init(SIZE,0);
 }
 
 void displayF()
 {
-    int i,j,k; k = 0;
-    for(i = 0; i < SIZE; i++){
-        for(j = 0; j < SIZE; j++){
-            if(ising[i][j].s == 1){ pixels[k] = pixels[k+1] = pixels[k+2] = pixels[k+3] = 1; k += 4; }
-            else                  { pixels[k] = pixels[k+1] = pixels[k+2] = pixels[k+3] = 0; k += 4; }
+    int i,j,k,l,t = 0;
 
-        }
-        for(j = 0; j < SIZE; j++){
-            if(ising[i][j].s == 1){ pixels[k] = pixels[k+1] = pixels[k+2] = pixels[k+3] = 1; k += 4; }
-            else                  { pixels[k] = pixels[k+1] = pixels[k+2] = pixels[k+3] = 0; k += 4; }
-
-        }
-        for(j = 0; j < SIZE; j++){
-            if(ising[i][j].s == 1){ pixels[k] = pixels[k+1] = pixels[k+2] = pixels[k+3] = 1; k += 4; }
-            else                  { pixels[k] = pixels[k+1] = pixels[k+2] = pixels[k+3] = 0; k += 4; }
-
-        }
-        for(j = 0; j < SIZE; j++){
-            if(ising[i][j].s == 1){ pixels[k] = pixels[k+1] = pixels[k+2] = pixels[k+3] = 1; k += 4; }
-            else                  { pixels[k] = pixels[k+1] = pixels[k+2] = pixels[k+3] = 0; k += 4; }
-
-        }
-    }
+    for(i = 0; i < SIZE; i++)
+        for( k = 0; k < zoom; k++)
+            for(j = 0; j < SIZE; j++)
+                for( l = 0; l < zoom; l++){
+                    pixels[t++] = color[(ising[CENTER].s+1)/2][0]/255.0f;
+                    pixels[t++] = color[(ising[CENTER].s+1)/2][1]/255.0f;
+                    pixels[t++] = color[(ising[CENTER].s+1)/2][2]/255.0f;
+                }
 
     glRasterPos2i(0,0);
-    glDrawPixels(4*SIZE, 4*SIZE, GL_LUMINANCE, GL_FLOAT, pixels);
+    glDrawPixels(zoom*SIZE, zoom*SIZE,GL_RGB,GL_FLOAT, pixels);
     glutSwapBuffers();
 }
 
@@ -175,8 +106,8 @@ int main(int argc, char *argv[])
     SIZE = 128;
 
     glutInit(&argc, argv);
-    glutInitWindowSize(4*SIZE, 4*SIZE); 
-    glutInitDisplayMode( GLUT_LUMINANCE );
+    glutInitWindowSize(zoom*SIZE, zoom*SIZE); 
+    glutInitDisplayMode( GLUT_RGB | GLUT_DOUBLE );
     glutCreateWindow("ising"); 
     GLInit();
     glutDisplayFunc(displayF); 

@@ -1,5 +1,5 @@
-#ifndef ISING
-#define ISING
+#ifndef POTTS
+#define POTTS
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -27,7 +27,7 @@ typedef struct _spin{
     struct _spin *next;
 }spin;
 
-spin **ising = NULL;
+spin **potts = NULL;
 spin **cluster = NULL;
 
 int merge_clusters(int a, int b)
@@ -49,23 +49,23 @@ void create_clusters()
     int i,j;
     /* activate links */
     for(i = 0; i < SIZE; i++) for(j = 0; j < SIZE; j++){
-        ising[CENTER].link[0] = ising[RIGHT].link[2] = ( (ising[CENTER].s==ising[RIGHT].s)&&(mersenne()<(1-exp(-2*BETA))) );
-        ising[CENTER].link[1] = ising[UP   ].link[3] = ( (ising[CENTER].s==ising[UP   ].s)&&(mersenne()<(1-exp(-2*BETA))) );
-        ising[CENTER].link[2] = ising[LEFT ].link[0] = ( (ising[CENTER].s==ising[LEFT ].s)&&(mersenne()<(1-exp(-2*BETA))) );
-        ising[CENTER].link[3] = ising[DOWN ].link[1] = ( (ising[CENTER].s==ising[DOWN ].s)&&(mersenne()<(1-exp(-2*BETA))) );
+        potts[CENTER].link[0] = potts[RIGHT].link[2] = ( (potts[CENTER].s==potts[RIGHT].s)&&(mersenne()<(1-exp(-2*BETA))) );
+        potts[CENTER].link[1] = potts[UP   ].link[3] = ( (potts[CENTER].s==potts[UP   ].s)&&(mersenne()<(1-exp(-2*BETA))) );
+        potts[CENTER].link[2] = potts[LEFT ].link[0] = ( (potts[CENTER].s==potts[LEFT ].s)&&(mersenne()<(1-exp(-2*BETA))) );
+        potts[CENTER].link[3] = potts[DOWN ].link[1] = ( (potts[CENTER].s==potts[DOWN ].s)&&(mersenne()<(1-exp(-2*BETA))) );
     }
     /* initialize every spin as its own cluster */
     for(i = 0; i < SIZE; i++) for(j = 0; j < SIZE; j++){
-        ising[CENTER].cl = i*SIZE+j;
-        cluster[ising[CENTER].cl] = &ising[CENTER];
-        ising[CENTER].next = NULL;
+        potts[CENTER].cl = i*SIZE+j;
+        cluster[potts[CENTER].cl] = &potts[CENTER];
+        potts[CENTER].next = NULL;
     }
     /* merge linked clusters */
     for(i = 0; i < SIZE; i++) for(j = 0; j < SIZE; j++){
-/*        if( ising[CENTER].link[0] ) merge_clusters(ising[CENTER].cl, ising[RIGHT].cl);*/
-        if( ising[CENTER].link[1] ) merge_clusters(ising[CENTER].cl, ising[UP   ].cl);
-        if( ising[CENTER].link[2] ) merge_clusters(ising[CENTER].cl, ising[LEFT ].cl);
-/*        if( ising[CENTER].link[3] ) merge_clusters(ising[CENTER].cl, ising[DOWN ].cl);*/
+/*        if( potts[CENTER].link[0] ) merge_clusters(potts[CENTER].cl, potts[RIGHT].cl);*/
+        if( potts[CENTER].link[1] ) merge_clusters(potts[CENTER].cl, potts[UP   ].cl);
+        if( potts[CENTER].link[2] ) merge_clusters(potts[CENTER].cl, potts[LEFT ].cl);
+/*        if( potts[CENTER].link[3] ) merge_clusters(potts[CENTER].cl, potts[DOWN ].cl);*/
     }
 }
 
@@ -76,34 +76,34 @@ void SW()
     /* flip clusters */
     for(k = 0; k < SIZE * SIZE; k++)
         if( cluster[k]->s != (new_spin = rand()%STATES) )
-            for( tmp = cluster[k]; tmp != NULL; tmp = tmp->next ){
+            for( tmp = cluster[k]; tmp != NULL; tmp = tmp->next )
                 tmp->s = new_spin;
     create_clusters();
 }
 
 void MH()
 {
-    int i, j, tmp, delta_energy;
+    int i, j, new_spin, delta_energy;
     for(i = 0; i < SIZE; i++) for(j = 0; j < SIZE; j++)
-        if( ising[CENTER].s != (new_spin = rand()%STATES) ){
-            delta_energy  = (ising[RIGHT].s == ising[CENTER].s) - (ising[RIGHT].s == new_spin);
-            delta_energy += (ising[UP   ].s == ising[CENTER].s) - (ising[UP   ].s == new_spin);
-            delta_energy += (ising[LEFT ].s == ising[CENTER].s) - (ising[LEFT ].s == new_spin);
-            delta_energy += (ising[DOWN ].s == ising[CENTER].s) - (ising[DOWN ].s == new_spin);
+        if( potts[CENTER].s != (new_spin = rand()%STATES) ){
+            delta_energy  = (potts[RIGHT].s == potts[CENTER].s) - (potts[RIGHT].s == new_spin);
+            delta_energy += (potts[UP   ].s == potts[CENTER].s) - (potts[UP   ].s == new_spin);
+            delta_energy += (potts[LEFT ].s == potts[CENTER].s) - (potts[LEFT ].s == new_spin);
+            delta_energy += (potts[DOWN ].s == potts[CENTER].s) - (potts[DOWN ].s == new_spin);
             if( (delta_energy <= 0)||(mersenne() < exp(- BETA * delta_energy)) )
-                ising[CENTER].s = new_spin;
+                potts[CENTER].s = new_spin;
         }
 }
 
 void clear()
 {
-    if(ising){
+    if(potts){
         int i;
         for(i = 0; i < SIZE; i++)
-            if(ising[i])
-                free(ising[i]);
-        free(ising);
-        ising = NULL;
+            if(potts[i])
+                free(potts[i]);
+        free(potts);
+        potts = NULL;
     }
     if(cluster){
         free(cluster);
@@ -123,11 +123,11 @@ void init(int lattice_size, double beta_value)
 
     clear();
     cluster = (spin**)malloc(SIZE*SIZE*sizeof(spin*));
-    ising = (spin**)malloc(SIZE * sizeof(spin*));
+    potts = (spin**)malloc(SIZE * sizeof(spin*));
     for(i = 0; i < SIZE; i++){
-        ising[i] = (spin*)malloc(SIZE * sizeof(spin));
+        potts[i] = (spin*)malloc(SIZE * sizeof(spin));
         for(j = 0; j < SIZE; j++)
-            ising[CENTER].s = 0;
+            potts[CENTER].s = 0;
     }
 
     create_clusters();
@@ -148,25 +148,32 @@ char *get_algorithm_string(void (*algorithm)())
 double get_energy()
 {
     int i, j, energy = 0;
-    for(i = 0; i < SIZE; i++) for(j = 0; j < SIZE; j++)
-        energy += - ( ising[UP].s + ising[LEFT].s ) * ising[CENTER].s;
+    for(i = 0; i < SIZE; i++) for(j = 0; j < SIZE; j++){
+        energy -= (potts[UP].s == potts[CENTER].s) + (potts[LEFT].s == potts[CENTER].s);
+    }
     return 1.0f * energy;
 }
 
-double get_signed_magnetization()
+double RE(int p)
 {
-    int i, j, magnetization = 0;
-    for(i = 0; i < SIZE; i++) for(j = 0; j < SIZE; j++)
-        magnetization += ising[CENTER].s;
-    return 1.0f * magnetization;
+    return cos(p*6.28318530718f/STATES);
+}
+
+double IM(int p)
+{
+    return sin(p*6.28318530718f/STATES);
 }
 
 double get_magnetization()
 {
-    int i, j, magnetization = 0;
-    for(i = 0; i < SIZE; i++) for(j = 0; j < SIZE; j++)
-        magnetization += ising[CENTER].s;
-    return 1.0f * abs(magnetization);
+    int i, j;
+    double magnetization[2];
+    magnetization[0] = magnetization[1] = 0.0;
+    for(i = 0; i < SIZE; i++) for(j = 0; j < SIZE; j++){
+        magnetization[0] += RE(potts[CENTER].s);
+        magnetization[1] += IM(potts[CENTER].s);
+    }
+    return sqrt(magnetization[0]*magnetization[0]+magnetization[1]*magnetization[1]);
 }
 
 int get_largest_cluster()
@@ -193,8 +200,8 @@ double get_correlation(int dist)
         Sx[i] = Sy[i] = 0.0f;
 
     for(i = 0; i < SIZE; i++) for(j = 0; j < SIZE; j++){
-        Sx[j] += ising[i][j].s;
-        Sy[i] += ising[i][j].s;
+        Sx[j] += potts[i][j].s;
+        Sy[i] += potts[i][j].s;
     }
     for(i = 0; i < SIZE; i++){
         Sx[i] /= SIZE;
