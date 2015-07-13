@@ -51,35 +51,53 @@
     <no-break><pageref|auto-33>>
   </table-of-contents>
 
-  <section|Ising Model <math|2d>>
+  <section|Potts Model <math|2d>>
 
-  In this section we study the statistical properties of a <math|2d> Ising
-  Model. We consider a system of <math|L\<times\>L> spins situated on the
-  points of a regular square lattice with periodic boundary conditions (PBC)
-  in both directions. Each spin interacts with its nearest neighbours inside
-  the lattice, with an Hamiltonian:
+  The <math|2>-dimensional Potts Model constitutes a generalization of the
+  Ising Model to a generic number <math|q\<in\>\<bbb-N\>> of states for the
+  spin variable. A useful way to picture the space of states of a Potts spin
+  variable is to map it to the space <math|U<around*|(|1|)>\<subset\>\<bbb-C\>>
+  of unimodular complex numbers. We represent each state <math|p> with the
+  <math|p<rsup|th>> complex <math|q>-root of the unity in <math|\<bbb-C\>>:
 
   <\equation>
-    H=-<big|sum><rsub|<around*|\<langle\>|i,j|\<rangle\>>>\<sigma\><rsub|i>*\<sigma\><rsub|j>
+    p\<mapsto\>e<rsup|<frac|2\<pi\>i|q>*p>\<in\>U<around*|(|1|)>
+  </equation>
+
+  Lets consider a <math|3>-state Potts system of <math|L\<times\>L> spins
+  situated on the points of a regular square lattice with periodic boundary
+  conditions (PBC) in both directions, as for the Ising Model. Each spin
+  interacts with its nearest neighbours inside the lattice, with an
+  Hamiltonian:
+
+  <\equation>
+    H=-<big|sum><rsub|<around*|\<langle\>|i,j|\<rangle\>>>\<delta\><rsub|\<sigma\><rsub|i>,\<sigma\><rsub|j>>
   </equation>
 
   where the sum is taken only over the set of unordered pairs
   <math|<around*|\<langle\>|i,j|\<rangle\>>> such that
   <math|\<sigma\><rsub|i>> and <math|\<sigma\><rsub|j>> are nearest
-  neighbours.
-
-  In order to obtain expectation values for physical quantities of the system
-  we should be able to sum over the space of all the spin configurations, or
-  at least to sample configurations from this space with probability:
+  neighbours. The implementation of the MH algorithm is completely analogous
+  to that for the ising model, while for the SW algorithm we need to modify
+  the probability with which to activate the link between neighbouring spins.
+  In fact, the partition function can be written as:
 
   <\equation>
-    P<around*|(|<around*|{|\<sigma\>|}>|)>\<sim\>\<mathe\><rsup|-\<beta\>*H<around*|(|<around*|{|\<sigma\>|}>|)>>
+    Z<around*|[|\<beta\>|]>=<big|sum><rsub|<around*|{|\<sigma\>|}>>\<mathe\><rsup|\<beta\><big|sum><rsub|<around*|\<langle\>|i*j|\<rangle\>>>\<delta\><rsub|\<sigma\><rsub|i>*\<sigma\><rsub|j>>>=<big|sum><rsub|<around*|{|\<sigma\>|}>><big|prod><rsub|<around*|\<langle\>|i*j|\<rangle\>>>\<mathe\><rsup|\<beta\>*\<delta\><rsub|\<sigma\><rsub|i>*\<sigma\><rsub|j>>>
   </equation>
 
-  which reproduces the integration measure of the functional integral. The
-  obvious choice for numerical simulations is the second one, which we
-  implement through Monte Carlo (MC) algorithms. In particular we focus on
-  the Metropolis-Hastings (MH) and the Swendsen-Wang (SW) algorithms.
+  using the Fortuin-Kasteleyn representation we can write:
+
+  <\equation>
+    \<mathe\><rsup|\<beta\>*\<delta\><rsub|\<sigma\><rsub|i>*\<sigma\><rsub|j>>>=1+<around*|(|\<mathe\><rsup|\<beta\>>-1|)>\<delta\><rsub|\<sigma\><rsub|i>*\<sigma\><rsub|j>>=\<mathe\><rsup|\<beta\>>*<around*|[|\<mathe\><rsup|-\<beta\>>+<around*|(|1-\<mathe\><rsup|-\<beta\>>|)>*\<delta\><rsub|\<sigma\><rsub|i>*\<sigma\><rsub|j>>|]>
+  </equation>
+
+  therefore we can immediately read the probability of establishing a link
+  between neighbouring spins as:
+
+  <\equation>
+    p=1-\<mathe\><rsup|-\<beta\>>
+  </equation>
 
   <subsection|Thermalization>
 
@@ -786,9 +804,9 @@
     <associate|auto-8|<tuple|5|5>>
     <associate|auto-9|<tuple|6|5>>
     <associate|eq:MC|<tuple|2|?>>
-    <associate|eq:cosh|<tuple|26|20>>
-    <associate|eq:scalingtau|<tuple|3|3>>
-    <associate|eq:tint|<tuple|5|4>>
+    <associate|eq:cosh|<tuple|29|20>>
+    <associate|eq:scalingtau|<tuple|6|3>>
+    <associate|eq:tint|<tuple|8|4>>
     <associate|fig:autocorrelation1|<tuple|4|4>>
     <associate|fig:autocorrelation2|<tuple|4|5>>
     <associate|fig:autocorrelation_time|<tuple|7|6>>
