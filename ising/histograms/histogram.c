@@ -39,6 +39,8 @@ int main ( int argc, char *argv[] )
         fclose(fout);
 
         printf("Written to: %s\t\tβ -> %f\n", output, storage.b);
+        raw_close(&storage);
+        free(histogram);
     }
     return 0;
 }

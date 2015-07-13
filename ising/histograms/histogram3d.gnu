@@ -19,7 +19,7 @@ set ticslevel 0
 set xlabel "{/Symbol b}"
 set ylabel "m"
 
-load 'parula.pal'
+load '../../modules/parula.pal'
 
 set output 'img/8_MH_histogram3d.eps'
 splot "data/8_MH.3d" ls 1 w pm3d t '8x8 MH'
