@@ -532,12 +532,22 @@
   <math|m> obtained from <math|10<rsup|6>> sweeps of SW on a lattice
   <math|8\<times\>8>.>
 
-  Since we used a cold start initialization, all our simulations at
+  Since we used a cold start initialization, all our simulations of MH at
   temperatures lower than <math|T<rsub|c>> spontaneously broke the
   <math|\<bbb-Z\><rsub|2>> symmetry of the ground state to some value
   <math|m<rsub|0>\<gtr\>0>. Having used a hot start initialization instead,
   we would have ended up with <math|m<rsub|0>=\<pm\><around*|\||m<rsub|0>|\|>>
-  with probability <math|<frac|1|2>> each.
+  with probability <math|<frac|1|2>> each. For the SW algorithm this is not
+  an issue since it can easily tunnel between ground states by flipping large
+  numbers of spins in a single sweep. In both cases, though, we measured the
+  unsigned magnetization thus obtaining only histograms for the range
+  <math|<around*|[|0,1|]>>. In (Fig.<reference|fig:pdfMH>) and
+  (Fid.<reference|fig:pdfSW>) we computed the histograms for the negative
+  range by assuming the <math|\<bbb-Z\><rsub|2>> symmetry:
+
+  <\equation>
+    P<around*|(|-m|)>=P<around*|(|m|)>
+  </equation>
 
   <big-figure|<image|../ising/histograms/img/8_MH_histogram3d.eps||||>|3d
   plot of <math|P<around*|(|m,\<beta\>|)>> as computed from <math|10<rsup|6>>
@@ -786,7 +796,7 @@
     <associate|auto-8|<tuple|5|5>>
     <associate|auto-9|<tuple|6|5>>
     <associate|eq:MC|<tuple|2|?>>
-    <associate|eq:cosh|<tuple|26|20>>
+    <associate|eq:cosh|<tuple|27|20>>
     <associate|eq:scalingtau|<tuple|3|3>>
     <associate|eq:tint|<tuple|5|4>>
     <associate|fig:autocorrelation1|<tuple|4|4>>

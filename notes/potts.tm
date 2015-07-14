@@ -28,23 +28,23 @@
 
     <with|par-left|1tab|1.3<space|2spc>Observables
     <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
-    <no-break><pageref|auto-9>>
+    <no-break><pageref|auto-7>>
 
     <with|par-left|1tab|1.4<space|2spc><with|mode|math|\<beta\>> Critical
     <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
-    <no-break><pageref|auto-14>>
+    <no-break><pageref|auto-12>>
 
     <with|par-left|1tab|1.5<space|2spc>Probability Distribution Functions
     <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
-    <no-break><pageref|auto-20>>
+    <no-break><pageref|auto-18>>
 
     <with|par-left|1tab|1.6<space|2spc>Spatial Correlations
     <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
-    <no-break><pageref|auto-24>>
+    <no-break><pageref|auto-22>>
 
     <with|par-left|1tab|1.7<space|2spc>Finite Size Scaling
     <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
-    <no-break><pageref|auto-28>>
+    <no-break><pageref|auto-26>>
   </table-of-contents>
 
   <section|Potts Model <math|2d>>
@@ -100,7 +100,12 @@
   As for the case of the Ising Model, we opted for a cold start approach. In
   (Fig.<reference|fig:thermalization>) we present the thermalization process
   for MH and SW at various temperatures and for two different volumes:
-  <math|32<rsup|2>> and <math|64<rsup|2>>.
+  <math|32<rsup|2>> and <math|64<rsup|2>>. The observed quantity is the
+  energy density:
+
+  <\equation>
+    e=<around*|\<langle\>|\<cal-H\>|\<rangle\>>/V
+  </equation>
 
   <\big-figure>
     <image|../potts/thermalization/img/32_MH_thermalization.eps|0.5par|||><image|../potts/thermalization/img/32_SW_thermalization.eps|0.5par|||>
@@ -125,72 +130,14 @@
 
   <subsection|<label|sect:autocorrelation>Autocorrelation Times>
 
-  We now study the correlations present between consecutive configurations
-  sampled by the two algorithms in order to obtain the characteristic time
-  after which we can consider two configurations to be statistically
-  independent. This is called <with|font-shape|italic|integrated
-  autocorrelation time> and is computed in the following way:
-
-  <\equation>
-    <label|eq:tint>\<tau\><rsub|\<cal-O\>,int>=<frac|1|2>+<big|sum><rsub|k=1><rsup|k<rsub|max>>R
-    <around*|(|k|)>
-  </equation>
-
-  where <math|\<cal-O\>> is the physical observable for which we compute
-  autocorrelation and <math|R<around*|(|k|)>> is defined as:
-
-  <\equation>
-    R <around*|(|k|)> = <frac|1|<around*|(|n-k|)>*\<sigma\><rsup|2>>*<big|sum><rsup|n-k><rsub|t=1><around*|(|\<cal-O\><rsub|t>-\<mu\>|)>*<around*|(|\<cal-O\><rsub|t+k>-\<mu\>|)>
-  </equation>
-
-  here <math|n> is the total number of samples of <math|\<cal-O\>> and
-  <math|\<mu\>,\<sigma\><rsup|2>> are the mean and variance of the process.
-  For large time separations <math|k>, <math|R(k)> decays exponentially:
-
-  <\equation>
-    R<around*|(|k|)><long-arrow|\<rubber-rightarrow\>|k\<rightarrow\>\<infty\>>r\<mathe\><rsup|-k/\<tau\><rsub|\<cal-O\>,exp>>
-  </equation>
-
-  which defines the exponential autocorrelation time
-  <math|\<tau\><rsub|\<cal-O\>,exp>>.
-
-  \;
-
-  We immediately see from (Fig.<reference|fig:autocorrelation1>) that the MC
-  process is strongly correlated in time particularly near the phase
-  transition:
-
-  <big-figure||<label|fig:autocorrelation1>Comparison of the energy for the
-  two algorithms at <math|\<beta\>=\<beta\><rsub|c>> and <math|L=32>. (Left)
-  MH (Right) SW.>
-
-  We now compute the autocorrelation time <math|\<tau\><rsub|int>> for the
-  observable <math|e=E/V> using formula (<reference|eq:tint>):
-
-  <\big-figure>
-    \;
-  </big-figure|Plot of the integrated autocorrelation time near the phase
-  transition for the MH algorithm. The raw data was obtained from a
-  simulation of <math|10<rsup|6>> measurements on a lattice
-  <math|32\<times\>32>. The fit in the center is not very accurate because
-  near <math|\<beta\><rsub|c>> the autocorrelation time becomes very large
-  and the interval <math|<around*|[|0,2000|]>> becomes too small for a
-  reliable estimate of <math|\<tau\><rsub|int>>.>
-
-  <\big-figure>
-    \;
-  </big-figure|Plot of the integrated autocorrelation time near the phase
-  transition for the SW algorithm. The raw data was obtained from a
-  simulation of <math|10<rsup|5>> measurements on a lattice
-  <math|32\<times\>32>.>
-
-  The data is fitted using the function:
+  We now study the correlations present in the energy density signal produced
+  by the Markov process. As we did for the Ising Model, we fit the data using
+  the integrated autocorrelation time exact result for a bivariate gaussian
+  signal:
 
   <\equation>
     \<tau\><rsub|int><around*|(|k<rsub|max>|)>=\<tau\><rsub|int><around*|[|1-<frac|2*\<tau\><rsub|exp>|2*\<tau\><rsub|exp>+1>*\<mathe\><rsup|-k<rsub|max>/\<tau\><rsub|exp>>|]>
   </equation>
-
-  which is the exact solution for a bivariate gaussian process.
 
   \;
 
@@ -201,12 +148,24 @@
   <math|\<tau\><rsub|int><rsup|MH>\<sim\>100> compared to an autocorrelation
   time <math|\<tau\><rsub|int><rsup|SW>\<sim\>5> for SW.
 
-  <big-figure||<label|fig:autocorrelation_time>Plot of the integrated
-  autocorrelation time as a function of <math|x=<frac|\<beta\>-\<beta\><rsub|c>|\<beta\><rsub|c>>>
-  for <math|L=32>.>
+  <\big-figure|<image|../potts/autocorrelation/img/SW_acr.eps|0.5par|||><image|../potts/autocorrelation/img/SW_fit.eps|0.5par|||>>
+    <label|fig:autocorrelation_time>Plots of the autocorrelation of the
+    signal for <math|e>. On the left is shown the integrated autocorrelation
+    time <math|\<tau\><rsub|int>> as a function <math|k<rsub|max>>. The
+    chromatic key indicates the value of <math|\<beta\>>. On the left is
+    shown the plot of <math|\<tau\><rsub|int>> as a function of
+    <math|x=<frac|\<beta\>-\<beta\><rsub|c>|\<beta\><rsub|c>>>. The lattice
+    size is <math|L=8>.
+  </big-figure>
 
-  We remark that the peak is slightly off centered because of the finite size
-  of the lattice (pseudocritical point <math|\<beta\><rsub|c><around*|(|V|)>\<less\>\<beta\><rsub|c><around*|(|\<infty\>|)>>).
+  As already pointed out, the autocorrelation time of the SW signal is very
+  low even near the phase transition because of the dynamical critical
+  exponent <math|z\<approx\>0>. Thus we can safely set the bin size to
+  <math|50>.
+
+  <big-figure|<image|../potts/autocorrelation/img/SW_3d.eps|0.5par|||>|3d
+  plot of <math|\<tau\><rsub|int><around*|(|\<beta\>,k<rsub|max>|)>> for a
+  Potts Model of volume <math|8\<times\>8> near <math|\<beta\><rsub|c>>.>
 
   <subsection|Observables>
 
@@ -356,20 +315,25 @@
   <math|<frac|1|2><around*|(|L<rsup|2>+1|)><around*|(|L<rsup|2>+2|)>>
   magnetization levels distributed as in (Fig.<reference|fig:levels>):
 
-  <big-figure|<image|../potts/histograms/img/example.eps|0.5par|||>|<label|fig:levels>Magnetization
-  levels of the Potts Model on a <math|4\<times\>4> lattice.>
+  <big-figure|<image|../potts/histograms/img/levels.eps|0.5par|||>|<label|fig:levels>Magnetization
+  levels of the Potts Model on a <math|4\<times\>4> lattice. We remark that,
+  since the average is a convex function of its arguements, every
+  magnetization level must be contained in the convex hull of the three basic
+  magnetizations <math|1, <frac|-1+i*<sqrt|3>|2>, <frac|-1-i*<sqrt|3>|2>>.>
 
   With this consideration one can construct the probability distribution
   function of the magnetization just by counting the number of samples in
-  each level (for <math|L> not too large). In (Fig.<reference|fig:pdfMH>) and
-  (Fig.<reference|fig:pdfSW>) we show the PDFs of <math|m> for both of the
-  algorithms and for various values of <math|\<beta\>>:
+  each level (for <math|L> not too large):
 
   <\big-figure>
-    \;
+    <image|../potts/histograms/img/8_0.750000_SW_histogram.eps|0.33par|||><image|../potts/histograms/img/8_0.810000_SW_histogram.eps|0.33par|||><image|../potts/histograms/img/8_0.830000_SW_histogram.eps|0.33par|||>
+
+    <image|../potts/histograms/img/8_0.850000_SW_histogram.eps|0.33par|||><image|../potts/histograms/img/8_0.870000_SW_histogram.eps|0.33par|||><image|../potts/histograms/img/8_0.890000_SW_histogram.eps|0.33par|||>
+
+    <image|../potts/histograms/img/8_0.910000_SW_histogram.eps|0.33par|||><image|../potts/histograms/img/8_0.930000_SW_histogram.eps|0.33par|||><image|../potts/histograms/img/8_0.950000_SW_histogram.eps|0.33par|||>
   </big-figure|<label|fig:pdfMH>Probability distribution functions of
-  <math|m> obtained from <math|10<rsup|6>> sweeps of MH on a lattice
-  <math|8\<times\>8>.>
+  <math|m\<in\>\<bbb-C\>> obtained from <math|10<rsup|6>> sweeps of SW on a
+  lattice <math|8\<times\>8>.>
 
   By looking at the PDFs of <math|m> we can witness the formation of a 2-fold
   degeneracy of the ground state of the system for
@@ -380,19 +344,6 @@
   implies that near <math|\<beta\><rsub|c>> the distribution does not have a
   well defined second cumulant, which is precisely the magnetic
   susceptibility.
-
-  <\big-figure>
-    \;
-  </big-figure|<label|fig:pdfSW>Probability distribution functions of
-  <math|m> obtained from <math|10<rsup|6>> sweeps of SW on a lattice
-  <math|8\<times\>8>.>
-
-  Since we used a cold start initialization, all our simulations at
-  temperatures lower than <math|T<rsub|c>> spontaneously broke the
-  <math|\<bbb-Z\><rsub|2>> symmetry of the ground state to some value
-  <math|m<rsub|0>\<gtr\>0>. Having used a hot start initialization instead,
-  we would have ended up with <math|m<rsub|0>=\<pm\><around*|\||m<rsub|0>|\|>>
-  with probability <math|<frac|1|2>> each.
 
   <subsection|Spatial Correlations><label|sec:corr>
 
@@ -590,26 +541,26 @@
 <\references>
   <\collection>
     <associate|auto-1|<tuple|1|1>>
-    <associate|auto-10|<tuple|6|4>>
-    <associate|auto-11|<tuple|7|4>>
-    <associate|auto-12|<tuple|8|4>>
-    <associate|auto-13|<tuple|9|4>>
-    <associate|auto-14|<tuple|1.4|5>>
-    <associate|auto-15|<tuple|10|5>>
-    <associate|auto-16|<tuple|1|5>>
-    <associate|auto-17|<tuple|11|5>>
-    <associate|auto-18|<tuple|2|5>>
-    <associate|auto-19|<tuple|12|5>>
+    <associate|auto-10|<tuple|6|5>>
+    <associate|auto-11|<tuple|7|5>>
+    <associate|auto-12|<tuple|1.4|5>>
+    <associate|auto-13|<tuple|8|5>>
+    <associate|auto-14|<tuple|1|5>>
+    <associate|auto-15|<tuple|9|5>>
+    <associate|auto-16|<tuple|2|5>>
+    <associate|auto-17|<tuple|10|6>>
+    <associate|auto-18|<tuple|1.5|6>>
+    <associate|auto-19|<tuple|11|6>>
     <associate|auto-2|<tuple|1.1|2>>
-    <associate|auto-20|<tuple|1.5|6>>
-    <associate|auto-21|<tuple|13|6>>
-    <associate|auto-22|<tuple|14|6>>
-    <associate|auto-23|<tuple|15|6>>
-    <associate|auto-24|<tuple|1.6|6>>
-    <associate|auto-25|<tuple|16|7>>
-    <associate|auto-26|<tuple|17|8>>
-    <associate|auto-27|<tuple|18|8>>
-    <associate|auto-28|<tuple|1.7|8>>
+    <associate|auto-20|<tuple|12|7>>
+    <associate|auto-21|<tuple|1.6|7>>
+    <associate|auto-22|<tuple|13|8>>
+    <associate|auto-23|<tuple|14|8>>
+    <associate|auto-24|<tuple|15|9>>
+    <associate|auto-25|<tuple|1.7|9>>
+    <associate|auto-26|<tuple|3|9>>
+    <associate|auto-27|<tuple|16|10>>
+    <associate|auto-28|<tuple|17|10>>
     <associate|auto-29|<tuple|3|9>>
     <associate|auto-3|<tuple|1|2>>
     <associate|auto-30|<tuple|19|9>>
@@ -621,24 +572,24 @@
     <associate|auto-36|<tuple|24|?>>
     <associate|auto-4|<tuple|1.2|3>>
     <associate|auto-5|<tuple|2|3>>
-    <associate|auto-6|<tuple|3|3>>
-    <associate|auto-7|<tuple|4|3>>
-    <associate|auto-8|<tuple|5|3>>
-    <associate|auto-9|<tuple|1.3|4>>
+    <associate|auto-6|<tuple|3|4>>
+    <associate|auto-7|<tuple|1.3|4>>
+    <associate|auto-8|<tuple|4|4>>
+    <associate|auto-9|<tuple|5|4>>
     <associate|eq:MC|<tuple|2|?>>
-    <associate|eq:cosh|<tuple|24|8>>
+    <associate|eq:cosh|<tuple|22|9>>
     <associate|eq:scalingtau|<tuple|6|4>>
     <associate|eq:tint|<tuple|7|3>>
     <associate|fig:autocorrelation1|<tuple|2|3>>
     <associate|fig:autocorrelation2|<tuple|4|5>>
-    <associate|fig:autocorrelation_time|<tuple|5|3>>
-    <associate|fig:corr|<tuple|17|8>>
+    <associate|fig:autocorrelation_time|<tuple|2|3>>
+    <associate|fig:corr|<tuple|14|9>>
     <associate|fig:energy_bin|<tuple|9|9>>
-    <associate|fig:heatcapacity|<tuple|8|4>>
-    <associate|fig:levels|<tuple|13|6>>
-    <associate|fig:pdfMH|<tuple|14|6>>
-    <associate|fig:pdfSW|<tuple|15|6>>
-    <associate|fig:susceptibility|<tuple|9|4>>
+    <associate|fig:heatcapacity|<tuple|6|5>>
+    <associate|fig:levels|<tuple|11|6>>
+    <associate|fig:pdfMH|<tuple|12|7>>
+    <associate|fig:pdfSW|<tuple|13|7>>
+    <associate|fig:susceptibility|<tuple|7|5>>
     <associate|fig:termalization|<tuple|1|2>>
     <associate|fig:termalizationMH|<tuple|1|?>>
     <associate|fig:thermalization|<tuple|1|2>>
@@ -649,9 +600,9 @@
     <associate|footnr-1|<tuple|1|?>>
     <associate|result_box|<tuple|5|?>>
     <associate|sec:betafss|<tuple|1.4|5>>
-    <associate|sec:corr|<tuple|1.6|6>>
+    <associate|sec:corr|<tuple|1.6|8>>
     <associate|sect:autocorrelation|<tuple|1.2|3>>
-    <associate|sect:fss|<tuple|1.7|8>>
+    <associate|sect:fss|<tuple|1.7|9>>
   </collection>
 </references>
 
@@ -663,73 +614,70 @@
       <with|mode|<quote|math>|64\<times\>64> in the bottom two. MH on the
       left, SW on the right.|<pageref|auto-3>>
 
-      <tuple|normal|Comparison of the energy for the two algorithms at
-      <with|mode|<quote|math>|\<beta\>=\<beta\><rsub|c>> and
-      <with|mode|<quote|math>|L=32>. (Left) MH (Right) SW.|<pageref|auto-5>>
+      <\tuple|normal>
+        Plots of the autocorrelation of the signal for
+        <with|mode|<quote|math>|e>. On the left is shown the integrated
+        autocorrelation time <with|mode|<quote|math>|\<tau\><rsub|int>> as a
+        function <with|mode|<quote|math>|k<rsub|max>>. The chromatic key
+        indicates the value of <with|mode|<quote|math>|\<beta\>>. On the left
+        is shown the plot of <with|mode|<quote|math>|\<tau\><rsub|int>> as a
+        function of <with|mode|<quote|math>|x=<frac|\<beta\>-\<beta\><rsub|c>|\<beta\><rsub|c>>>.
+        The lattice size is <with|mode|<quote|math>|L=8>.
+      </tuple|<pageref|auto-5>>
 
-      <tuple|normal|Plot of the integrated autocorrelation time near the
-      phase transition for the MH algorithm. The raw data was obtained from a
-      simulation of <with|mode|<quote|math>|10<rsup|6>> measurements on a
-      lattice <with|mode|<quote|math>|32\<times\>32>. The fit in the center
-      is not very accurate because near <with|mode|<quote|math>|\<beta\><rsub|c>>
-      the autocorrelation time becomes very large and the interval
-      <with|mode|<quote|math>|<around*|[|0,2000|]>> becomes too small for a
-      reliable estimate of <with|mode|<quote|math>|\<tau\><rsub|int>>.|<pageref|auto-6>>
-
-      <tuple|normal|Plot of the integrated autocorrelation time near the
-      phase transition for the SW algorithm. The raw data was obtained from a
-      simulation of <with|mode|<quote|math>|10<rsup|5>> measurements on a
-      lattice <with|mode|<quote|math>|32\<times\>32>.|<pageref|auto-7>>
-
-      <tuple|normal|Plot of the integrated autocorrelation time as a function
-      of <with|mode|<quote|math>|x=<frac|\<beta\>-\<beta\><rsub|c>|\<beta\><rsub|c>>>
-      for <with|mode|<quote|math>|L=32>.|<pageref|auto-8>>
+      <tuple|normal|3d plot of <with|mode|<quote|math>|\<tau\><rsub|int><around*|(|\<beta\>,k<rsub|max>|)>>
+      for a Potts Model of volume <with|mode|<quote|math>|8\<times\>8> near
+      <with|mode|<quote|math>|\<beta\><rsub|c>>.|<pageref|auto-6>>
 
       <tuple|normal|Energy density as a function of
       <with|mode|<quote|math>|\<beta\>>. MH on the left and SW on the
-      right.|<pageref|auto-10>>
+      right.|<pageref|auto-8>>
 
       <tuple|normal|Magnetization as a function of
       <with|mode|<quote|math>|\<beta\>>. MH on the left and SW on the
-      right.|<pageref|auto-11>>
+      right.|<pageref|auto-9>>
 
       <tuple|normal|Heat capacity as a function of
       <with|mode|<quote|math>|\<beta\>>. MH on the left and SW on the
-      right.|<pageref|auto-12>>
+      right.|<pageref|auto-10>>
 
       <tuple|normal|Magnetic susceptibility as a function of
       <with|mode|<quote|math>|\<beta\>>. MH on the left and SW on the
-      right.|<pageref|auto-13>>
+      right.|<pageref|auto-11>>
 
       <tuple|normal|Fit of the heat capacity and susceptibility peaks
-      (MH).|<pageref|auto-15>>
+      (MH).|<pageref|auto-13>>
 
       <tuple|normal|Fit of the heat capacity and susceptibility peaks
-      (SW).|<pageref|auto-17>>
+      (SW).|<pageref|auto-15>>
 
       <tuple|normal|Pseudocritical inverse temperature fit. MH on the left,
       SW on the right. The purple lines are relative to the heat capacity
       <with|mode|<quote|math>|C> while the green ones to the magnetic
-      susceptibility <with|mode|<quote|math>|\<chi\>>.|<pageref|auto-19>>
+      susceptibility <with|mode|<quote|math>|\<chi\>>.|<pageref|auto-17>>
 
       <tuple|normal|Magnetization levels of the Potts Model on a
-      <with|mode|<quote|math>|4\<times\>4> lattice.|<pageref|auto-21>>
+      <with|mode|<quote|math>|4\<times\>4> lattice. We remark that, since the
+      average is a convex function of its arguements, every magnetization
+      level must be contained in the convex hull of the three basic
+      magnetizations <with|mode|<quote|math>|1, <frac|-1+i*<sqrt|3>|2>,
+      <frac|-1-i*<sqrt|3>|2>>.|<pageref|auto-19>>
 
       <tuple|normal|Probability distribution functions of
-      <with|mode|<quote|math>|m> obtained from
-      <with|mode|<quote|math>|10<rsup|6>> sweeps of MH on a lattice
-      <with|mode|<quote|math>|8\<times\>8>.|<pageref|auto-22>>
+      <with|mode|<quote|math>|m\<in\>\<bbb-C\>> obtained from
+      <with|mode|<quote|math>|10<rsup|6>> sweeps of SW on a lattice
+      <with|mode|<quote|math>|8\<times\>8>.|<pageref|auto-20>>
 
       <tuple|normal|Probability distribution functions of
       <with|mode|<quote|math>|m> obtained from
       <with|mode|<quote|math>|10<rsup|6>> sweeps of SW on a lattice
-      <with|mode|<quote|math>|8\<times\>8>.|<pageref|auto-23>>
+      <with|mode|<quote|math>|8\<times\>8>.|<pageref|auto-21>>
 
       <tuple|normal|Ilustration of the growth of spatial correlations when
       criticality is approached on a lattice
       <with|mode|<quote|math>|128\<times\>128> :
       <with|mode|<quote|math>|\<beta\>=0.2, 0.5, 0.7,0.8, 0.9, 0.95, 0.97,
-      0.98, 0.99>.|<pageref|auto-25>>
+      0.98, 0.99>.|<pageref|auto-23>>
 
       <tuple|normal|Correlation functions for various values of
       <with|mode|<quote|math>|\<beta\>>. The lattice size used is
@@ -737,32 +685,32 @@
       effects. As a precaution, we considers an interval in
       <with|mode|<quote|math>|\<beta\>>-space such that the correlation
       length is much smaller that the size of the lattice (approximately one
-      order of magnitude smaller). |<pageref|auto-26>>
+      order of magnitude smaller). |<pageref|auto-24>>
 
       <tuple|normal|Plot of the correlation length dependence on the
       parameter <with|mode|<quote|math>|x=<frac|\<beta\>-\<beta\><rsub|c>|\<beta\><rsub|c>>>
       for a lattice of size <with|mode|<quote|math>|128\<times\>128>. MH on
       the left and SW on the right. The errors are computed by jackknife
       binning of the fit data from (Fig.<reference|fig:corr>) through
-      (<reference|eq:cosh>).|<pageref|auto-27>>
+      (<reference|eq:cosh>).|<pageref|auto-25>>
 
       <tuple|normal|Finite Size Scaling study for the lattice sizes
       <with|mode|<quote|math>|8<rsup|2>,16<rsup|2>,32<rsup|2>,64<rsup|2>>.
       Left MH, right SW. The top plot represents the scaling of the
       magnetization, the center one the magnetic susceptibility and the
-      bottom one the heat capacity.|<pageref|auto-30>>
+      bottom one the heat capacity.|<pageref|auto-28>>
     </associate>
     <\associate|table>
       <tuple|normal|Pseudocritical <with|mode|<quote|math>|\<beta\>>-values
       obtained by polynomial fit of the peaks of <with|mode|<quote|math>|C>
-      and <with|mode|<quote|math>|\<chi\>> (MH).|<pageref|auto-16>>
+      and <with|mode|<quote|math>|\<chi\>> (MH).|<pageref|auto-14>>
 
       <tuple|normal|Pseudocritical <with|mode|<quote|math>|\<beta\>>-values
       obtained by polynomial fit of the peaks of <with|mode|<quote|math>|C>
-      and <with|mode|<quote|math>|\<chi\>> (SW).|<pageref|auto-18>>
+      and <with|mode|<quote|math>|\<chi\>> (SW).|<pageref|auto-16>>
 
       <tuple|normal|Exact critical exponents for the Ising model in
-      <with|mode|<quote|math>|2d>.|<pageref|auto-29>>
+      <with|mode|<quote|math>|2d>.|<pageref|auto-27>>
     </associate>
     <\associate|toc>
       <vspace*|1fn><with|font-series|<quote|bold>|math-font-series|<quote|bold>|1<space|2spc>Potts
@@ -779,23 +727,23 @@
 
       <with|par-left|<quote|1tab>|1.3<space|2spc>Observables
       <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
-      <no-break><pageref|auto-9>>
+      <no-break><pageref|auto-7>>
 
       <with|par-left|<quote|1tab>|1.4<space|2spc><with|mode|<quote|math>|\<beta\>>
       Critical <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
-      <no-break><pageref|auto-14>>
+      <no-break><pageref|auto-12>>
 
       <with|par-left|<quote|1tab>|1.5<space|2spc>Probability Distribution
       Functions <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
-      <no-break><pageref|auto-20>>
+      <no-break><pageref|auto-18>>
 
       <with|par-left|<quote|1tab>|1.6<space|2spc>Spatial Correlations
       <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
-      <no-break><pageref|auto-24>>
+      <no-break><pageref|auto-22>>
 
       <with|par-left|<quote|1tab>|1.7<space|2spc>Finite Size Scaling
       <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
-      <no-break><pageref|auto-28>>
+      <no-break><pageref|auto-26>>
     </associate>
   </collection>
 </auxiliary>
