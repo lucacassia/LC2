@@ -47,8 +47,9 @@ int main ( int argc, char *argv[] )
                 autocorrelation /= variance * (storage.hdr.size - k);
                 autocorrelation_time += autocorrelation;
             }
-            fprintf(fout, "%d\t%e\n", k_max, autocorrelation_time);
+            fprintf(fout, "%d\t%e\t%e\n", k_max, autocorrelation_time, storage.hdr.b);
         }
+        fprintf(fout, "\n");
         printf("%s\n", output);
         raw_close(&storage);
         fclose(fout);
