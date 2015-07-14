@@ -1,6 +1,7 @@
 #!/usr/bin/sh
 
-rm data/* img/*
+rm data/*
+rm img/*
 
 make
 

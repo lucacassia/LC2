@@ -16,6 +16,7 @@ set palette negative defined ( \
 
 set xlabel "k_{max}"
 set ylabel "{/Symbol t}_{int}(\k_{max})"
+set yrange[0:10]
 
 set title '8x8 SW'
 set output sprintf('img/SW_acr.eps' )
@@ -27,7 +28,6 @@ plot for [i=0:12] sprintf('data/8_%.6f_SW_99000.acr', (0.7+i*0.05) ) u 1:2:3 w l
 set xlabel "x"
 set ylabel "{/Symbol t}_{int}"
 set xrange[-0.35:0.35]
-set yrange[0:10]
 
 set title '8x8 SW'
 set output 'img/SW_fit.eps'
