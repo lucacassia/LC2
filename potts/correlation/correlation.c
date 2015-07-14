@@ -19,12 +19,10 @@ int main ( int argc, char *argv[] )
         fseek(fin, 0L, SEEK_SET);
         hdr.size -= 1000;
 
-        int bin_size = 100;
+        int bin_size = 50;
         double **binned_data = (double**)malloc( (hdr.l/2) * sizeof(double*) );
         int k; for(k = 0; k < hdr.l/2; k++){
-            raw storage = load_data( fin, 1 + hdr.q + 1, 1000 );
-            if(!hdr.id)
-                bin_size = get_bin_size(storage.hdr.id, storage.hdr.l);
+            raw storage = load_data( fin, 1 + hdr.q + 1 + k, 1000 );
             binned_data[k] = jackknife(storage.data, storage.hdr.size, bin_size );
             raw_close(&storage);
         }

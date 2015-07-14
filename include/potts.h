@@ -165,14 +165,17 @@ int get_magnetization(int p)
     return magnetization;
 }
 
+double RE(int p){ return cos(p*6.28318530718/STATES); }
+double IM(int p){ return sin(p*6.28318530718/STATES); }
+
 double get_magnetization_mod(double *frac)
 {
     int p;
     double re = 0.0f;
     double im = 0.0f;
     for(p = 0; p < STATES; p++){
-        re += cos(p*6.28318530718/STATES)*frac[p];
-        im += sin(p*6.28318530718/STATES)*frac[p];
+        re += RE(p)*frac[p];
+        im += IM(p)*frac[p];
     }
     return sqrt(re*re+im*im);
 }
@@ -194,30 +197,39 @@ int get_largest_cluster()
 
 double get_correlation(int dist)
 {
-    double *Sx = (double*)malloc(SIZE * sizeof(double));
-    double *Sy = (double*)malloc(SIZE * sizeof(double));
+    double *Sxre = (double*)malloc(SIZE * sizeof(double));
+    double *Sxim = (double*)malloc(SIZE * sizeof(double));
+    double *Syre = (double*)malloc(SIZE * sizeof(double));
+    double *Syim = (double*)malloc(SIZE * sizeof(double));
     int i,j;
     for(i = 0; i < SIZE; i++)
-        Sx[i] = Sy[i] = 0.0f;
+        Sxre[i] = Sxim[i] = Syre[i] = Syim[i] = 0.0f;
 
     for(i = 0; i < SIZE; i++) for(j = 0; j < SIZE; j++){
-        Sx[j] += potts[i][j].s;
-        Sy[i] += potts[i][j].s;
+        Sxre[j] += RE(potts[i][j].s);
+        Sxim[j] += IM(potts[i][j].s);
+        Syre[i] += RE(potts[i][j].s);
+        Syim[i] += IM(potts[i][j].s);
     }
     for(i = 0; i < SIZE; i++){
-        Sx[i] /= SIZE;
-        Sy[i] /= SIZE;
+        Sxre[i] /= SIZE;
+        Sxim[i] /= SIZE;
+        Syre[i] /= SIZE;
+        Syim[i] /= SIZE;
     }
 
     double correlation = 0.0f;
     for(i = 0; i < SIZE; i++){
-        correlation += Sx[i] * Sx[(i+dist)%SIZE];
-        correlation += Sx[i] * Sx[(SIZE+i-dist)%SIZE];
-        correlation += Sy[i] * Sy[(i+dist)%SIZE];
-        correlation += Sy[i] * Sy[(SIZE+i-dist)%SIZE];
+        correlation += Sxre[i] * Sxre[(i+dist)%SIZE] + Sxim[i] * Sxim[(i+dist)%SIZE];
+        correlation += Sxre[i] * Sxre[(SIZE+i-dist)%SIZE] + Sxim[i] * Sxim[(SIZE+i-dist)%SIZE];
+
+        correlation += Syre[i] * Syre[(i+dist)%SIZE] + Syim[i] * Syim[(i+dist)%SIZE];
+        correlation += Syre[i] * Syre[(SIZE+i-dist)%SIZE] + Syim[i] * Syim[(SIZE+i-dist)%SIZE];
     }
-    free(Sx);
-    free(Sy);
+    free(Sxre);
+    free(Sxim);
+    free(Syre);
+    free(Syim);
     return correlation / (4 * SIZE);
 }
 
@@ -231,7 +243,7 @@ void dump_data(int lattice_size, double beta_value, void (*algorithm)(), int run
         char filename_bin[50];
         sprintf(filename_bin, "data/%d_%f_%s_%d.bin", lattice_size, beta_value, get_algorithm_string(algorithm), run_time);
         FILE *f_bin = fopen(filename_bin, "wb");
-        int cols = 1 + STATES + 1;  /* + lattice_size/2;*/
+        int cols = 1 + STATES + 1 + lattice_size/2;
 
         fwrite(&cols, sizeof(int), 1, f_bin);
         fwrite(&STATES, sizeof(int), 1, f_bin);
@@ -257,12 +269,12 @@ void dump_data(int lattice_size, double beta_value, void (*algorithm)(), int run
 
             tmp = get_magnetization_mod(frac) / (lattice_size * lattice_size);
             fwrite(&tmp, sizeof(double), 1, f_bin);
-/*
+
             for(k = 0; k < lattice_size / 2; k++){
                 tmp = get_correlation(k);
                 fwrite(&tmp, sizeof(double), 1, f_bin);
             }
-*/
+
             algorithm();
         }
         free(frac);
