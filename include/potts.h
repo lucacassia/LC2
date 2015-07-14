@@ -165,6 +165,18 @@ int get_magnetization(int p)
     return magnetization;
 }
 
+double get_magnetization_mod(double *frac)
+{
+    int p;
+    double re = 0.0f;
+    double im = 0.0f;
+    for(p = 0; p < STATES; p++){
+        re += cos(p*6.28318530718/STATES)*frac[p];
+        im += sin(p*6.28318530718/STATES)*frac[p];
+    }
+    return sqrt(re*re+im*im);
+}
+
 int get_largest_cluster()
 {
     int k;
@@ -219,7 +231,7 @@ void dump_data(int lattice_size, double beta_value, void (*algorithm)(), int run
         char filename_bin[50];
         sprintf(filename_bin, "data/%d_%f_%s_%d.bin", lattice_size, beta_value, get_algorithm_string(algorithm), run_time);
         FILE *f_bin = fopen(filename_bin, "wb");
-        int cols = 1 + STATES;/* + lattice_size/2;*/
+        int cols = 1 + STATES + 1;  /* + lattice_size/2;*/
 
         fwrite(&cols, sizeof(int), 1, f_bin);
         fwrite(&STATES, sizeof(int), 1, f_bin);
@@ -229,18 +241,22 @@ void dump_data(int lattice_size, double beta_value, void (*algorithm)(), int run
         fwrite(&run_time, sizeof(int), 1, f_bin);
 
         /* data gathering */
-        printf("\nExecuting %s : L = %d : β = %f : time = %d\n", get_algorithm_string(algorithm), lattice_size, beta_value, run_time);
+        printf("Executing %s : q = %d : L = %d : time = %d : β = %f\n",get_algorithm_string(algorithm),STATES,lattice_size,run_time,beta_value);
         init(lattice_size, beta_value);
-        double tmp;
+
         int t, k;
+        double tmp;
+        double *frac = (double*)malloc( STATES * sizeof(double) );
         for(t = 0; t < run_time; t++){
             tmp = get_energy() / (lattice_size * lattice_size);
             fwrite(&tmp, sizeof(double), 1, f_bin);
 
-            for(k = 0; k < STATES; k++){
-                tmp = 1.0f * get_magnetization(k);
-                fwrite(&tmp, sizeof(double), 1, f_bin);
-            }
+            for(k = 0; k < STATES; k++)
+                frac[k] = 1.0f * get_magnetization(k);
+            fwrite(frac, sizeof(double), STATES, f_bin);
+
+            tmp = get_magnetization_mod(frac) / (lattice_size * lattice_size);
+            fwrite(&tmp, sizeof(double), 1, f_bin);
 /*
             for(k = 0; k < lattice_size / 2; k++){
                 tmp = get_correlation(k);
@@ -249,6 +265,7 @@ void dump_data(int lattice_size, double beta_value, void (*algorithm)(), int run
 */
             algorithm();
         }
+        free(frac);
         fclose(f_bin);
         clear();
     }
