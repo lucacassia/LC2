@@ -1,10 +1,9 @@
 #!/usr/bin/gnuplot
 
-## observables
+## fss
 
 set terminal postscript eps size 4.5,4.5 enhanced color dashed lw 1 "DejaVuSans" 12
-set samples 100000
-color = "4 7 1 6"
+color = "4 7 1 3 6"
 set xrange[-10:10]
 
 ## magnetization
@@ -12,7 +11,7 @@ set xrange[-10:10]
 set xlabel "xL^{1/{/Symbol n}}"
 set ylabel "mL^{{/Symbol b}/{/Symbol n}}"
 
-beta = "0.85303 0.93607 0.97245 0.99079"
+beta = "0.85303 0.93607 0.97245 0.99079 0.99946"
 
 set output 'img/magnetization.eps'
 set title 'SW'
@@ -37,7 +36,7 @@ plot for [i=1:words(beta)] sprintf('data/%d_SW.obs',2*(2**i)) u (((($1)-word(bet
 set xlabel "xL^{1/{/Symbol n}}"
 set ylabel "C/L^{{/Symbol a}/{/Symbol n}}"
 
-beta = "0.93530 0.96457 0.98577 0.99651"
+beta = "0.93530 0.96457 0.98577 0.99651 1.00091"
 
 set output 'img/heat_capacity.eps'
 set title 'SW'
