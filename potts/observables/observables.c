@@ -97,7 +97,7 @@ int main ( int argc, char *argv[] )
         mean *= beta_value * lattice_size * lattice_size;
         error = beta_value * lattice_size * lattice_size * sqrt(error);
 
-        fprintf(fout, "%e\t%e\n", mean,  error );   /* susceptibility w error */
+        fprintf(fout, "%e\t%e\t%d\n", mean,  error, lattice_size );   /* susceptibility w error */
 
 
         printf("Written to: %s\t\tβ -> %f\n", output, beta_value);

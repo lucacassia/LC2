@@ -33,6 +33,8 @@ plot for [i=1:words(beta)] sprintf('data/%d_SW.obs',2*(2**i)) u (((($1)-word(bet
 
 ## heat capacity
 
+set xrange[-5:5]
+
 set xlabel "xL^{1/{/Symbol n}}"
 set ylabel "C/L^{{/Symbol a}/{/Symbol n}}"
 
