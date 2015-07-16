@@ -4,7 +4,7 @@ make
 
 rm data/*
 
-./example
+./levels
 time ./generator
 
 ./histograms data/*.bin

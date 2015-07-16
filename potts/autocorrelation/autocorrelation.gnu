@@ -3,14 +3,14 @@
 set terminal postscript eps size 4.5,4.5 enhanced color dashed lw 1 "DejaVuSans" 12
 
 set palette negative defined ( \
-    0 '#D53E4F',\
-    1 '#F46D43',\
-    2 '#FDAE61',\
-    3 '#FEE08B',\
-    4 '#E6F598',\
-    5 '#ABDDA4',\
-    6 '#66C2A5',\
-    7 '#3288BD' )
+    0 '#3288BD',\
+    1 '#66C2A5',\
+    2 '#ABDDA4',\
+    3 '#E6F598',\
+    4 '#FEE08B',\
+    5 '#FDAE61',\
+    6 '#F46D43',\
+    7 '#D53E4F' )
 
 ## integrated autocorrelation time as a function of k_max
 

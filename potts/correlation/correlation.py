@@ -28,7 +28,7 @@ with open(args.output,"w") as output:
             popt, pcov = curve_fit(func, data[0], data[1])
             error += (numpy.log(popt[1])-mean)**2
         error *= (n_bins - 1) / n_bins
-        output.write("{}\t{}\t{}\n".format( numpy.log((0.44-beta)/0.44), mean, error ) )
+        output.write("{}\t{}\t{}\n".format( numpy.log((0.998543-beta)/0.998543), mean, error ) )
 
 print("File saved to: "+args.output)
 

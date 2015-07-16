@@ -18,14 +18,13 @@ with open(args.output,"w") as output:
         with open(path, 'r') as f:
             data = numpy.loadtxt(f, usecols = (0, 2), unpack=True)
         lattice_size = path.split('_')[0].split('/')[1]
-        data = data[:,numpy.logical_and(0.35 < data[0,:], data[0,:] < 0.5)]
-        plt.plot(data[0], data[1], 'b-')
+        plt.plot(data[0], data[1], 'bo')
         plt.show()
         left  = float(input("enter left  extremum: "))
         right = float(input("enter right extremum: "))
         
         crop = data[:,numpy.logical_and(left < data[0,:], data[0,:] < right)]
-        p0 = [  4.34689952e-01,   1.77684498e+05,   3.07106140e+06,   1.83096187e+02]
+        p0 = [ 1.0, 2.00000000e+05,   3.00000000e+06,   2.00000000e+02]
         popt, pcov = curve_fit(func, crop[0], crop[1], p0, maxfev=100000)
 
         y = func(crop[0],popt[0],popt[1],popt[2],popt[3])
@@ -44,14 +43,13 @@ with open(args.output,"w") as output:
         with open(path, 'r') as f:
             data = numpy.loadtxt(f, usecols = (0, 5), unpack=True)
         lattice_size = path.split('_')[0].split('/')[1]
-        data = data[:,numpy.logical_and(0.35 < data[0,:], data[0,:] < 0.5)]
-        plt.plot(data[0], data[1], 'b-')
+        plt.plot(data[0], data[1], 'bo')
         plt.show()
         left  = float(input("enter left  extremum: "))
         right = float(input("enter right extremum: "))
         
         crop = data[:,numpy.logical_and(left < data[0,:], data[0,:] < right)]
-        p0 = [ 0.43, 2.00000000e+05,   3.00000000e+06,   2.00000000e+02]
+        p0 = [ 1.0, 2.00000000e+05,   3.00000000e+06,   2.00000000e+02]
         popt, pcov = curve_fit(func, crop[0], crop[1], p0, maxfev=100000)
 
         y = func(crop[0],popt[0],popt[1],popt[2],popt[3])

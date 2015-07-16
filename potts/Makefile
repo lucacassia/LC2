@@ -19,7 +19,7 @@ all: rmxeq mkdep mkxeq rmpmk
 
 # main programs and required modules 
 
-MAIN = levels generator histograms
+MAIN = potts
 
 RANDOM = mersenne
 
@@ -28,14 +28,14 @@ MODULES = $(RANDOM)
 
 # search path for modules
 
-MDIR = ../../modules
+MDIR = ../modules
 
 VPATH = $(MDIR)/random
 
 
 # additional include directories
 
-INCPATH = ../../include
+INCPATH = ../include
 
 
 # additional libraries to be included 

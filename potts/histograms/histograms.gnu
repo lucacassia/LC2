@@ -17,7 +17,7 @@ set palette negative defined ( \
 #load '../../modules/parula.pal'
 
 
-## example
+## levels
 
 set xlabel "Re"
 set ylabel "Im"
@@ -28,8 +28,8 @@ set size ratio 1
 
 set title 'Magnetization Levels 4x4'
 
-set output 'img/example.eps'
-plot 'data/example.dat' pt 7 lc 6 notitle
+set output 'img/levels.eps'
+plot 'data/levels.dat' pt 7 lc 6 notitle
 
 
 ## histograms

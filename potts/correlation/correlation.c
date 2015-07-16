@@ -44,9 +44,10 @@ int main ( int argc, char *argv[] )
                 sum += binned_data[k][t];
                 fprintf(fout, "%e\t", binned_data[k][t]);
             }
-            fprintf(fout, "%e\n", sum/n_bins);
+            fprintf(fout, "%e\t%e\n", sum/n_bins, hdr.b);
             free(binned_data[k]);
         }
+        fprintf(fout,"\n");
         free(binned_data);
         fclose(fout);
         printf("Written to: %s\n", output);

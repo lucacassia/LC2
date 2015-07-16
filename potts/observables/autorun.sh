@@ -2,8 +2,8 @@
 
 make
 
-rm data/*
-time ./generator
+#rm data/*
+#time ./generator
 ./observables data/*.bin
 
 rm img/*

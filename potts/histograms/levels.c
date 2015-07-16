@@ -5,7 +5,7 @@ int main()
 {
     int l = 4;
 
-    FILE *f = fopen("data/example.dat","w");
+    FILE *f = fopen("data/levels.dat","w");
     int k,j;
     for(k = 0; k < l*l+1; k++)
         for(j = 0; j < k+1; j++)
