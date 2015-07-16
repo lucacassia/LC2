@@ -4,6 +4,8 @@ reset
 
 set terminal postscript eps size 4.5,4.5 enhanced color dashed lw 1 "DejaVuSans" 12
 
+color = "4 7 1 3 6"
+
 ## energy
 
 set xlabel "{/Symbol b}"
@@ -11,10 +13,7 @@ set ylabel "e"
 
 set output 'img/energy.eps'
 set title 'SW'
-plot 'data/4_SW.obs'   u 1:2 w l lw 2 lc 4 title '4^2',\
-     'data/8_SW.obs'   u 1:2 w l lw 2 lc 7 title '8^2',\
-     'data/16_SW.obs'  u 1:2 w l lw 2 lc 1 title '16^2',\
-     'data/32_SW.obs'  u 1:2 w l lw 2 lc 3 title '32^2',\
+plot for [i=1:words(color)] sprintf('data/%d_SW.obs',2*(2**i)) u 1:2 w l lw 2 lc word(color, i) title sprintf('%d^2',2*(2**i))
 
 
 ## magnetization
@@ -24,23 +23,7 @@ set ylabel "m"
 
 set output 'img/magnetization.eps'
 set title 'SW'
-plot 'data/4_SW.obs'   u 1:5 w l lw 2 lc 4 title '4^2',\
-     'data/8_SW.obs'   u 1:5 w l lw 2 lc 7 title '8^2',\
-     'data/16_SW.obs'  u 1:5 w l lw 2 lc 1 title '16^2',\
-     'data/32_SW.obs'  u 1:5 w l lw 2 lc 6 title '32^2',\
-
-
-## heat capacity
-
-set xlabel "{/Symbol b}"
-set ylabel "C"
-
-set output 'img/heat_capacity.eps'
-set title 'SW'
-plot 'data/4_SW.obs'   u 1:3:4 w errorbars pt 7 lc 4 ps 0.5 title '4^2',\
-     'data/8_SW.obs'   u 1:3:4 w errorbars pt 7 lc 7 ps 0.5 title '8^2',\
-     'data/16_SW.obs'  u 1:3:4 w errorbars pt 7 lc 1 ps 0.5 title '16^2',\
-     'data/32_SW.obs'  u 1:3:4 w errorbars pt 7 lc 6 ps 0.5 title '32^2'
+plot for [i=1:words(color)] sprintf('data/%d_SW.obs',2*(2**i)) u 1:5 w l lw 2 lc word(color, i) title sprintf('%d^2',2*(2**i))
 
 
 ## susceptibility
@@ -51,8 +34,16 @@ set ylabel "{/Symbol c}"
 
 set output 'img/susceptibility.eps'
 set title 'SW'
-plot 'data/4_SW.obs'   u 1:6:7 w errorbars pt 7 lc 4 ps 0.5 title '4^2',\
-     'data/8_SW.obs'   u 1:6:7 w errorbars pt 7 lc 7 ps 0.5 title '8^2',\
-     'data/16_SW.obs'  u 1:6:7 w errorbars pt 7 lc 1 ps 0.5 title '16^2',\
-     'data/32_SW.obs'  u 1:6:7 w errorbars pt 7 lc 6 ps 0.5 title '32^2'
+plot for [i=1:words(color)] sprintf('data/%d_SW.obs',2*(2**i)) u 1:6:7 w e pt 7 ps 0.5 lc word(color, i) title sprintf('%d^2',2*(2**i))
+
+
+## heat capacity
+
+set xrange[0.8:1.1]
+set xlabel "{/Symbol b}"
+set ylabel "C"
+
+set output 'img/heat_capacity.eps'
+set title 'SW'
+plot for [i=1:words(color)] sprintf('data/%d_SW.obs',2*(2**i)) u 1:3:4 w e pt 7 ps 0.5 lc word(color, i) title sprintf('%d^2',2*(2**i))
 
