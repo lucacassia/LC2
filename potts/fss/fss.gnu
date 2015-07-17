@@ -11,7 +11,7 @@ set xrange[-10:10]
 set xlabel "xL^{1/{/Symbol n}}"
 set ylabel "mL^{{/Symbol b}/{/Symbol n}}"
 
-beta = "0.85303 0.93607 0.97245 0.99079 0.99946"
+beta = "0.85303 0.93607 0.97245 0.99079 0.99917"
 
 set output 'img/magnetization.eps'
 set title 'SW'
@@ -38,7 +38,7 @@ set xrange[-5:5]
 set xlabel "xL^{1/{/Symbol n}}"
 set ylabel "C/L^{{/Symbol a}/{/Symbol n}}"
 
-beta = "0.93530 0.96457 0.98577 0.99651 1.00091"
+beta = "0.93530 0.96457 0.98577 0.99651 1.00092"
 
 set output 'img/heat_capacity.eps'
 set title 'SW'

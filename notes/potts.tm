@@ -32,19 +32,19 @@
 
     <with|par-left|1tab|1.4<space|2spc><with|mode|math|\<beta\>> Critical
     <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
-    <no-break><pageref|auto-12>>
+    <no-break><pageref|auto-10>>
 
     <with|par-left|1tab|1.5<space|2spc>Probability Distribution Functions
     <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
-    <no-break><pageref|auto-18>>
+    <no-break><pageref|auto-14>>
 
     <with|par-left|1tab|1.6<space|2spc>Spatial Correlations
     <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
-    <no-break><pageref|auto-21>>
+    <no-break><pageref|auto-17>>
 
     <with|par-left|1tab|1.7<space|2spc>Finite Size Scaling
     <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
-    <no-break><pageref|auto-25>>
+    <no-break><pageref|auto-21>>
   </table-of-contents>
 
   <section|Potts Model <math|2d>>
@@ -119,7 +119,7 @@
   slowing down effect near the critical inverse temperature:
 
   <\equation>
-    \<beta\><rsub|c>=log <around*|(|1+<sqrt|3>|)>\<approx\>1.00505254\<ldots\>
+    <label|eq:betac>\<beta\><rsub|c>=log <around*|(|1+<sqrt|3>|)>\<approx\>1.00505254\<ldots\>
   </equation>
 
   For this reason we focus only on the study of the model through the
@@ -139,20 +139,11 @@
     \<tau\><rsub|int><around*|(|k<rsub|max>|)>=\<tau\><rsub|int><around*|[|1-<frac|2*\<tau\><rsub|exp>|2*\<tau\><rsub|exp>+1>*\<mathe\><rsup|-k<rsub|max>/\<tau\><rsub|exp>>|]>
   </equation>
 
-  \;
-
-  As we can see, near the phase transition the autocorrelation time for the
-  MH process becomes very large compared to the autocorrelation time of the
-  SW process (Fig.<reference|fig:autocorrelation_time>). In fact due to the
-  critical slowing down of the MH algorithm, we have
-  <math|\<tau\><rsub|int><rsup|MH>\<sim\>100> compared to an autocorrelation
-  time <math|\<tau\><rsub|int><rsup|SW>\<sim\>5> for SW.
-
   <\big-figure|<image|../potts/autocorrelation/img/SW_acr.eps|0.5par|||><image|../potts/autocorrelation/img/SW_fit.eps|0.5par|||>>
     <label|fig:autocorrelation_time>Plots of the autocorrelation of the
     signal for <math|e>. On the left is shown the integrated autocorrelation
     time <math|\<tau\><rsub|int>> as a function <math|k<rsub|max>>. The
-    chromatic key indicates the value of <math|\<beta\>>. On the right is
+    chromatic scale indicates the value of <math|\<beta\>>. On the right is
     shown the plot of <math|\<tau\><rsub|int>> as a function of
     <math|x=<frac|\<beta\>-\<beta\><rsub|c>|\<beta\><rsub|c>>>. The lattice
     size is <math|L=8>.
@@ -207,7 +198,7 @@
   <big-figure|<image|../potts/observables/img/heat_capacity.eps|0.5par|||><image|../potts/observables/img/susceptibility.eps|0.5par|||>|<label|fig:susceptibility>Left:
   heat capacity as a function of <math|\<beta\>>. Right: magnetic
   susceptibility. The various colors represent different lattice sizes:
-  <math|L=4,8,16,32>.>
+  <math|L=4,8,16,32>,64.>
 
   <subsection|<math|\<beta\>> Critical><label|sec:betafss>
 
@@ -227,7 +218,7 @@
     <image|../potts/observables/img/64SW1.eps|0.5par|||><image|../potts/observables/img/64SW2.eps|0.5par|||>
   </big-figure|Fit of the heat capacity and susceptibility peaks.>
 
-  <big-table|<block|<tformat|<cwith|1|-1|1|-1|cell-halign|c>|<table|<row|<cell|<math|L>>|<cell|<math|\<beta\><rsub|max><around*|(|C|)>>>|<cell|<math|\<beta\><rsub|max><around*|(|\<chi\>|)>>>>|<row|<cell|<math|4>>|<cell|<math|0.93530\<pm\>0.00181>>|<cell|<math|0.85303\<pm\>0.00198>>>|<row|<cell|<math|8>>|<cell|<math|0.96457\<pm\>0.00168>>|<cell|<math|0.93607\<pm\>0.00078>>>|<row|<cell|<math|16>>|<cell|<math|0.98577\<pm\>0.00133>>|<cell|<math|0.97245\<pm\>0.00123>>>|<row|<cell|<math|32>>|<cell|<math|0.99651\<pm\>0.00048>>|<cell|<math|0.99079\<pm\>0.00053>>>|<row|<cell|64>|<cell|<math|1.00091\<pm\>0.00052>>|<cell|<math|0.99946\<pm\>0.00010>>>>>>|Pseudocritical
+  <big-table|<block|<tformat|<cwith|1|-1|1|-1|cell-halign|c>|<table|<row|<cell|<math|L>>|<cell|<math|\<beta\><rsub|max><around*|(|C|)>>>|<cell|<math|\<beta\><rsub|max><around*|(|\<chi\>|)>>>>|<row|<cell|<math|4>>|<cell|<math|0.93530\<pm\>0.00181>>|<cell|<math|0.85303\<pm\>0.00198>>>|<row|<cell|<math|8>>|<cell|<math|0.96457\<pm\>0.00168>>|<cell|<math|0.93607\<pm\>0.00078>>>|<row|<cell|<math|16>>|<cell|<math|0.98577\<pm\>0.00133>>|<cell|<math|0.97245\<pm\>0.00123>>>|<row|<cell|<math|32>>|<cell|<math|0.99651\<pm\>0.00048>>|<cell|<math|0.99079\<pm\>0.00053>>>|<row|<cell|64>|<cell|<math|1.00092\<pm\>0.00045>>|<cell|<math|0.99917\<pm\>0.00016>>>>>>|Pseudocritical
   <math|\<beta\>>-values obtained by polynomial fit of the peaks of <math|C>
   and <math|\<chi\>>.>
 
@@ -252,18 +243,19 @@
   The result of the fit are:
 
   <\equation>
-    \<beta\><rsub|c><around*|(|C|)>=1.00802\<pm\>0.00272
+    \<beta\><rsub|c><around*|(|C|)>=1.00777\<pm\>0.00252
   </equation>
 
   <\equation>
-    \<beta\><rsub|c><around*|(|\<chi\>|)>=1.00667\<pm\>0.00049
+    \<beta\><rsub|c><around*|(|\<chi\>|)>=1.00616\<pm\>0.00043
   </equation>
 
   As we can see, both values obtained from the fit of <math|C> and
-  <math|\<chi\>> are very close to the exact solution. We could improve these
-  results further by discarding some measurements done at smaller volumes
-  (<math|L=4> and <math|L=8> for instance) and repeat the measurement
-  procedure for larger lattice sizes.
+  <math|\<chi\>> are very close to the exact solution of
+  (<reference|eq:betac>). We could improve these results further by
+  discarding some measurements done at smaller volumes (<math|L=4> and
+  <math|L=8> for instance) and repeat the measurement procedure for larger
+  lattice sizes.
 
   <subsection|Probability Distribution Functions>
 
@@ -492,6 +484,7 @@
     <associate|auto-8|<tuple|4|4>>
     <associate|auto-9|<tuple|5|4>>
     <associate|eq:MC|<tuple|2|?>>
+    <associate|eq:betac|<tuple|7|?>>
     <associate|eq:cosh|<tuple|22|10>>
     <associate|eq:scalingtau|<tuple|6|4>>
     <associate|eq:tint|<tuple|7|3>>
@@ -534,7 +527,7 @@
         Plots of the autocorrelation of the signal for
         <with|mode|<quote|math>|e>. On the left is shown the integrated
         autocorrelation time <with|mode|<quote|math>|\<tau\><rsub|int>> as a
-        function <with|mode|<quote|math>|k<rsub|max>>. The chromatic key
+        function <with|mode|<quote|math>|k<rsub|max>>. The chromatic scale
         indicates the value of <with|mode|<quote|math>|\<beta\>>. On the
         right is shown the plot of <with|mode|<quote|math>|\<tau\><rsub|int>>
         as a function of <with|mode|<quote|math>|x=<frac|\<beta\>-\<beta\><rsub|c>|\<beta\><rsub|c>>>.
@@ -553,7 +546,7 @@
       <tuple|normal|Left: heat capacity as a function of
       <with|mode|<quote|math>|\<beta\>>. Right: magnetic susceptibility. The
       various colors represent different lattice sizes:
-      <with|mode|<quote|math>|L=4,8,16,32>.|<pageref|auto-9>>
+      <with|mode|<quote|math>|L=4,8,16,32>,64.|<pageref|auto-9>>
 
       <tuple|normal|Fit of the heat capacity and susceptibility
       peaks.|<pageref|auto-11>>
