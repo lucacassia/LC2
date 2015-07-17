@@ -9,10 +9,6 @@
 #include "mersenne.h"
 #include "vec2.h"
 
-#define THERMALIZATION_TIME 10000       /* Numero collisioni di termalizzazione */
-#define TIME_MAX 300                    /* tempo adimensionato in cui si simula il sistema */
-#define MAX_COLLISION 2e5
-
 double SIGMA = 0.0f;            /* diameter of the disks */
 int n_particles = 100;          /* number of particles */
 int collider[2];                /* indices of the two colliding particles */
@@ -23,24 +19,23 @@ double total_time = 0.0f;
 double temperature = 0.0f;
 double pressure = 0.0f;
 
-char header_file[256];
 double time_step = 0.03f;
 double time_prec;
 unsigned int time_counted = 0;
-unsigned int n_history;
+unsigned int n_history = 10000;
 
 
-typedef struct body {
+typedef struct body{
     double pos[DIMENSION];      /* position */
     double mom[DIMENSION];      /* momentum */
     double distance;            /* distance traveled */
     double last_collision_time; /* time of the last collision of the particle */
     unsigned int n_collisions;   /* collisions made */
-    } body ;
+}body;
 
 body *particle = NULL;      /* particle list */
-double *collTable = NULL;   /* collision table */
-body *history = NULL;       /* Necessaria per il calcolo di Delta r^2 per memorizzare la "storia" di tutta la simulazione */
+body *history = NULL;       /* simulation history */
+double *collision_table = NULL;   /* collision table */
 
 
 void print_pos()
@@ -67,7 +62,7 @@ void print_mom()
     fclose(f);
 }
 
-double get_kinetic()
+double get_kinetic_energy()
 {
     int i,j;
     double sum = 0.0f;
@@ -90,11 +85,11 @@ void print_distribution()
 void clean()
 {
     if(particle)    free(particle);
-    if(collTable)   free(collTable);
+    if(collision_table)   free(collision_table);
     if(history)     free(history);
 }
 
-void reset_mfp_variables()
+void reset_variables()
 {
     int i;
     for(i = 0; i < n_particles; i++){
@@ -102,13 +97,17 @@ void reset_mfp_variables()
         particle[i].n_collisions = 0;
         particle[i].last_collision_time = 0.0f;
     }
+
+    numOfCollisions = 0;
+    total_time = 0.0f;
+    pressure = 0.0f;
 }
 
 /* rescale all the momenta to set the desired temperature */
 void set_temperature(double temp)
 {
     int i,j;
-    double energy = get_kinetic();
+    double energy = get_kinetic_energy();
     for(i = 0; i < n_particles; i++)
         for(j = 0; j < DIMENSION; j++)
             particle[i].mom[j] *= sqrt(n_particles*temp/energy);
@@ -147,7 +146,7 @@ void get_collision_table()
     int i,j;
     for(i = 0; i < n_particles; i++)
         for(j = i+1; j < n_particles; j++)
-            collTable[i*n_particles+j] = get_collision_time(i,j);
+            collision_table[i*n_particles+j] = get_collision_time(i,j);
 }
 
 /* find first pair of colliding particles */
@@ -157,8 +156,8 @@ double get_first_collision()
     double min = DBL_MAX;
     for(i = 0; i < n_particles; i++)
         for(j = i+1; j < n_particles; j++)
-            if(collTable[i*n_particles+j] < min){
-                min = collTable[i*n_particles+j];
+            if(collision_table[i*n_particles+j] < min){
+                min = collision_table[i*n_particles+j];
                 collider[0] = i;
                 collider[1] = j;
             }
@@ -174,33 +173,37 @@ void update_collision_table()
 
             /* if one of the particles in the pair (i,j) takes part in the collision, update its row and column */
             if(i == collider[0] || j == collider[0] || i == collider[1] || j == collider[1])
-                collTable[i*n_particles+j] = get_collision_time(i,j);
+                collision_table[i*n_particles+j] = get_collision_time(i,j);
 
             /* if particles (i,j) are spectators, just subtract time until the collision */
-            else collTable[i*n_particles+j] -= min_time;
+            else collision_table[i*n_particles+j] -= min_time;
     min_time = 0;
 }
 
 /* initialization */
 int init()
 {
+    /* check if disks fit the box */
+    int k = 0; while( k * k < n_particles ) k++;
+    if( SIGMA > 1.0f / k ){
+        printf("Disks are too close to each other!\n");
+        return 1;
+    }
+
+    /* initialize pseudo-random number generators */
     int i,j;
     srand(time(NULL));
     seed_mersenne( (long)time(NULL) );
     for(i = 0; i < 543210; i++) mersenne();
 
+    /* init stuff */
+
+
     /* allocate memory */
     clean();
-    collTable = (double*)malloc( n_particles * n_particles * sizeof(double) );
+    collision_table = (double*)malloc( n_particles * n_particles * sizeof(double) );
     particle = (body*)malloc( n_particles * sizeof(body));
     history = (body*)malloc( n_history * n_particles * sizeof(body) );
-
-    /* check if disks fit the box */
-    int k = 0; while( k * k < n_particles ) k++;
-    if( SIGMA > 1.0f/k ){
-        printf("Disks are too close to each other!\n");
-        return 1;
-    }
 
     for(i = 0; i < n_particles; i++){
         /* place disks on a square lattice */
@@ -300,8 +303,8 @@ void update_coll_table()
     for(i = 0; i < 2; i++)
         for(j = 0; j < n_particles; j++){
             /* ignore the lower diagonal part of the collision table */
-            if(collider[i] < j) collTable[collider[i]*n_particles+j]= get_collision_time(collider[i],j);
-            if(collider[i] > j) collTable[j*n_particles+collider[i]]= get_collision_time(collider[i],j);
+            if(collider[i] < j) collision_table[collider[i]*n_particles+j]= get_collision_time(collider[i],j);
+            if(collider[i] > j) collision_table[j*n_particles+collider[i]]= get_collision_time(collider[i],j);
         }
 }
 
@@ -365,15 +368,14 @@ void evolve() {
     else{
         time_counted++;
         step( time_prec + time_step - total_time);
-        for ( j = 0; j< n_particles;j++){
+        for(j = 0; j < n_particles; j++)
             history[time_counted*n_particles+j] = particle[j];
-        }
         step( total_time+ min_time - time_prec - time_step);
         time_prec += time_step;
     }
     subtract(particle[collider[0]].mom,particle[collider[1]].mom,deltaV_pre);
 /*    switch_moms();*/
-    /*calcoli pressuree*/
+    /*calcoli pressure*/
     subtract(particle[collider[0]].mom,particle[collider[1]].mom,deltaV_post);
     subtract(deltaV_pre,deltaV_post,deltaV);
     /*condizioni al bordo*/
@@ -388,11 +390,10 @@ void evolve() {
     }
 
 /* Evolve ma utilizzata solo in fase di termalizzazione, senza alcuna presa dati*/
-void evolve_therm() {
-    double deltaV_pre[DIMENSION];
+void evolve_therm()
+{
     get_first_collision();
     step(min_time);
-    subtract(particle[collider[0]].mom,particle[collider[1]].mom,deltaV_pre);
     /*switch_moms();*/
     /*condizioni al bordo*/
     fix_boundaries();
@@ -400,64 +401,51 @@ void evolve_therm() {
     update_coll_table();
     numOfCollisions +=1;
     /*total_time+=min_time;*/
-    }
+}
 
-/*Calcola il minimo di dr2 fra tutte le immagini
-    Viene calcolato per tutte le particelle. Le due liste passate sono le liste di particelle a istanti di tempo diversi
-    Deve essere chiamata da r_squared_save
-*/
-inline double r_squared_calc ( body * list_0, body * list_1){
-    unsigned int i,k;
-    double sum = 0;
-    double rsubtract[DIMENSION];
-    double distance, min;
-    double rsubtract2[2]={0,0};
-    int x,y;
-    body temp_part;
-    for ( i = 0; i< n_particles;i++){
-        min = DBL_MAX;
-        for ( x= -1; x < 2 ; x++){
-            for ( y = -1; y<2 ; y++){
-                temp_part = list_0[i];
-                temp_part.pos[0] += x;
-                temp_part.pos[1] += y;
-                subtract(list_1[i].pos,temp_part.pos,rsubtract);
-                distance = scalar(rsubtract,rsubtract);
-                if( distance < min ){
-                    min = distance;
-                    for ( k = 0; k<DIMENSION;k++){
-                        rsubtract2[k] = rsubtract[k];
-                    }
-                }
+/* compute <dr²(t)> averaging on every particle. for each particle take the distance with the nearest copy */
+double get_dr2(body *list0, body *list1)
+{
+    int i,j;
+    int dx[DIMENSION];
+    double distance, sum = 0.0f;
+    double dr[DIMENSION];
+    for(i = 0; i < n_particles; i++){
+        /* first copy */
+        for(j = 0; j < DIMENSION; j++)
+            dr[j] = list1[i].pos[j] - list0[i].pos[j];
+        distance = scalar(dr,dr);
+        /* check other copies */
+        for(dx[0] = -1; dx[0] <= 1 ; dx[0]++)
+            for(dx[1] = -1; dx[1] <= 1; dx[1]++){
+                for(j = 0; j < DIMENSION; j++)
+                    dr[j] = dx[j] + list1[i].pos[j] - list0[i].pos[j];
+                if(scalar(dr,dr) < distance)
+                    distance = scalar(dr,dr);
             }
-        }
-        sum += scalar(rsubtract2,rsubtract2);
+        sum += distance;
     }
-    return sum/(double)n_particles;
+    return sum / n_particles;
 } 
 
 /* Fa una media sui tempi dei dr2(delta) per tutti i delta e per tempi tali che sono distanti delta tra di loro */
-void r_squared_save ( char * filename){
+void r_squared_save(char *filename)
+{
     FILE *f = fopen(filename, "w");
-    double sum = 0.0f;
-    unsigned int delta,init;
-    unsigned int count ;
-    fprintf(f,"%s",header_file);
+    int count, start, shift;
     double tmp;
-    double var = 0;
-    for ( delta = 1; delta  <  time_counted-1; delta++){
-        sum = 0;
-        count = 0;
-        for ( init = 0; init+delta<time_counted; init++){
-            tmp=r_squared_calc( history+(init+delta)*n_particles,history + init*n_particles);
-            sum += tmp;
-            var += tmp*tmp;
+    double mean, error;
+    for(shift = 0; shift < time_counted-1; shift++){
+        error = mean = count = 0;
+        for(start = 0; start+shift < time_counted; start++){
+            tmp = get_dr2( &history[start * n_particles], &history[(start+shift)*n_particles] );
+            mean += tmp;
+            error += tmp*tmp;
             count++;
         }
-        sum /= (double) count;
-        var /= (double) count;
-        var -= sum*sum;
-        fprintf(f,"%.14e\t%.14e\t%.14e\n",delta*time_step, sum, sqrt(var/(double)count));
+        mean /= count;
+        error = sqrt( error / count - mean * mean );
+        fprintf(f,"%.14e\t%.14e\t%.14e\n", shift * time_step, mean, error );
     }
     fclose(f);
 }
