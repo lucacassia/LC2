@@ -19,7 +19,7 @@ all: rmxeq mkdep mkxeq rmpmk
 
 # main programs and required modules 
 
-MAIN = hard_core_2d test
+MAIN = hardcore2d test
 
 RANDOM = mersenne
 
