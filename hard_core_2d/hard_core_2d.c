@@ -25,10 +25,8 @@ int main (int argc, char *argv[])
     printf("Starting simulation with:\n");
     printf("SIGMA = %e\t",SIGMA);
     printf("Frazione di impacchettamento: %e\n", fraz_imp);
-    collTable = malloc (n_particles*n_particles*sizeof(double));
-    particle = malloc ( n_particles * sizeof(body));
-    time_list = malloc (NUM_TEMPI_SALVATI*n_particles * sizeof(body));
-    set_pos();
+
+    init();
     fix_boundaries();
 
     if ( check_distance() != 0 ){
@@ -36,12 +34,12 @@ int main (int argc, char *argv[])
         exit(EXIT_FAILURE);
     }
 
-    temperature = 2*kin_en()/((double) DIMENSION)/(double) n_particles/K_BOLTZ;
-    printf(" K = %e \t P= %e \t", kin_en(), total_momentum());
+    temperature = 2*get_kinetic()/((double) DIMENSION)/(double) n_particles/K_BOLTZ;
+    printf(" K = %e \t P= %e \t", get_kinetic(), total_momentum());
     printf("Temperature is: %f \n",temperature );
     riscala_vel_temp();
-    temperature = 2*kin_en()/((double) DIMENSION)/(double) n_particles/K_BOLTZ;
-    printf(" K = %e \t P= %e \t", kin_en(), total_momentum());
+    temperature = 2*get_kinetic()/((double) DIMENSION)/(double) n_particles/K_BOLTZ;
+    printf(" K = %e \t P= %e \t", get_kinetic(), total_momentum());
     printf("Temperature is: %f \n",temperature );
 
     /****** GESTIONE FILE  ******/
@@ -75,7 +73,7 @@ int main (int argc, char *argv[])
     print_distribution();
     total_time = 0;
     pression=0;
-    printf("Termalizzato: %d urti ---- kin_en = %lf\n",numOfCollisions,kin_en());
+    printf("Termalizzato: %d urti ---- kin_en = %lf\n",numOfCollisions,get_kinetic());
     while(total_time < TIME_MAX){
         evolve();
         fprintf(pdf_tc_file,"%lf\n",time_collision*n_particles/2.0);
@@ -88,7 +86,7 @@ int main (int argc, char *argv[])
     r_squared_save(r2_file);
 
     /****** CALCOLO PV/NKT = 1 + 1/(3*n_particles*k_boltz*temp)*massa*diametro*Somma collisioni******/
-    pression /= (double) (3*(total_time)*kin_en());
+    pression /= (double) (3*(total_time)*get_kinetic());
     pression *= SIGMA;
     pression +=1.0;
     pression *= (fraz_imp/0.9069); /*dovuto a PV_0/NKT*/
@@ -107,8 +105,6 @@ int main (int argc, char *argv[])
     fprintf(f_mean_mfp, "%.14e\t%.14e\t\n", fraz_imp, dist_tot);
     fclose(f_mean_mfp);
     fclose(f_collision);
-    free(particle);
-    free(collTable);
-    free(time_list);
+    clean();
     return 0;
 }

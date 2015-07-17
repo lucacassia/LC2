@@ -1,3 +1,6 @@
+#ifndef HARD_CORE_2D
+#define HARD_CORE_2D
+
 #include <stdio.h>
 #include <math.h>
 #include <stdlib.h>
@@ -6,16 +9,15 @@
 #include "mersenne.h"
 #include "vec2.h"
 
-#define THERMALIZATION_TIME 10000     /*Numero collisioni di termalizzazione*/
+#define THERMALIZATION_TIME 10000       /* Numero collisioni di termalizzazione */
+#define TIME_MAX 300                    /* tempo adimensionato in cui si simula il sistema */
 #define MAX_COLLISION 2e5
-#define TIME_MAX 300        /*tempo adimensionato in cui si simula il sistema*/
 
-int n_particles = 100;      /* number of particles */
-double SIGMA = 0.0f;        /* diameter of the disks */
-double *collTable;          /* collision table */
-int index_collision[2];     /* (i,j,tempo di collisione) */
-double time_collision = 0.0f;
+int n_particles = 100;          /* number of particles */
+int index_collision[2];         /* (i,j,tempo di collisione) */
 int numOfCollisions = 0;
+double SIGMA = 0.0f;            /* diameter of the disks */
+double time_collision = 0.0f;
 double total_time = 0.0f;
 double temperature = 0.0f;
 double K_BOLTZ = 1.0f;
@@ -29,27 +31,20 @@ double time_prec;
 unsigned int time_counted = 0;
 unsigned int NUM_TEMPI_SALVATI;
 
-/*Struttura per la particella. COntine velocità, posizione, */
-/*il tempo in cui ha effettuato l'ultima collisione, il numero di collisioni che ha fatto e la distanza percorsa.*/
+
 typedef struct body {
-    double pos[DIMENSION];  /* position */
-    double mom[DIMENSION];  /* momentum */
-    double distance;
-    double last_collision_time;
-    unsigned int n_collision;
+    double pos[DIMENSION];      /* position */
+    double mom[DIMENSION];      /* momentum */
+    double distance;            /* distance traveled */
+    double last_collision_time; /* time of the last collision of the particle */
+    unsigned int n_collision;   /* collisions made */
     } body ;
 
-body *particle;
-body *time_list; /*Necessaria per il calcolo di Delta r^2 per memorizzare la "storia" di tutta la simulazione*/
+body *particle = NULL;      /* particle list */
+double *collTable = NULL;   /* collision table */
+body *time_list = NULL;     /* Necessaria per il calcolo di Delta r^2 per memorizzare la "storia" di tutta la simulazione */
 double T_D = 1.0f;
 
-void init()
-{
-    int k;
-    srand(time(NULL));
-    seed_mersenne( (long)time(NULL) );
-    for(k = 0; k < 543210; k++) mersenne();
-}
 
 void print_pos()
 {
@@ -85,30 +80,40 @@ double get_kinetic()
     return sum / 2.0f;
 }
 
-double kin_en()
-{
-    int i;
-    double sum = 0.0f;
-    for(i = 0; i < n_particles; i++)
-        sum += scalar(particle[i].mom, particle[i].mom);
-    return sum / 2.0f;
-}
-
-/* Print momenta for histogram */
 void print_distribution()
 {
     int i;
-    FILE *f = fopen("data/boltzmann.dat","a");
+    FILE *f = fopen("data/boltzmann.dat","w");
     for(i = 0; i < n_particles; i++)
-        fprintf(f, "%e\n", sqrt( scalar( particle[i].mom, particle[i].mom) ) );
+        fprintf(f, "%e\n", module(particle[i].mom) );
     fclose(f);
 }
 
-void set_pos()
+void clean()
 {
+    if(particle)
+        free(particle);
+    if(collTable)
+        free(collTable);
+    if(time_list)
+        free(time_list);
+}
+
+void init()
+{
+    int i,j,k;
+    srand(time(NULL));
+    seed_mersenne( (long)time(NULL) );
+    for(i = 0; i < 543210; i++) mersenne();
+
+    /* allocate memory */
+    clean();
+    collTable = (double*)malloc( n_particles * n_particles * sizeof(double) );
+    particle = (body*)malloc( n_particles * sizeof(body));
+    time_list = (body*)malloc( NUM_TEMPI_SALVATI * n_particles * sizeof(body) );
+
     /* find the first k such that k² >= n_particles */
-    int i,j,k = 0;
-    while( k * k < n_particles ) k++;
+    k = 0; while( k * k < n_particles ) k++;
 
     for(i = 0; i < n_particles; i++){
         /* place disks on a square lattice */
@@ -159,37 +164,32 @@ EXIT CODE 1 =  ERRORE, si toccano
 EXIT CODE 0 =  TUTTO OK
 */
 
-int  check_distance (){
-    int i,j;
-    double distance = 0;
-    double subtract_v[DIMENSION];
-    int x,y;
-    body temp_part;
-    for (i = 0 ; i< n_particles ; i++){
-        for(j = i+1;j <n_particles ; j++){
-            for ( x= -1; x < 2 ; x++){
-                for ( y = -1; y<2 ; y++){
-                    temp_part = particle[j];
-                    temp_part.pos[0] += x;
-                    temp_part.pos[1] += y;
-                    subtract(particle[i].pos,temp_part.pos,subtract_v);    
-                    distance = sqrt(scalar(subtract_v,subtract_v));
-                    if( distance <SIGMA){
-                        printf("Sfere (%d,%d) troppo vicine!\n",i,j);
-                        return (1);
+int check_distance()
+{
+    body tmp;
+    int i,j,x,y;
+    double delta[DIMENSION];
+    for(i = 0; i < n_particles; i++)
+        for(j = i+1; j < n_particles; j++)
+            for(x = -1; x < 2; x++)
+                for(y = -1; y < 2; y++){
+                    tmp = particle[j];
+                    tmp.pos[0] += x;
+                    tmp.pos[1] += y;
+                    subtract(particle[i].pos, tmp.pos, delta);    
+                    if(module(delta) < SIGMA){
+                        printf("Disks (%d,%d) are too close to each other!\n",i,j);
+                        return 1;
                     }
                 }
-            }            
-        }
-    }
-    return (0);
+    return 0;
 }
 
 
 /*Riscala la velocità in modo da avere la temperatura desiderata T_D*/
 inline void riscala_vel_temp (){
     int i,j;
-    double k_en = kin_en();
+    double k_en = get_kinetic();
     for ( i = 0; i<n_particles;i++){
         for (j = 0; j<DIMENSION;j++){
             particle[i].mom[j] *= sqrt( n_particles* T_D/k_en);
@@ -543,3 +543,4 @@ void r_squared_save ( char * filename){
     fclose(f);
 }
 
+#endif
