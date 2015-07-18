@@ -1,5 +1,5 @@
 #include<GL/freeglut.h>
-#include "hardcore2d.h"
+#include "opengl.h"
 
 #define PI 3.1415926535897932384626433832795
  
@@ -43,7 +43,7 @@ void specialKeyboard(int key, int x, int y)
 
 void idle(void)
 {
-    if(ACTIVE) collide();
+    if(ACTIVE) run();
     glutPostRedisplay();
 }
 

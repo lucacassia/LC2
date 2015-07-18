@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <math.h>
 #include <stdlib.h>
+#include <unistd.h>
 #include <time.h>
 #include <float.h>
 #include "mersenne.h"
@@ -13,8 +14,8 @@
 
 double SIGMA;                   /* diameter of the disks */
 int n_particles = 100;          /* number of particles */
-int n_history = 10000;          /* number of time steps of the simulation */
-double time_step = 0.03f;
+int n_history = 100000;          /* number of time steps of the simulation */
+double time_step = 0.0003f;
 
 int n_collisions;
 double runtime;
@@ -175,11 +176,12 @@ double collide()
     double min_time = collision_table[collider[0]][collider[1]];
 
     /* gather data at regular steps until first collision */
+/*
     while( idx_history_time * time_step < runtime + min_time ){
         save_to_history();
         evolve( history[idx_history_time-1], (idx_history_time-1) * time_step - runtime );
     }
-
+*/
     /* evolve until collision */
     evolve( particle, min_time );
 
