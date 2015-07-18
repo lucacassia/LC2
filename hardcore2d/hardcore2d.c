@@ -24,14 +24,10 @@ int main (int argc, char *argv[])
     set_temperature(5.0f);
     printf(" K = %e\tP = %e\tT = %e\n", get_kinetic_energy(), get_total_momentum(), get_temperature() );
 
-    /****** GESTIONE FILE  ******/
-
-    /****FINE GESTIONE FILE***/
-
-    while( n_collisions < THERMALIZATION_TIME )
-        run();
+    while( n_collisions < THERMALIZATION_TIME ) run();
+    printf("Mixed for %d hits  ---->  K = %f\n", n_collisions, get_kinetic_energy() );
     print_distribution();
-    printf("Mixed for %d hits  ---->  K = %f\n", n_collisions, get_kinetic_energy());
+
     reset_variables();
 
     char filename[128];
@@ -40,25 +36,18 @@ int main (int argc, char *argv[])
     /* tcpdf */
     sprintf(filename, "data/pdf_tc/%d/%f.dat", n_particles, ETA);
     f = fopen(filename,"w");
-    while(runtime < n_history * time_step){
-        evolve();
-        fprintf(f,"%e\n", n_particles * min_time / 2.0f);
-    }
+    while(runtime < n_history * time_step)
+        fprintf(f, "%e\n", n_particles * run() / 2.0f);
     fclose(f);
 
-    printf("Num collisioni: %d\n", n_collisions);
+    printf("Number of collisions: %d\n", n_collisions);
+
     if(idx_history_time > n_history)
         printf("ERROR \n");
 
     /* <dr²> */
     sprintf(filename, "data/dr2/dr2_%d_%f.dat", (int)time(NULL), ETA); 
     print_dr2(filename);
-
-    /****** CALCOLO PV/NKT = 1 + 1/(3*n_particles*k_boltz*temp)*massa*diametro*Somma collisioni******/
-    pressure /= 3.0f * runtime * get_kinetic_energy();
-    pressure *= SIGMA;
-    pressure += 1.0f;
-    pressure *= (ETA/0.9069);
 
     /* collision times */
     sprintf(filename, "data/tc/%d/tc%f.dat", n_particles, ETA);
@@ -69,9 +58,10 @@ int main (int argc, char *argv[])
     /* pressure */
     sprintf(filename, "data/pressure/%d/pressure%f.dat", n_particles, ETA);
     f = fopen(filename,"a");
-    fprintf(f,"%e\n",pressure);
+    fprintf(f,"%e\n", get_pressure() * (ETA/0.9069) );
     fclose(f);
 
+    /* mean free path */
     sprintf(filename, "data/mfp/%d/mfp%f.dat", n_particles, ETA);
     f = fopen(filename,"a");
     int i;
@@ -79,7 +69,7 @@ int main (int argc, char *argv[])
     for(i = 0; i < n_particles; i++)
         mean_free_path += particle[i].distance / particle[i].n_collisions; 
     mean_free_path /= n_particles;
-    fprintf(f, "%.14e\t%.14e\t\n", ETA, mean_free_path);
+    fprintf(f, "%e\t%e\t\n", ETA, mean_free_path);
     fclose(f);
 
     clean();
