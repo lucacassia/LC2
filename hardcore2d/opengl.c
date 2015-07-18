@@ -78,7 +78,7 @@ void display()
     glEnable(GL_MULTISAMPLE_ARB);
 
     double normal[3] = {65/255.0,182/255.0,196/255.0};
-    double edf8b1[3] = {237/255.0,248/255.0,177/255.0};
+    double edf8b1[3] = {178/255.0,24/255.0,43/255.0};
     int i;
     for(i = 0; i < n_particles; i++){
         if(i == collider[0]||i == collider[1]) drawCircle(particle[i].pos,SIGMA/2,edf8b1);

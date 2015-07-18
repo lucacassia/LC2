@@ -22,7 +22,6 @@ double runtime;
 double dp;
 
 int idx_history_time;
-double time_prec;
 
 int collider[2];
 
