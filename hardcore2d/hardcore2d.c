@@ -24,7 +24,7 @@ int main (int argc, char *argv[])
     set_temperature(5.0f);
     printf(" K = %e\tP = %e\tT = %e\n", get_kinetic_energy(), get_total_momentum(), get_temperature() );
 
-    while( n_collisions < THERMALIZATION_TIME ) run();
+    while( n_collisions < THERMALIZATION_TIME ) collide();
     printf("Mixed for %d hits  ---->  K = %f\n", n_collisions, get_kinetic_energy() );
     print_distribution();
 
@@ -37,7 +37,7 @@ int main (int argc, char *argv[])
     sprintf(filename, "data/pdf_tc/%d/%f.dat", n_particles, ETA);
     f = fopen(filename,"w");
     while(runtime < n_history * time_step)
-        fprintf(f, "%e\n", n_particles * run() / 2.0f);
+        fprintf(f, "%e\n", n_particles * collide() / 2.0f);
     fclose(f);
 
     printf("Number of collisions: %d\n", n_collisions);
@@ -72,6 +72,6 @@ int main (int argc, char *argv[])
     fprintf(f, "%e\t%e\t\n", ETA, mean_free_path);
     fclose(f);
 
-    clean();
+    clear();
     return 0;
 }

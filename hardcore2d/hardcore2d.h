@@ -9,7 +9,7 @@
 #include "mersenne.h"
 #include "vec2.h"
 
-#define DEBUG
+/*#define DEBUG*/
 
 double SIGMA;                   /* diameter of the disks */
 int n_particles = 100;          /* number of particles */
@@ -23,6 +23,7 @@ double dp;
 int idx_history_time;
 double time_prec;
 
+int collider[2];
 
 typedef struct body{
     double pos[DIMENSION];      /* position */
@@ -32,9 +33,9 @@ typedef struct body{
     int n_collisions;  /* collisions made */
 }body;
 
-body *particle = NULL;      /* particle list */
-body *history = NULL;       /* simulation history */
-double *collision_table = NULL;   /* collision table */
+body *particle = NULL;              /* particle list */
+body **history = NULL;              /* simulation history */
+double **collision_table = NULL;    /* collision table */
 
 
 void print_pos()
@@ -109,7 +110,6 @@ void set_temperature(double temp)
             particle[i].mom[j] *= sqrt(n_particles*temp/energy);
 }
 
-
 /* compute collision time of the pair (i,j) */
 double get_collision_time(int i, int j)
 {
@@ -141,24 +141,23 @@ double get_collision_time(int i, int j)
 void get_collision_table()
 {
     int i,j;
+    double min = DBL_MAX;
     for(i = 0; i < n_particles; i++)
         for(j = i+1; j < n_particles; j++)
-            collision_table[i*n_particles+j] = get_collision_time(i,j);
+            if( (collision_table[i][j] = get_collision_time(i,j)) < min ){
+                collider[0] = i;
+                collider[1] = j;
+            }
 }
 
 /* update collision table */
 void update_collision_table(int collider1, int collider2)
 {
-    int i;
-    for(i = 0; i < collider1; i++)
-        collision_table[i*n_particles+collider1] = get_collision_time(i,collider1);
-    for(i = 0; i < collider2; i++)
-        collision_table[i*n_particles+collider2] = get_collision_time(i,collider2);
-    int j;
-    for(j = collider1+1; j < n_particles; i++)
-        collision_table[collider1*n_particles+j] = get_collision_time(collider1,j);
-    for(j = collider2+1; j < n_particles; j++)
-        collision_table[collider2*n_particles+j] = get_collision_time(collider1,j);
+    int i,j;
+    for(i = 0; i < n_particles; i++)
+        for(j = i+1; j < n_particles; j++)
+            if(i == collider1 || j == collider1 || i == collider2 || j == collider2)
+                collision_table[i][j] = get_collision_time(i,j);
 }
 
 /* save current state to history */
@@ -167,7 +166,7 @@ void save_to_history()
     if(idx_history_time < n_history){
         int j;
         for(j = 0; j < n_particles; j++)
-            history[idx_history_time * n_particles + j] = particle[j];
+            history[idx_history_time][j] = particle[j];
         idx_history_time++;
     }else{ printf("\n *** history is full! ***\n"); }
 }
@@ -192,11 +191,25 @@ void reset_variables()
 }
 
 /* free all the allocated memory */
-void clean()
+void clear()
 {
-    if(particle)        free(particle);
-    if(collision_table) free(collision_table);
-    if(history)         free(history);
+    int i;
+    if(particle)
+        free(particle);
+
+    if(collision_table){
+        for(i = 0; i < n_particles; i++)
+            if(collision_table[i])
+                free(collision_table[i]);
+        free(collision_table);
+    }
+
+    if(history){
+        for(i = 0; i < n_history; i++)
+            if(history[i])
+                free(history[i]);
+        free(history);
+    }
 }
 
 /* initialization */
@@ -218,10 +231,14 @@ int init(double eta, double temperature)
     for(i = 0; i < 543210; i++) mersenne();
 
     /* allocate memory */
-    clean();
-    collision_table = (double*)malloc( n_particles * n_particles * sizeof(double) );
+    clear();
     particle = (body*)malloc( n_particles * sizeof(body));
-    history = (body*)malloc( n_history * n_particles * sizeof(body) );
+    collision_table = (double**)malloc( n_particles * sizeof(double*) );
+    for(i = 0; i < n_particles; i++)
+        collision_table[i] = (double*)malloc( n_particles * sizeof(double) );
+    history = (body**)malloc( n_history * sizeof(body*) );
+    for(i = 0; i < n_history; i++)
+        history[i] = (body*)malloc( n_particles * sizeof(body) );
 
     /* initialize position and momentum of particles */
     for(i = 0; i < n_particles; i++){
@@ -253,7 +270,7 @@ int init(double eta, double temperature)
 }
 
 /* move particles for time dt */
-void step(double dt){
+void evolve(double dt){
     int i,j;
     for(i = 0; i < n_particles; i++){
         for(j = 0; j < DIMENSION; j++){
@@ -264,39 +281,39 @@ void step(double dt){
 
         /* update all the table by subtracting dt */
         for(j = i+1; j < n_particles; j++)
-            collision_table[i*n_particles+j] -= dt;
+            collision_table[i][j] -= dt;
     }
     runtime += dt;
 }
 
-double run()
+double collide()
 {
     /* find first pair (i,j) to collide */
     int i,j;
-    int collider[2] = {0,1};
-    double min_time = collision_table[1];
+    collider[0] = 0;
+    collider[1] = 1;
+    double min_time = collision_table[collider[0]][collider[1]];
     for(i = 0; i < n_particles; i++)
         for(j = i+1; j < n_particles; j++)
-            if(collision_table[i*n_particles+j] < min_time){
-                min_time = collision_table[i*n_particles+j];
+            if(collision_table[i][j] < min_time){
+                min_time = collision_table[i][j];
                 collider[0] = i;
                 collider[1] = j;
             }
 #ifdef DEBUG
-    printf("colliders = (%d,%d)\n",collider[0],collider[1]);
     printf("runtime + min_time = %e + %e = %e\n",runtime,min_time,runtime+min_time);
-    printf("collision_table[%d*%d+%d] = %e\n",collider[0],n_particles,collider[1],collision_table[collider[0]*n_particles+collider[1]] );
+    printf("collision_table[%d,%d] = %e\n",collider[0],collider[1],collision_table[collider[0]][collider[1]] );
 #endif
     /* gather data at regular steps until first collision */
-    while( idx_history_time * time_step < runtime + collision_table[collider[0]*n_particles+collider[1]] ){
-        step( idx_history_time * time_step - runtime );
+    while( idx_history_time * time_step < runtime + collision_table[collider[0]][collider[1]] ){
+        evolve( idx_history_time * time_step - runtime );
         save_to_history();
     }
 
     /* evolve until collision */
-    step( collision_table[collider[0]*n_particles+collider[1]] );
+    evolve( collision_table[collider[0]][collider[1]] );
 #ifdef DEBUG
-    printf("collision_table[%d*%d+%d] = %e\n",collider[0],n_particles,collider[1],collision_table[collider[0]*n_particles+collider[1]] );
+    printf("collision_table[%d,%d] = %e\n",collider[0],collider[1],collision_table[collider[0]][collider[1]] );
 #endif
     /* update data of colliding particles */
     for(i = 0; i < 2; i++){
@@ -340,6 +357,7 @@ double run()
 #ifdef DEBUG
     printf("n_collisions = %d\n", n_collisions );
     printf("runtime = %e\n", runtime );
+    printf("idx_history_time = %d\n\n", idx_history_time );
 #endif
     update_collision_table(collider[0], collider[1]);
 
@@ -381,7 +399,7 @@ void print_dr2(char *filename)
     for(shift = 0; shift < idx_history_time-1; shift++){
         error = mean = count = 0;
         for(start = 0; (start + shift) < idx_history_time; start++){
-            tmp = get_dr2( &history[start * n_particles], &history[(start+shift)*n_particles] );
+            tmp = get_dr2( history[start], history[start+shift] );
             mean += tmp;
             error += tmp*tmp;
             count++;
