@@ -100,7 +100,6 @@ double get_total_momentum(){
     return module(sum);
 }
 
-/* rescale all the momenta to set the desired temperature */
 void set_temperature(double temp)
 {
     int i,j;
@@ -110,57 +109,47 @@ void set_temperature(double temp)
             particle[i].mom[j] *= sqrt(n_particles*temp/energy);
 }
 
-/* compute collision time of the pair (i,j) */
 double get_collision_time(int i, int j)
 {
-    double delta_pos[DIMENSION], delta_mom[DIMENSION];
-    double t, rr, rv, vv, delta, collision_time = DBL_MAX;
+    double dr[DIMENSION], dv[DIMENSION];
+    double t, dx[2], rr, rv, vv, delta, collision_time = DBL_MAX;
 
-    int k,dx[2];
-    for(dx[0] = -1; dx[0] <= 1 ; dx[0]++)
+    for(dx[0] = -1; dx[0] <= 1 ; dx[0]++){
         for(dx[1] = -1; dx[1] <= 1; dx[1]++){
-            vv = rv = rr = 0.0f;
-            for(k = 0; k < DIMENSION; k++){
-                delta_pos[k] = (1.0f * dx[k]) + particle[j].pos[k] - particle[i].pos[k];
-                delta_mom[k] = particle[j].mom[k] - particle[i].mom[k];
-                rr += delta_pos[k] * delta_pos[k];
-                rv += delta_pos[k] * delta_mom[k];
-                vv += delta_mom[k] * delta_mom[k];
-            }
+            sum(dr, dx, particle[j].pos);
+            subtract(dr, particle[j].pos, particle[i].pos);
+            subtract(dv, particle[j].mom, particle[i].mom);
+
+            rr = scalar(dr, dr);
+            rv = scalar(dr, dv);
+            vv = scalar(dv, dv);
             delta = rv*rv-vv*(rr-SIGMA*SIGMA);
-            if( (rv < 0)&&(delta > 0) ){
+
+            if((rv < 0)&&(delta > 0)){
                 t = (-rv-sqrt(delta))/vv;
                 if(t < collision_time)
                     collision_time = t;
             }
         }
+    }
     return collision_time;
 }
 
-/* fill collision table */
+
 void get_collision_table()
 {
     int i,j;
     double min = DBL_MAX;
     for(i = 0; i < n_particles; i++)
-        for(j = i+1; j < n_particles; j++)
-            if( (collision_table[i][j] = get_collision_time(i,j)) < min ){
+        for(j = i+1; j < n_particles; j++){
+            collision_table[i][j] = get_collision_time(i,j);
+            if( collision_table[i][j] < min ){
                 collider[0] = i;
                 collider[1] = j;
             }
+        }
 }
 
-/* update collision table */
-void update_collision_table(int collider1, int collider2)
-{
-    int i,j;
-    for(i = 0; i < n_particles; i++)
-        for(j = i+1; j < n_particles; j++)
-            if(i == collider1 || j == collider1 || i == collider2 || j == collider2)
-                collision_table[i][j] = get_collision_time(i,j);
-}
-
-/* save current state to history */
 void save_to_history()
 {
     if(idx_history_time < n_history){
@@ -169,6 +158,68 @@ void save_to_history()
             history[idx_history_time][j] = particle[j];
         idx_history_time++;
     }else{ printf("\n *** history is full! ***\n"); }
+}
+
+/* move particles for time dt */
+void evolve(body *list, double dt){
+    int i,j;
+    for(i = 0; i < n_particles; i++)
+        /* implement periodic boundary conditions */
+        for(j = 0; j < DIMENSION; j++)
+            list[i].pos[j] = fmod(fmod( list[i].pos[j]+particle[i].mom[j]*dt ,1.0)+1.0,1.0);
+}
+
+double collide()
+{
+    int i,j;
+    double min_time = collision_table[collider[0]][collider[1]];
+
+    /* gather data at regular steps until first collision */
+    while( idx_history_time * time_step < runtime + min_time ){
+        save_to_history();
+        evolve( history[idx_history_time-1], (idx_history_time-1) * time_step - runtime );
+    }
+
+    /* evolve until collision */
+    evolve( particle, min_time );
+
+    /* update data of colliding particles */
+    for(i = 0; i < 2; i++){
+        particle[collider[i]].distance += (runtime + min_time - particle[collider[i]].last_collision_time) * module(particle[collider[i]].mom);
+        particle[collider[i]].last_collision_time = runtime + min_time;
+        particle[collider[i]].n_collisions++;
+    }
+
+    /* compute distance between colliding particles in the same box (not necessarily the shortest) */
+    double dr[DIMENSION], dv[DIMENSION], tmp[DIMENSION];
+    for(j = 0; j < DIMENSION; j++)
+        dr[j] = particle[collider[1]].pos[j] - particle[collider[0]].pos[j];
+
+    /* find the right copy of the particle to collide with */
+    double dx[2];
+    for(dx[0] = -1; dx[0] <= 1 ; dx[0]++)
+        for(dx[1] = -1; dx[1] <= 1; dx[1]++){
+            for(j = 0; j < DIMENSION; j++)
+                tmp[j] = dx[j] + particle[collider[1]].pos[j] - particle[collider[0]].pos[j];
+            if(scalar(tmp,tmp) < scalar(dr,dr))
+                for(j = 0; j < DIMENSION; j++)
+                    dr[j] = tmp[j];
+        }
+
+    /* update momenta of colliding particles */
+    for(j = 0; j < DIMENSION; j++){
+        dv[j] = particle[collider[0]].mom[j] - particle[collider[1]].mom[j];
+        tmp[j] = scalar(dv,dr)*dr[j]/scalar(dr,dr);
+        particle[collider[0]].mom[j] -= tmp[j];
+        particle[collider[1]].mom[j] += tmp[j];
+    }
+
+    n_collisions++;
+    dp += module(dv);
+    runtime += min_time;
+
+    get_collision_table();
+    return min_time;
 }
 
 /* clear history but not the state */
@@ -269,101 +320,6 @@ int init(double eta, double temperature)
     return 0;
 }
 
-/* move particles for time dt */
-void evolve(double dt){
-    int i,j;
-    for(i = 0; i < n_particles; i++){
-        for(j = 0; j < DIMENSION; j++){
-            particle[i].pos[j] += particle[i].mom[j] * dt;
-            particle[i].pos[j] -= floor(particle[i].pos[j]);
-/*            particle[i].pos[j] = fmod(fmod( particle[i].pos[j]+particle[i].mom[j]*dt ,1.0)+1.0,1.0);*/
-        }
-
-        /* update all the table by subtracting dt */
-        for(j = i+1; j < n_particles; j++)
-            collision_table[i][j] -= dt;
-    }
-    runtime += dt;
-}
-
-double collide()
-{
-    /* find first pair (i,j) to collide */
-    int i,j;
-    collider[0] = 0;
-    collider[1] = 1;
-    double min_time = collision_table[collider[0]][collider[1]];
-    for(i = 0; i < n_particles; i++)
-        for(j = i+1; j < n_particles; j++)
-            if(collision_table[i][j] < min_time){
-                min_time = collision_table[i][j];
-                collider[0] = i;
-                collider[1] = j;
-            }
-#ifdef DEBUG
-    printf("runtime + min_time = %e + %e = %e\n",runtime,min_time,runtime+min_time);
-    printf("collision_table[%d,%d] = %e\n",collider[0],collider[1],collision_table[collider[0]][collider[1]] );
-#endif
-    /* gather data at regular steps until first collision */
-    while( idx_history_time * time_step < runtime + collision_table[collider[0]][collider[1]] ){
-        evolve( idx_history_time * time_step - runtime );
-        save_to_history();
-    }
-
-    /* evolve until collision */
-    evolve( collision_table[collider[0]][collider[1]] );
-#ifdef DEBUG
-    printf("collision_table[%d,%d] = %e\n",collider[0],collider[1],collision_table[collider[0]][collider[1]] );
-#endif
-    /* update data of colliding particles */
-    for(i = 0; i < 2; i++){
-        particle[collider[i]].distance += (runtime - particle[collider[i]].last_collision_time) * module(particle[collider[i]].mom);
-        particle[collider[i]].last_collision_time = runtime;
-        particle[collider[i]].n_collisions++;
-#ifdef DEBUG
-        printf("particle[%d].distance = %e\n",collider[i],particle[collider[i]].distance );
-        printf("particle[%d].last_collision_time = %e\n",collider[i],particle[collider[i]].last_collision_time );
-        printf("particle[%d].n_collisions = %d\n",collider[i],particle[collider[i]].n_collisions );
-#endif
-    }
-
-    /* compute distance between colliding particles in the same box (not necessarily the shortest) */
-    double dr[DIMENSION], dv[DIMENSION], tmp[DIMENSION];
-    for(j = 0; j < DIMENSION; j++)
-        dr[j] = particle[collider[1]].pos[j] - particle[collider[0]].pos[j];
-
-    /* find the right copy of the particle to collide with */
-    double dx[2];
-    for(dx[0] = -1; dx[0] <= 1 ; dx[0]++)
-        for(dx[1] = -1; dx[1] <= 1; dx[1]++){
-            for(j = 0; j < DIMENSION; j++)
-                tmp[j] = dx[j] + particle[collider[1]].pos[j] - particle[collider[0]].pos[j];
-            if(scalar(tmp,tmp) < scalar(dr,dr))
-                for(j = 0; j < DIMENSION; j++)
-                    dr[j] = tmp[j];
-        }
-
-    /* update momenta of colliding particles */
-    for(j = 0; j < DIMENSION; j++){
-        dv[j] = particle[collider[0]].mom[j] - particle[collider[1]].mom[j];
-        tmp[j] = scalar(dv,dr)*dr[j]/scalar(dr,dr);
-        particle[collider[0]].mom[j] -= tmp[j];
-        particle[collider[1]].mom[j] += tmp[j];
-    }
-
-    n_collisions++;
-    dp += module(dv);
-
-#ifdef DEBUG
-    printf("n_collisions = %d\n", n_collisions );
-    printf("runtime = %e\n", runtime );
-    printf("idx_history_time = %d\n\n", idx_history_time );
-#endif
-    update_collision_table(collider[0], collider[1]);
-
-    return min_time;
-}
-
 /* compute <dr²(dt)> by averaging on every particle at dt fixed. for each particle take the distance with its nearest copy */
 double get_dr2(body *list0, body *list1)
 {
@@ -409,6 +365,15 @@ void print_dr2(char *filename)
         fprintf(f,"%e\t%e\t%e\n", shift * time_step, mean, error );
     }
     fclose(f);
+}
+
+void update_collision_table(int collider1, int collider2)
+{
+    int i,j;
+    for(i = 0; i < n_particles; i++)
+        for(j = i+1; j < n_particles; j++)
+            if(i == collider1 || j == collider1 || i == collider2 || j == collider2)
+                collision_table[i][j] = get_collision_time(i,j);
 }
 
 #endif
