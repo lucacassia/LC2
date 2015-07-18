@@ -8,18 +8,18 @@ void drawStat(){}
 
 void showInfo()
 {
-    // backup current model-view matrix
-    glPushMatrix();                     // save current modelview matrix
-    glLoadIdentity();                   // reset modelview matrix
+    /* backup current model-view matrix */
+    glPushMatrix();
+    glLoadIdentity();
 
-    // set to 2D orthogonal projection
-    glMatrixMode(GL_PROJECTION);     // switch to projection matrix
-    glPushMatrix();                  // save current projection matrix
-    glLoadIdentity();                // reset projection matrix
-    gluOrtho2D(0, width, 0, height);  // set to orthogonal projection
+    /* set to 2D orthogonal projection */
+    glMatrixMode(GL_PROJECTION);
+    glPushMatrix();
+    glLoadIdentity();
+    gluOrtho2D(0, width, 0, height);
 
     int h = height, dh = 18;
-    drawString(1, h-=dh, "Particles: %d", N);
+    drawString(1, h-=dh, "Particles: %d", n_particles);
     drawString(1, h-=dh, "Eta = %lf", ETA);
     drawString(1, h-=dh, "Sigma = %lf", SIGMA);
     drawString(1, h-=dh, "Temperature = %lf", temperature);
@@ -28,22 +28,24 @@ void showInfo()
     drawString(1, h-=dh, "mfp = %lf pm %lf", mfp, dmfp);
     drawString(1, h-=dh, "Hits = %d", hits);
 
-    // restore projection matrix
-    glPopMatrix();                   // restore to previous projection matrix
+    /* restore projection matrix */
+    glPopMatrix();
 
-    // restore modelview matrix
-    glMatrixMode(GL_MODELVIEW);      // switch to modelview matrix
-    glPopMatrix();                   // restore to previous modelview matrix
+    /* restore modelview matrix */
+    glMatrixMode(GL_MODELVIEW);
+    glPopMatrix();
 }
 
 void drawStuff()
 {
     int k;
-    for(k = 0; k < N; k++){
+    double red[3] = {1.0,0.2,0.2};
+    double grey[3] = {0.2,0.2,0.2};
+    for(k = 0; k < n_particles; k++){
         if((k==collider1)||(k==collider2))
-            drawSphere(particle[k].r, SIGMA/2, vec3_new(1.0,0.2,0.2));
+            drawSphere(particle[k].pos, SIGMA/2, red);
         else
-            drawSphere(particle[k].r, SIGMA/2, vec3_new(0.2,0.2,0.2));
+            drawSphere(particle[k].pos, SIGMA/2, grey);
     }
     showInfo();
 }
@@ -64,11 +66,11 @@ void keyboardF(unsigned char key, int x, int y)
             init();
             break;
         case 'n':
-            N += 2;
+            n_particles += 2;
             init();
             break;
         case 'N':
-            if(N >= 2) N -= 2;
+            if(n_particles >= 2) n_particles -= 2;
             init();
             break;
         case 'f': case 'F':

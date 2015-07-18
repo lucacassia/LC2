@@ -2,17 +2,23 @@
 #include <string.h>
 #include <stdio.h>
 
+#include "mersenne.h"
 #include "vec3.h"
 
+typedef struct body{
+    double pos[DIMENSION];
+    double mom[DIMENSION];
+}body;
+
 body *particle = NULL;
-double *ctimes = NULL;
-vec3 *data = NULL;
+double **collision_table = NULL;
+body *data = NULL;
 double *dtimes = NULL;
 int *ptr = NULL;
 
 int collider1, collider2;
-int N = 250;
-int NSIM = 10000;
+int n_particles = 250;
+int n_history = 10000;
 double ETA = 0.2;
 double SIGMA;
 
@@ -30,21 +36,21 @@ double get_kinetic()
 {
     double tmp = 0;
     int k;
-    for(k = 0; k < N; k++)
-        tmp += vec3_dot(particle[k].v,particle[k].v);
+    for(k = 0; k < n_particles; k++)
+        tmp += scalar(particle[k].mom,particle[k].mom);
     return tmp/2;
 }
 
 double get_min()
 {
     int i,j;
-    double minimum = ctimes[1];
     collider1 = 0;
     collider2 = 1;
-    for(i = 0; i < N; i++)
-        for(j = i+1; j < N; j++)
-            if(ctimes[i*N+j] <= minimum){
-                minimum = ctimes[i*N+j];
+    double minimum = collision_table[collider1][collider2];
+    for(i = 0; i < n_particles; i++)
+        for(j = i+1; j < n_particles; j++)
+            if(collision_table[i][j] <= minimum){
+                minimum = collision_table[i][j];
                 collider1 = i;
                 collider2 = j;
             }
@@ -53,23 +59,23 @@ double get_min()
 
 double get_collision_time(int i, int j)
 {
-    vec3 dr, dv;
+    double dr[DIMENSION], dv[DIMENSION];
     double t, dx, dy, dz, rr, rv, vv, delta, collision_time = DBL_MAX;
 
     for(dx = -1; dx <= 1 ; dx++){
         for(dy = -1; dy <= 1; dy++){
             for(dz = -1; dz <= 1; dz++){
-                dr.x = dx + particle[j].r.x - particle[i].r.x;
-                dr.y = dy + particle[j].r.y - particle[i].r.y;
-                dr.z = dz + particle[j].r.z - particle[i].r.z;
+                dr[0] = dx + particle[j].pos[0] - particle[i].pos[0];
+                dr[1] = dy + particle[j].pos[1] - particle[i].pos[1];
+                dr[2] = dz + particle[j].pos[2] - particle[i].pos[2];
 
-                dv.x = particle[j].v.x - particle[i].v.x;
-                dv.y = particle[j].v.y - particle[i].v.y;
-                dv.z = particle[j].v.z - particle[i].v.z;
+                dv[0] = particle[j].mom[0] - particle[i].mom[0];
+                dv[1] = particle[j].mom[1] - particle[i].mom[1];
+                dv[2] = particle[j].mom[2] - particle[i].mom[2];
 
-                rr = vec3_dot(dr, dr);
-                rv = vec3_dot(dr, dv);
-                vv = vec3_dot(dv, dv);
+                rr = scalar(dr, dr);
+                rv = scalar(dr, dv);
+                vv = scalar(dv, dv);
                 delta = rv*rv-vv*(rr-SIGMA*SIGMA);
 
                 if((rv < 0)&&(delta > 0)){
@@ -86,20 +92,25 @@ double get_collision_time(int i, int j)
 void collide()
 {
     int i, j;
-    for(i = 0; i < N; i++)
-        for(j = i+1; j < N; j++)
+    for(i = 0; i < n_particles; i++)
+        for(j = i+1; j < n_particles; j++)
             if(i == collider1 || j == collider1 || i == collider2 || j == collider2 || collider1 == collider2)
-                ctimes[i*N+j] = get_collision_time(i,j);
+                collision_table[i][j] = get_collision_time(i,j);
             else
-                ctimes[i*N+j] -= min_time;
+                collision_table[i][j] -= min_time;
 }
 
 void clear()
 {
+    int i;
     if(particle != NULL)
         free(particle);
-    if(ctimes != NULL)
-        free(ctimes);
+    if(collision_table){
+        for(i = 0; i < n_particles; i++)
+            if(collision_table[i])
+                free(collision_table[i]);
+        free(collision_table);
+    }
     if(data != NULL)
         free(data);
     if(dtimes != NULL)
@@ -117,52 +128,56 @@ void reset()
 
 void init()
 {
-    int n = 0;
-    while(2*n*n*n < N) n++;
-    SIGMA = cbrt(ETA*1.909859317/N);
+    int i,j,k,l,n;
+    srand(time(NULL));
+    seed_mersenne( (long)time(NULL) );
+    for(n = 0; n < 543210; n++) mersenne();
+
+    n = 0;
+    while(2*n*n*n < n_particles) n++;
+    SIGMA = cbrt(ETA*1.909859317/n_particles);
 
     clear();
-    particle = (body*)malloc(N*sizeof(body));
-    ctimes = (double*)malloc(N*N*sizeof(double));
-    data = (vec3*)malloc(N*NSIM*sizeof(vec3));
-    dtimes = (double*)malloc(N*NSIM*sizeof(double));
-    ptr = (int*)malloc(N*sizeof(int));
+    particle = (body*)malloc(n_particles*sizeof(body));
+    collision_table = (double**)malloc(n_particles*sizeof(double*));
+    for(i = 0; i < n_particles; i++)
+        collision_table[i] = (double*)malloc(n_particles*sizeof(double));
+    data = (body*)malloc(n_particles*n_history*sizeof(body));
+    dtimes = (double*)malloc(n_particles*n_history*sizeof(double));
+    ptr = (int*)malloc(n_particles*sizeof(int));
 
-    int i,j,k,l;
-    for(l = i = 0; i < n && l < N/2; i++)
-        for(j = 0; j < n && l < N/2; j++)
-            for(k = 0; k < n && l < N/2; k++){
-                particle[l].r.x = i*1.0/n;
-                particle[l].r.y = j*1.0/n;
-                particle[l].r.z = k*1.0/n;
-                particle[N/2+l].r.x = 1.0/n/2.0 + i*1.0/n;
-                particle[N/2+l].r.y = 1.0/n/2.0 + j*1.0/n;
-                particle[N/2+l].r.z = 1.0/n/2.0 + k*1.0/n;
+    for(l = i = 0; i < n && l < n_particles/2; i++)
+        for(j = 0; j < n && l < n_particles/2; j++)
+            for(k = 0; k < n && l < n_particles/2; k++){
+                particle[l].pos[0] = i*1.0/n;
+                particle[l].pos[1] = j*1.0/n;
+                particle[l].pos[2] = k*1.0/n;
+                particle[n_particles/2+l].pos[0] = 1.0/n/2.0 + i*1.0/n;
+                particle[n_particles/2+l].pos[1] = 1.0/n/2.0 + j*1.0/n;
+                particle[n_particles/2+l].pos[2] = 1.0/n/2.0 + k*1.0/n;
                 l++;
             }
 
-    vec3 tmp = vec3_new(0.0, 0.0, 0.0);
-    for(k = 0; k < N; k++){
-        particle[k].c = vec3_new(_rand(), _rand(), _rand());
-        particle[k].v = vec3_new(_rand()*2-1, _rand()*2-1, _rand()*2-1);
-        tmp.x += particle[k].v.x;
-        tmp.y += particle[k].v.y;
-        tmp.z += particle[k].v.z;
+    double tmp[DIMENSION] = {0};
+    for(k = 0; k < n_particles; k++){
+        tmp[0] += particle[k].mom[0] = 2*mersenne()-1;
+        tmp[1] += particle[k].mom[1] = 2*mersenne()-1;
+        tmp[2] += particle[k].mom[2] = 2*mersenne()-1;
     }
 
-    for(k = 0; k < N; k++){
-        particle[k].v.x -= tmp.x/N;
-        particle[k].v.y -= tmp.y/N;
-        particle[k].v.z -= tmp.z/N;
+    for(k = 0; k < n_particles; k++){
+        particle[k].mom[0] -= tmp[0]/n_particles;
+        particle[k].mom[1] -= tmp[1]/n_particles;
+        particle[k].mom[2] -= tmp[2]/n_particles;
     }
     double norm = 0;
-    for(k = 0; k < N; k++)
-        norm += vec3_dot(particle[k].v, particle[k].v);
-    norm = sqrt( norm / (3 * N * temperature) );
-    for(k = 0; k < N; k++){
-        particle[k].v.x /= norm;
-        particle[k].v.y /= norm;
-        particle[k].v.z /= norm;
+    for(k = 0; k < n_particles; k++)
+        norm += scalar(particle[k].mom, particle[k].mom);
+    norm = sqrt( norm / (3 * n_particles * temperature) );
+    for(k = 0; k < n_particles; k++){
+        particle[k].mom[0] /= norm;
+        particle[k].mom[1] /= norm;
+        particle[k].mom[2] /= norm;
         ptr[k] = 0;
     }
 
@@ -170,7 +185,7 @@ void init()
     collider2 = 0;
 
     kinetic = get_kinetic();
-    temperature = 2*kinetic/(3*N);
+    temperature = 2*kinetic/(3*n_particles);
 
     collide();
     reset();
@@ -180,92 +195,93 @@ void run()
 {
     min_time = get_min();
 
-    vec3 dr, dv, tmp;
+    double dr[DIMENSION], dv[DIMENSION], tmp[DIMENSION];
 
     int k;
-    for(k = 0; k < N; k++){
-        particle[k].r.x += particle[k].v.x * min_time;
-        particle[k].r.y += particle[k].v.y * min_time;
-        particle[k].r.z += particle[k].v.z * min_time;
+    for(k = 0; k < n_particles; k++){
+        particle[k].pos[0] += particle[k].mom[0] * min_time;
+        particle[k].pos[1] += particle[k].mom[1] * min_time;
+        particle[k].pos[2] += particle[k].mom[2] * min_time;
 
-        particle[k].r.x -= floor(particle[k].r.x);
-        particle[k].r.y -= floor(particle[k].r.y);
-        particle[k].r.z -= floor(particle[k].r.z);
+        particle[k].pos[0] -= floor(particle[k].pos[0]);
+        particle[k].pos[1] -= floor(particle[k].pos[1]);
+        particle[k].pos[2] -= floor(particle[k].pos[2]);
     }
 
-    dr.x = particle[collider2].r.x - particle[collider1].r.x;
-    dr.y = particle[collider2].r.y - particle[collider1].r.y;
-    dr.z = particle[collider2].r.z - particle[collider1].r.z;
+    dr[0] = particle[collider2].pos[0] - particle[collider1].pos[0];
+    dr[1] = particle[collider2].pos[1] - particle[collider1].pos[1];
+    dr[2] = particle[collider2].pos[2] - particle[collider1].pos[2];
 
     double dx, dy, dz;
     for(dx = -1; dx <= 1 ; dx++){
         for(dy = -1; dy <= 1; dy++){
             for(dz = -1; dz <= 1; dz++){
-                tmp.x = dx + particle[collider2].r.x - particle[collider1].r.x;
-                tmp.y = dy + particle[collider2].r.y - particle[collider1].r.y;
-                tmp.z = dz + particle[collider2].r.z - particle[collider1].r.z;
+                tmp[0] = dx + particle[collider2].pos[0] - particle[collider1].pos[0];
+                tmp[1] = dy + particle[collider2].pos[1] - particle[collider1].pos[1];
+                tmp[2] = dz + particle[collider2].pos[2] - particle[collider1].pos[2];
 
-                if(vec3_dot(tmp,tmp) < vec3_dot(dr,dr)){
-                    dr = tmp;
+                if(scalar(tmp,tmp) < scalar(dr,dr)){
+                    for(k = 0; k < DIMENSION; k++)
+                        dr[k] = tmp[k];
                 }
             }
         }
     }
 
-    dv.x = particle[collider1].v.x - particle[collider2].v.x;
-    dv.y = particle[collider1].v.y - particle[collider2].v.y;
-    dv.z = particle[collider1].v.z - particle[collider2].v.z;
+    dv[0] = particle[collider1].mom[0] - particle[collider2].mom[0];
+    dv[1] = particle[collider1].mom[1] - particle[collider2].mom[1];
+    dv[2] = particle[collider1].mom[2] - particle[collider2].mom[2];
 
-    tmp.x = vec3_dot(dv,dr)*dr.x/vec3_dot(dr,dr);
-    tmp.y = vec3_dot(dv,dr)*dr.y/vec3_dot(dr,dr);
-    tmp.z = vec3_dot(dv,dr)*dr.z/vec3_dot(dr,dr);
+    tmp[0] = scalar(dv,dr)*dr[0]/scalar(dr,dr);
+    tmp[1] = scalar(dv,dr)*dr[1]/scalar(dr,dr);
+    tmp[2] = scalar(dv,dr)*dr[2]/scalar(dr,dr);
 
-    particle[collider1].v.x -= tmp.x;
-    particle[collider1].v.y -= tmp.y;
-    particle[collider1].v.z -= tmp.z;
+    particle[collider1].mom[0] -= tmp[0];
+    particle[collider1].mom[1] -= tmp[1];
+    particle[collider1].mom[2] -= tmp[2];
 
-    particle[collider2].v.x += tmp.x;
-    particle[collider2].v.y += tmp.y;
-    particle[collider2].v.z += tmp.z;
+    particle[collider2].mom[0] += tmp[0];
+    particle[collider2].mom[1] += tmp[1];
+    particle[collider2].mom[2] += tmp[2];
 
     collide();
 
-    data[ptr[collider1]*N+collider1] = particle[collider1].r;
-    data[ptr[collider2]*N+collider2] = particle[collider2].r;
-    dtimes[ptr[collider1]*N+collider1] = runtime;
-    dtimes[ptr[collider2]*N+collider2] = runtime;
-    ptr[collider1] = (ptr[collider1]+1)%NSIM;
-    ptr[collider2] = (ptr[collider2]+1)%NSIM;
+    data[ptr[collider1]*n_particles+collider1] = particle[collider1];
+    data[ptr[collider2]*n_particles+collider2] = particle[collider2];
+    dtimes[ptr[collider1]*n_particles+collider1] = runtime;
+    dtimes[ptr[collider2]*n_particles+collider2] = runtime;
+    ptr[collider1] = (ptr[collider1]+1)%n_history;
+    ptr[collider2] = (ptr[collider2]+1)%n_history;
 
     hits++;
     runtime += min_time;
-    dp += vec3_mod(dv);
-    pressure = N*temperature*(1+SIGMA*dp/(2*kinetic*runtime));
+    dp += module(dv);
+    pressure = n_particles*temperature*(1+SIGMA*dp/(2*kinetic*runtime));
 }
 
 void get_mfp()
 {
     int i,j;
-    double tmp[N];
-    vec3 dr;
-    for(j = 0; j < N; j++){
-        for(tmp[j] = i = 0; i < NSIM-1; i++){
-            dr.x = data[(ptr[j]+i+1)*N+j].x - data[(ptr[j]+i)*N+j].x;
-            dr.y = data[(ptr[j]+i+1)*N+j].y - data[(ptr[j]+i)*N+j].y;
-            dr.z = data[(ptr[j]+i+1)*N+j].z - data[(ptr[j]+i)*N+j].z;
-            tmp[j] += vec3_mod(dr);
+    double tmp[n_particles];
+    double dr[DIMENSION];
+    for(j = 0; j < n_particles; j++){
+        for(tmp[j] = i = 0; i < n_history-1; i++){
+            dr[0] = data[(ptr[j]+i+1)*n_particles+j].pos[0] - data[(ptr[j]+i)*n_particles+j].pos[0];
+            dr[1] = data[(ptr[j]+i+1)*n_particles+j].pos[1] - data[(ptr[j]+i)*n_particles+j].pos[1];
+            dr[2] = data[(ptr[j]+i+1)*n_particles+j].pos[2] - data[(ptr[j]+i)*n_particles+j].pos[2];
+            tmp[j] += module(dr);
         }
-        tmp[j] /= NSIM;
+        tmp[j] /= n_history;
     }
     mfp = dmfp = 0;
-    for(j = 0; j < N; j++){
+    for(j = 0; j < n_particles; j++){
         mfp += tmp[j];
     }
-    mfp /= N;
-    for(j = 0; j < N; j++){
+    mfp /= n_particles;
+    for(j = 0; j < n_particles; j++){
         dmfp += (tmp[j]-mfp)*(tmp[j]-mfp);
     }
-    dmfp = sqrt(dmfp/(N*N));
+    dmfp = sqrt(dmfp/(n_particles*n_particles));
 }
 
 void print()
@@ -275,17 +291,17 @@ void print()
     FILE *t = fopen("times.dat","w");
 
     int i,k;
-    for(k = 0; k < N; k++){
-        for(i = 0; i < NSIM-1; i++){
-            fprintf(t, "%e\n", dtimes[(ptr[k]+i+1)*N+k] - dtimes[(ptr[k]+i)*N+k]);
+    for(k = 0; k < n_particles; k++){
+        for(i = 0; i < n_history-1; i++){
+            fprintf(t, "%e\n", dtimes[(ptr[k]+i+1)*n_particles+k] - dtimes[(ptr[k]+i)*n_particles+k]);
         }
     }
 
-    for(k = 0; k < N; k++){
-        fprintf(v, "%e\t%e\t%e\n", particle[k].v.x, particle[k].v.y, particle[k].v.z);
+    for(k = 0; k < n_particles; k++){
+        fprintf(v, "%e\t%e\t%e\n", particle[k].mom[0], particle[k].mom[1], particle[k].mom[2]);
     }
 
-    fprintf(f, "%d\t%lf\t%lf\t%lf\t%e\n", N, ETA, pressure, temperature, SIGMA*dp/(2*kinetic*runtime) );
+    fprintf(f, "%d\t%lf\t%lf\t%lf\t%e\n", n_particles, ETA, pressure, temperature, SIGMA*dp/(2*kinetic*runtime) );
 
     fclose(t);
     fclose(v);

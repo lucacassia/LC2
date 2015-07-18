@@ -19,16 +19,18 @@ all: rmxeq mkdep mkxeq rmpmk
 
 # main programs and required modules 
 
-MAIN = hard_core main
+MAIN = hard_core
 
-MODULES = 
+RANDOM = mersenne
+
+MODULES = $(RANDOM)
 
 
 # search path for modules
 
-MDIR = 
+MDIR = ../modules
 
-VPATH = 
+VPATH = $(MDIR)/random
 
 
 # additional include directories
