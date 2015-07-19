@@ -3,6 +3,7 @@
 
 #include <float.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <time.h>
 
 #include "mersenne.h"
@@ -40,7 +41,9 @@ int n_collisions;
 
 void print_pos()
 {
-    FILE *f = fopen("data/position.dat","w");
+    char filename[64];
+    sprintf(filename, "data/position_%d_%f.dat", n_particles, ETA);
+    FILE *f = fopen(filename,"w");
     int i,j;
     for(i = 0; i < n_particles; i++){
         for(j = 0; j < DIMENSION; j++)
@@ -52,7 +55,9 @@ void print_pos()
 
 void print_mom()
 {
-    FILE *f = fopen("data/momentum.dat","w");
+    char filename[64];
+    sprintf(filename, "data/momentum_%d_%f.dat", n_particles, ETA);
+    FILE *f = fopen(filename,"w");
     int i,j;
     for(i = 0; i < n_particles; i++){
         for(j = 0; j < DIMENSION; j++)
@@ -65,7 +70,9 @@ void print_mom()
 void print_distribution()
 {
     int i;
-    FILE *f = fopen("data/boltzmann.dat","w");
+    char filename[64];
+    sprintf(filename, "data/distribution_%d_%f.dat", n_particles, ETA);
+    FILE *f = fopen(filename,"w");
     for(i = 0; i < n_particles; i++)
         fprintf(f, "%e\n", module(particle[i].mom) );
     fclose(f);
@@ -154,12 +161,20 @@ double get_collision_time(int i, int j)
     return collision_time;
 }
 
-void collide()
+void get_collision_table()
 {
     int i, j;
     for(i = 0; i < n_particles; i++)
         for(j = i+1; j < n_particles; j++)
-            if(i == collider[0] || j == collider[0] || i == collider[1] || j == collider[1] || collider[0] == collider[1])
+            collision_table[i][j] = get_collision_time(i,j);
+}
+
+void update_collision_table()
+{
+    int i, j;
+    for(i = 0; i < n_particles; i++)
+        for(j = i+1; j < n_particles; j++)
+            if(i == collider[0] || j == collider[0] || i == collider[1] || j == collider[1])
                 collision_table[i][j] = get_collision_time(i,j);
             else
                 collision_table[i][j] -= min_time;
@@ -264,10 +279,8 @@ int init(double eta, double temperature)
     set_temperature(temperature);
 
     /* init stuff */
-    collider[0] = 0;
-    collider[1] = 0;
-
-    collide();
+    get_collision_table();
+    get_min_time();
     reset();
     return 0;
 }
@@ -323,7 +336,7 @@ void run()
     particle[collider[1]].mom[0] += tmp[0];
     particle[collider[1]].mom[1] += tmp[1];
 
-    collide();
+    update_collision_table();
 /*
     history[ptr[collider[0]]][[collider[0]] = particle[collider[0]];
     history[ptr[collider[1]]][collider[1]] = particle[collider[1]];
@@ -338,28 +351,13 @@ void run()
 
 }
 
-void get_mfp()
+double get_mean_free_path()
 {
-    int i,j;
-    double tmp[n_particles];
-    double dr[DIMENSION];
-    for(j = 0; j < n_particles; j++){
-        for(tmp[j] = i = 0; i < n_history-1; i++){
-            dr[0] = history[(ptr[j]+i+1)][j].pos[0] - history[(ptr[j]+i)][j].pos[0];
-            dr[1] = history[(ptr[j]+i+1)][j].pos[1] - history[(ptr[j]+i)][j].pos[1];
-            tmp[j] += module(dr);
-        }
-        tmp[j] /= n_history;
-    }
-    mfp = dmfp = 0;
-    for(j = 0; j < n_particles; j++){
-        mfp += tmp[j];
-    }
-    mfp /= n_particles;
-    for(j = 0; j < n_particles; j++){
-        dmfp += (tmp[j]-mfp)*(tmp[j]-mfp);
-    }
-    dmfp = sqrt(dmfp/(n_particles*n_particles));
+    int i;
+    double tmp = 0.0f;
+    for(i = 0; i < n_particles; i++)
+        tmp += particle[i].distance / particle[i].n_collisions; 
+    return tmp/n_particles;
 }
 
 void print()

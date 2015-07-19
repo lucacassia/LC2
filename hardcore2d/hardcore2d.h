@@ -368,6 +368,15 @@ void print_dr2(char *filename)
     fclose(f);
 }
 
+double get_mean_free_path()
+{
+    int i;
+    double tmp = 0.0f;
+    for(i = 0; i < n_particles; i++)
+        tmp += particle[i].distance / particle[i].n_collisions; 
+    return tmp/n_particles;
+}
+
 void update_collision_table(int collider1, int collider2)
 {
     int i,j;

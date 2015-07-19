@@ -7,11 +7,21 @@
 #define HEIGHT 600
 
 int ACTIVE = 0;
+double frame = 0.025;
 
 void keyboard(unsigned char key, int x, int y)
 {
     switch(key){
-        case 'p': case 'P': case ' ':
+        case 'p': case 'P':
+            printf("Pressure: %f\n",get_pressure());
+            printf("Collisions: %d\n",n_collisions);
+            printf("Runtime: %f\n",runtime);
+            printf("Mean Free Path: %f\n",get_mean_free_path());
+            print_pos();
+            print_mom();
+            print_distribution();
+            break;
+        case ' ':
             ACTIVE = !ACTIVE;
             break;
         case 'f': case 'F':
@@ -51,8 +61,8 @@ void initGL()
 {
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    gluOrtho2D(0.0, 1.0, 0.0, 1.0);
-    glClearColor(8/255.0,29/255.0,88/255.0,0.0);
+    gluOrtho2D(0.0-frame, 1.0+frame, 0.0-frame, 1.0+frame);
+    glClearColor(1.0,1.0,1.0,0.0);
 }
  
 void reshape(int width, int height)
@@ -60,16 +70,25 @@ void reshape(int width, int height)
     glViewport(0, 0, (GLsizei)width, (GLsizei)height);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    gluOrtho2D(0.0, 1.0, 0.0, 1.0);
+    if(width > height)
+        gluOrtho2D((0.0-frame)-(width-height)*(1+2*frame)/(2*height), (1.0+frame)+(width-height)*(1+2*frame)/(2*height), 0.0-frame, 1.0+frame);
+    else
+        gluOrtho2D(0.0-frame, 1.0+frame, (0.0-frame)-(height-width)*(1+2*frame)/(2*width), (1.0+frame)+(height-width)*(1+2*frame)/(2*width));
 }
 
-void drawCircle(double *pos, double radius, double *color)
+void drawCircle(double *pos, double radius, char *color)
 {
-    glColor3f(color[0],color[1],color[2]);
+    double i;
+    glColor3ub(color[0],color[1],color[2]);
     glBegin(GL_POLYGON);
-    for(double i = 0; i < 2*PI; i += PI/24)
+    for(i = 0; i < 2*PI; i += PI/24)
         glVertex2f( pos[0] + cos(i) * radius, pos[1] + sin(i) * radius);
     glEnd();
+    if(pos[0]+radius > 1.0){glBegin(GL_POLYGON);for(i=0;i<2*PI;i+=PI/24)glVertex2f(pos[0]-1.0+cos(i)*radius,pos[1]+sin(i)*radius);glEnd();}
+    if(pos[0]-radius > 1.0){glBegin(GL_POLYGON);for(i=0;i<2*PI;i+=PI/24)glVertex2f(pos[0]+1.0+cos(i)*radius,pos[1]+sin(i)*radius);glEnd();}
+    if(pos[1]+radius > 1.0){glBegin(GL_POLYGON);for(i=0;i<2*PI;i+=PI/24)glVertex2f(pos[0]+cos(i)*radius,pos[1]-1.0+sin(i)*radius);glEnd();}
+    if(pos[1]-radius > 1.0){glBegin(GL_POLYGON);for(i=0;i<2*PI;i+=PI/24)glVertex2f(pos[0]+cos(i)*radius,pos[1]+1.0+sin(i)*radius);glEnd();}
+
 }
 
 void display()
@@ -77,19 +96,31 @@ void display()
     glClear(GL_COLOR_BUFFER_BIT);
     glEnable(GL_MULTISAMPLE_ARB);
 
-    double normal[3] = {65/255.0,182/255.0,196/255.0};
-    double edf8b1[3] = {178/255.0,24/255.0,43/255.0};
+    char normal[3] = {33,102,172};
+    char bright[3] = {255,0,0};
     int i;
     for(i = 0; i < n_particles; i++){
-        if(i == collider[0]||i == collider[1]) drawCircle(particle[i].pos,SIGMA/2,edf8b1);
+        if(i == collider[0]||i == collider[1])
+            drawCircle(particle[i].pos,SIGMA/2,bright);
         else drawCircle(particle[i].pos,SIGMA/2,normal);
     }
+
+    /* draw frame */
+    glColor3ub(0,0,0);
+    glLineWidth(3);
+    glBegin(GL_LINE_LOOP);
+        glVertex2f(0.0,0.0);
+        glVertex2f(1.0,0.0);
+        glVertex2f(1.0,1.0);
+        glVertex2f(0.0,1.0);
+    glEnd();
+
     glutSwapBuffers();
 }
 
 int main(int argc, char **argv)
 {
-    if(init( 0.1f, 1.0f )) return 1;
+    if(init( 0.2f, 1.0f )) return 1;
 
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH | GLUT_MULTISAMPLE);
@@ -103,7 +134,7 @@ int main(int argc, char **argv)
     glutSpecialFunc(specialKeyboard);
     glutReshapeFunc(reshape);
 
-    printf("%s\n",glGetString(GL_RENDERER));
+    printf("%s\n%s\n",glGetString(GL_RENDERER),glGetString(GL_VERSION));
 
     glutMainLoop();
     return 0;
