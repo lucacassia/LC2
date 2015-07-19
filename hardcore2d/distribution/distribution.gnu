@@ -3,18 +3,8 @@
 reset
 set macros
 
-set terminal pdf size 5,5 #enhanced color dashed lw 1
+set terminal pdf size 4.5,4.5 enhanced color dashed lw 1
 
-# axes
-set border 3 front
-set tics nomirror out scale 0.75
-# grid
-set style line 12 lc rgb'#808080' lt 0 lw 1
-set grid back ls 12
-set grid xtics ytics mxtics
-
-
-set fit errorvariables
 f1(v)=a1*(v/t1)*exp(-v**2/(t1*2)) #module
 f2(v)=a2*(v/t2)*exp(-v**2/(t2*2)) #module
 f3(v)=a3*(v/t3)*exp(-v**2/(t3*2)) #module
