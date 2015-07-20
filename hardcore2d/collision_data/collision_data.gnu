@@ -18,10 +18,10 @@ plot 'data/100_multi.sort' u 1:2  w l lc rgb "#FF0000" notitle,\
 set ylabel 'mean collision time'
 set output 'img/mct.eps'
 plot 'data/100_multi.sort' u 1:4  w l lc rgb "#FF0000" notitle,\
-     'data/100_multi.sort' u 1:4 lc 0 pt 1 notitle
+     'data/100_multi.sort' u 1:4:5 w e lc 0 pt 1 notitle
 
 set ylabel 'mean free path'
 set output 'img/mfp.eps'
 plot 'data/100_multi.sort' u 1:6  w l lc rgb "#FF0000" notitle,\
-     'data/100_multi.sort' u 1:6 lc 0 pt 1 notitle
+     'data/100_multi.sort' u 1:6:7 w e lc 0 pt 1 notitle
 
