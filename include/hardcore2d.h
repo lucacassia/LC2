@@ -21,6 +21,7 @@ body *particle = NULL;
 double **collision_table = NULL;
 double ***buffer = NULL;
 int idx;
+int FULL_BUFFER_FLAG;
 
 double SIGMA;                   /* diameter of the disks */
 double ETA;                     /* packing density */
@@ -177,6 +178,7 @@ void reset()
     n_collisions = 1;
     dp = 0;
     idx = 0;
+    FULL_BUFFER_FLAG = 0;
 }
 
 /* initialization */
@@ -250,18 +252,17 @@ double run()
 
     int i,j,k;
 
-    if(idx < buffer_size){
+    if(!FULL_BUFFER_FLAG){
         while( idx * time_step < runtime + min_time){
-            printf("Writing to buffer! %d/%d\n",idx,buffer_size);
             for(i = 0; i < n_particles; i++)
                 for(j = 0; j < DIMENSION; j++){
                     buffer[idx][i][j] = particle[i].pos[j]+particle[i].mom[j] * ( idx * time_step - runtime );
                     buffer[idx][i][j] -= floor(buffer[idx][i][j]);
                 }
             idx++;
+            FULL_BUFFER_FLAG = !(idx < buffer_size);
         }
-    }
-    else{ printf("Buffer is full!\n"); }
+    }else FULL_BUFFER_FLAG = 1;
 
 
     for(k = 0; k < 2; k++){
@@ -356,6 +357,53 @@ void print_mom()
         for(j = 0; j < DIMENSION; j++)
             fprintf(f, "%e\t", particle[i].mom[j]);
         fprintf(f, "%e\n", module(particle[i].mom) );
+    }
+    fclose(f);
+}
+
+/* compute <dr²(dt)> by averaging on every particle at t,dt fixed. for each particle take the distance with its nearest copy */
+double get_dr2(double **list0, double **list1)
+{
+    int i,j;
+    int dx[DIMENSION];
+    double distance, sum = 0.0f;
+    double dr[DIMENSION];
+    for(i = 0; i < n_particles; i++){
+        /* first copy */
+        for(j = 0; j < DIMENSION; j++)
+            dr[j] = list1[i][j] - list0[i][j];
+        distance = scalar(dr,dr);
+        /* check other copies */
+        for(dx[0] = -1; dx[0] <= 1 ; dx[0]++)
+            for(dx[1] = -1; dx[1] <= 1; dx[1]++){
+                for(j = 0; j < DIMENSION; j++)
+                    dr[j] = dx[j] + list1[i][j] - list0[i][j];
+                if(scalar(dr,dr) < distance)
+                    distance = scalar(dr,dr);
+            }
+        sum += distance;
+    }
+    return sum / n_particles;
+} 
+
+/* compute <dr²(dt)> for every dt and write to file */
+void print_dr2(char *filename)
+{
+    FILE *f = fopen(filename, "w");
+    int count, start, shift;
+    double tmp;
+    double mean, error;
+    for(shift = 0; shift < buffer_size; shift++){
+        error = mean = count = 0.0f;
+        for(start = 0; (start + shift) < buffer_size; start++){
+            tmp = get_dr2( buffer[start], buffer[start+shift] );
+            mean += tmp;
+            error += tmp*tmp;
+            count++;
+        }
+        mean /= count;
+        error = sqrt( (error / count - mean * mean)/count );
+        fprintf(f,"%e\t%e\t%e\n", shift * time_step, mean, error );
     }
     fclose(f);
 }
