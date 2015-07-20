@@ -16,9 +16,10 @@
 #define DOWN   (i+1)%SIZE][j
 #define CENTER i][j
 
-int STATES = 3;
-int SIZE = 32;
-double BETA = 0.0f;
+int SET_CORR = 0;       /* flag to enable correlation computation in dump_data(). default is false */
+int STATES = 3;         /* number of states of the potts model */
+int SIZE = 32;          /* lattice size L */
+double BETA = 0.0f;     /* inverse temperature */
 
 typedef struct _spin{
     int s;
@@ -62,10 +63,8 @@ void create_clusters()
     }
     /* merge linked clusters */
     for(i = 0; i < SIZE; i++) for(j = 0; j < SIZE; j++){
-/*        if( potts[CENTER].link[0] ) merge_clusters(potts[CENTER].cl, potts[RIGHT].cl);*/
         if( potts[CENTER].link[1] ) merge_clusters(potts[CENTER].cl, potts[UP   ].cl);
         if( potts[CENTER].link[2] ) merge_clusters(potts[CENTER].cl, potts[LEFT ].cl);
-/*        if( potts[CENTER].link[3] ) merge_clusters(potts[CENTER].cl, potts[DOWN ].cl);*/
     }
 }
 
@@ -195,41 +194,55 @@ int get_largest_cluster()
     return cl_size_max;
 }
 
+int set_corr(int flag)
+{
+    return SET_CORR = flag;
+}
+
 double get_correlation(int dist)
 {
-    double *Sxre = (double*)malloc(SIZE * sizeof(double));
-    double *Sxim = (double*)malloc(SIZE * sizeof(double));
-    double *Syre = (double*)malloc(SIZE * sizeof(double));
-    double *Syim = (double*)malloc(SIZE * sizeof(double));
+    double *Sre = (double*)malloc(SIZE * sizeof(double));
+    double *Sim = (double*)malloc(SIZE * sizeof(double));
     int i,j;
+    double tmp, correlation = 0.0f;
+    /* Sx */
     for(i = 0; i < SIZE; i++)
-        Sxre[i] = Sxim[i] = Syre[i] = Syim[i] = 0.0f;
+        Sre[i] = Sim[i] = 0.0f;
 
     for(i = 0; i < SIZE; i++) for(j = 0; j < SIZE; j++){
-        Sxre[j] += RE(potts[i][j].s);
-        Sxim[j] += IM(potts[i][j].s);
-        Syre[i] += RE(potts[i][j].s);
-        Syim[i] += IM(potts[i][j].s);
+        Sre[j] += RE(potts[i][j].s);
+        Sim[j] += IM(potts[i][j].s);
     }
     for(i = 0; i < SIZE; i++){
-        Sxre[i] /= SIZE;
-        Sxim[i] /= SIZE;
-        Syre[i] /= SIZE;
-        Syim[i] /= SIZE;
+        Sre[i] /= SIZE;
+        Sim[i] /= SIZE;
     }
-
-    double correlation = 0.0f;
     for(i = 0; i < SIZE; i++){
-        correlation += Sxre[i] * Sxre[(i+dist)%SIZE] + Sxim[i] * Sxim[(i+dist)%SIZE];
-        correlation += Sxre[i] * Sxre[(SIZE+i-dist)%SIZE] + Sxim[i] * Sxim[(SIZE+i-dist)%SIZE];
-
-        correlation += Syre[i] * Syre[(i+dist)%SIZE] + Syim[i] * Syim[(i+dist)%SIZE];
-        correlation += Syre[i] * Syre[(SIZE+i-dist)%SIZE] + Syim[i] * Syim[(SIZE+i-dist)%SIZE];
+        tmp = Sre[i]*Sre[i]+Sim[i]*Sim[i];
+        correlation += (Sre[i] * Sre[(i+dist)%SIZE] + Sim[i] * Sim[(i+dist)%SIZE])/tmp;
+        correlation += (Sre[i] * Sre[(SIZE+i-dist)%SIZE] + Sim[i] * Sim[(SIZE+i-dist)%SIZE])/tmp;
     }
-    free(Sxre);
-    free(Sxim);
-    free(Syre);
-    free(Syim);
+
+    /* Sy */
+    for(i = 0; i < SIZE; i++)
+        Sre[i] = Sim[i] = 0.0f;
+
+    for(i = 0; i < SIZE; i++) for(j = 0; j < SIZE; j++){
+        Sre[i] += RE(potts[i][j].s);
+        Sim[i] += IM(potts[i][j].s);
+    }
+    for(i = 0; i < SIZE; i++){
+        Sre[i] /= SIZE;
+        Sim[i] /= SIZE;
+    }
+    for(i = 0; i < SIZE; i++){
+        tmp = Sre[i]*Sre[i]+Sim[i]*Sim[i];
+        correlation += (Sre[i] * Sre[(i+dist)%SIZE] + Sim[i] * Sim[(i+dist)%SIZE])/tmp;
+        correlation += (Sre[i] * Sre[(SIZE+i-dist)%SIZE] + Sim[i] * Sim[(SIZE+i-dist)%SIZE])/tmp;
+    }
+
+    free(Sre);
+    free(Sim);
     return correlation / (4 * SIZE);
 }
 
@@ -243,7 +256,8 @@ void dump_data(int lattice_size, double beta_value, void (*algorithm)(), int run
         char filename_bin[50];
         sprintf(filename_bin, "data/%d_%f_%s_%d.bin", lattice_size, beta_value, get_algorithm_string(algorithm), run_time);
         FILE *f_bin = fopen(filename_bin, "wb");
-        int cols = 1 + STATES + 1 + lattice_size/2;
+        int cols = 1 + STATES + 1;
+        if(SET_CORR) cols += lattice_size/2;
 
         fwrite(&cols, sizeof(int), 1, f_bin);
         fwrite(&STATES, sizeof(int), 1, f_bin);
@@ -270,10 +284,11 @@ void dump_data(int lattice_size, double beta_value, void (*algorithm)(), int run
             tmp = get_magnetization_mod(frac) / (lattice_size * lattice_size);
             fwrite(&tmp, sizeof(double), 1, f_bin);
 
-            for(k = 0; k < lattice_size / 2; k++){
-                tmp = get_correlation(k);
-                fwrite(&tmp, sizeof(double), 1, f_bin);
-            }
+            if(SET_CORR)
+                for(k = 0; k < lattice_size / 2; k++){
+                    tmp = get_correlation(k);
+                    fwrite(&tmp, sizeof(double), 1, f_bin);
+                }
 
             algorithm();
         }

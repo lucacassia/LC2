@@ -1,11 +1,8 @@
 #include <GL/freeglut.h>
 #include <stdio.h>
 
-#include "vec3.h"
-
 #define BUFSIZE 512
-
-#define SPHERE	    1
+#define SPHERE  1
 
 void showInfo();
 void drawStat();
@@ -23,7 +20,8 @@ int MODE = 0;
 void drawString(int x, int y, char *format,...)
 {
     va_list args;
-    char buffer[512], *str;
+    char buffer[512];
+    char *str;
 
     va_start(args, format);
     vsprintf(buffer, format, args);
@@ -44,17 +42,17 @@ void drawString(int x, int y, char *format,...)
     glPopAttrib();
 }
 
-void drawSphere(vec3 p,double r,vec3 c)
+void drawSphere(double *pos, double radius, double *col)
 {
   glPushMatrix();
   glLoadName(SPHERE);
   glPushMatrix();
-  GLfloat COLOR[4] = {c.x, c.y, c.z, 0.5};
+  GLfloat COLOR[4] = {col[0], col[1], col[2], 0.5};
   glPushAttrib(GL_LIGHTING_BIT | GL_CURRENT_BIT);
   glMaterialfv(GL_FRONT, GL_DIFFUSE, COLOR);
-  glColor3f(c.x, c.y, c.z);
-  glTranslatef(p.x, p.y, p.z);
-  glScalef(r, r, r);
+  glColor3f(col[0], col[1], col[2]);
+  glTranslatef(pos[0], pos[1], pos[2]);
+  glScalef(radius, radius, radius);
   glCallList(SPHERE);
   glPopAttrib();
   glPopMatrix();
@@ -90,17 +88,13 @@ void displayF()
 
 void glInit()
 {
-  GLfloat light_ambient[] =
-  {0.1, 0.1, 0.1, 1.0};
-  GLfloat light_diffuse[] =
-  {0.1, 0.1, 0.1, 1.0};
-  GLfloat light_specular[] =
-  {0.1, 0.1, 0.1, 1.0};
-  GLfloat light_position[] =
-  {0.0, 0.0, 1.0, 0.0};
+  GLfloat light_ambient[]  =  {0.1, 0.1, 0.1, 1.0};
+  GLfloat light_diffuse[]  =  {0.1, 0.1, 0.1, 1.0};
+  GLfloat light_specular[] =  {0.1, 0.1, 0.1, 1.0};
+  GLfloat light_position[] =  {0.0, 0.0, 1.0, 0.0};
 
-  glLightfv(GL_LIGHT0, GL_AMBIENT, light_ambient);
-  glLightfv(GL_LIGHT0, GL_DIFFUSE, light_diffuse);
+  glLightfv(GL_LIGHT0, GL_AMBIENT,  light_ambient);
+  glLightfv(GL_LIGHT0, GL_DIFFUSE,  light_diffuse);
   glLightfv(GL_LIGHT0, GL_SPECULAR, light_specular);
   glLightfv(GL_LIGHT0, GL_POSITION, light_position);
 
@@ -120,8 +114,7 @@ void glInit()
 
 void idleF(void)
 {
-    if(active)
-        run();
+    if(active) run();
     glutPostRedisplay();
 }
 

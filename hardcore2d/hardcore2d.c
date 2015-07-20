@@ -30,6 +30,9 @@ void keyboard(unsigned char key, int x, int y)
             printf("Runtime: %f\n",runtime);
             savePPM();
             break;
+        case 'r': case 'R':
+            reset();
+            break;
         case ' ':
             ACTIVE = !ACTIVE;
             break;

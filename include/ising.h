@@ -198,10 +198,10 @@ double get_correlation(int dist)
 
     double correlation = 0.0f;
     for(i = 0; i < SIZE; i++){
-        correlation += Sx[i] * Sx[(i+dist)%SIZE];
-        correlation += Sx[i] * Sx[(SIZE+i-dist)%SIZE];
-        correlation += Sy[i] * Sy[(i+dist)%SIZE];
-        correlation += Sy[i] * Sy[(SIZE+i-dist)%SIZE];
+        correlation += Sx[i] * Sx[(i+dist)%SIZE] / (Sx[i] * Sx[i]);
+        correlation += Sx[i] * Sx[(SIZE+i-dist)%SIZE] / (Sx[i] * Sx[i]);
+        correlation += Sy[i] * Sy[(i+dist)%SIZE] / (Sy[i] * Sy[i]);
+        correlation += Sy[i] * Sy[(SIZE+i-dist)%SIZE] / (Sy[i] * Sy[i]);
     }
     free(Sx);
     free(Sy);
