@@ -39,7 +39,9 @@ plot 'data/momentum_100_0.500_1.000.dat'   @hist w filledcurves x1 ls 1 title "T
      'data/momentum_100_0.500_16.000.dat'  @hist w filledcurves x1 ls 3 title "T = 16"
 
 
+
 ##module
+set terminal pdf size 6,4.5 enhanced color dashed lw 1
 set xrange[0:15]
 set xlabel "|v|"
 set output "img/mdistribution.pdf"
