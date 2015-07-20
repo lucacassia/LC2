@@ -177,7 +177,7 @@
 
   <big-figure|<image|../potts/observables/img/energy.eps|0.5par|||><image|../potts/observables/img/magnetization.eps|0.5par|||>|Left:
   energy density <math|e> as a function of <math|\<beta\>>. Right:
-  magnetization module <math|m>. The various colors represent different
+  magnetization modulus <math|m>. The various colors represent different
   lattice sizes: <math|L=4,8,16,32>.>
 
   As the lattice volume <math|V=L<rsup|2>> increases, both the energy and

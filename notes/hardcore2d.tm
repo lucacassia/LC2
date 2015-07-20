@@ -172,7 +172,7 @@
   </equation>
 
   <\big-figure|<image|../hardcore2d/distribution/img/mdistribution.pdf|0.75par|||>>
-    <label|fig:hist1>Histogram of the module of the momenta for <math|N=100>
+    <label|fig:hist1>Histogram of the modulus of the momenta for <math|N=100>
     particles. The measurements are taken after <math|10<rsup|5>> collisions
     from the start of the simulation, and after that every <math|500>
     collisions for a total of <math|10<rsup|4>> datasets each containing the
@@ -258,8 +258,13 @@
   particle between successive impacts:
 
   <\equation>
-    l<rsub|c>=<big|sum><rsub|c=1><rsup|N<rsub|c>><frac|<around*|\||\<Delta\><wide|r|\<vect\>><rsub|i><around*|(|t<rsub|c>,t<rsub|c-1>|)>|\|>|N<rsub|c>>
+    l<rsub|c>=<big|sum><rsub|c=1><rsup|N<rsup|i><rsub|c>><frac|<around*|\||\<Delta\><wide|r|\<vect\>><rsub|i><around*|(|t<rsub|c>,t<rsub|c-1>|)>|\|>|N<rsup|i><rsub|c>>
   </equation>
+
+  To compute <math|l<rsub|c>>, we save the total distance travelled by every
+  particle <math|<big|sum><around*|\||\<Delta\><wide|r|\<vect\>><rsub|i>|\|>\<sim\><big|int><around*|\||d*<wide|r|\<vect\>><rsub|i>|\|>>
+  and the total number <math|N<rsup|i><rsub|c>> of collisions it had during
+  its path.
 
   <big-figure|<image|../hardcore2d/collision_data/img/mfp.eps|0.75par|||>|Plot
   of the mean free path against <math|\<eta\>> for <math|N=100>.>
@@ -268,7 +273,7 @@
 
   <subsection|Collision Times>
 
-  Another yet interesting quantity to look at is the collision time
+  Yet another interesting quantity to look at is the collision time
   <math|t<rsub|c>>, i.e., the time between two consecutive collisions. In
   (Fig.<reference|fig:collision_time>) we present the distribution of
   <math|t<rsub|c>> for increasing values of <math|\<eta\>>:
@@ -312,11 +317,11 @@
 <\references>
   <\collection>
     <associate|auto-1|<tuple|1|1>>
-    <associate|auto-10|<tuple|6|6>>
-    <associate|auto-11|<tuple|7|7>>
-    <associate|auto-12|<tuple|1.4|7>>
-    <associate|auto-13|<tuple|8|6>>
-    <associate|auto-14|<tuple|9|7>>
+    <associate|auto-10|<tuple|6|7>>
+    <associate|auto-11|<tuple|7|8>>
+    <associate|auto-12|<tuple|1.4|8>>
+    <associate|auto-13|<tuple|8|8>>
+    <associate|auto-14|<tuple|9|9>>
     <associate|auto-15|<tuple|8|7>>
     <associate|auto-16|<tuple|9|8>>
     <associate|auto-17|<tuple|1.6|9>>
@@ -357,7 +362,7 @@
     <associate|fig:autocorrelation1|<tuple|2|3>>
     <associate|fig:autocorrelation2|<tuple|4|5>>
     <associate|fig:autocorrelation_time|<tuple|2|3>>
-    <associate|fig:collision_time|<tuple|8|?>>
+    <associate|fig:collision_time|<tuple|8|8>>
     <associate|fig:corr|<tuple|11|10>>
     <associate|fig:energy_bin|<tuple|9|9>>
     <associate|fig:fss|<tuple|13|12>>
@@ -377,7 +382,7 @@
     <associate|fig:thermalization|<tuple|1|2>>
     <associate|fig:thermalizationMH|<tuple|2|3>>
     <associate|fig:thermalizationSW|<tuple|3|4>>
-    <associate|fig:times|<tuple|9|?>>
+    <associate|fig:times|<tuple|9|9>>
     <associate|fig:toruseffect|<tuple|1|3>>
     <associate|footnote-1|<tuple|1|?>>
     <associate|footnr-1|<tuple|1|?>>
@@ -445,10 +450,18 @@
       <with|mode|<quote|math>|\<eta\>> for
       <with|mode|<quote|math>|N=100>.|<pageref|auto-11>>
 
+      <tuple|normal|Distribution of the collision time
+      <with|mode|<quote|math>|t<rsub|c>> for <with|mode|<quote|math>|N=100>
+      and <with|mode|<quote|math>|\<eta\>=0.30,0.45,0.60,0.75>. The
+      histograms are obtained from a sample of
+      <with|mode|<quote|math>|10<rsup|6>> measurements and after a
+      thermalization time of <with|mode|<quote|math>|5\<cdot\>10<rsup|5>>
+      collisions.|<pageref|auto-13>>
+
       <tuple|normal|Plot of the mean collision time
       <with|mode|<quote|math>|<around*|\<langle\>|t<rsub|c>|\<rangle\>>>
       against <with|mode|<quote|math>|\<eta\>> for
-      <with|mode|<quote|math>|N=100>.|<pageref|auto-13>>
+      <with|mode|<quote|math>|N=100>.|<pageref|auto-14>>
     </associate>
     <\associate|toc>
       <vspace*|1fn><with|font-series|<quote|bold>|math-font-series|<quote|bold>|1<space|2spc>Hard-Core
