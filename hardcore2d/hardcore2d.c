@@ -1,77 +1,152 @@
-/*
- * USAGE: ./hardcore2d  <ETA> 
- */
-
+#include<GL/freeglut.h>
 #include "hardcore2d.h"
 
-#define THERMALIZATION_TIME 10000    /* number of collisions to thermalization */
+#define PI 3.1415926535897932384626433832795
+ 
+int WIDTH  = 600;
+int HEIGHT = 600;
 
-int main (int argc, char *argv[])
+int ACTIVE = 0;
+double frame = 0.025;
+
+void savePPM()
 {
-    double ETA = 0.1f;
-    if(argc > 1) ETA = atof(argv[1]);
-
-    /* initialize and abort if disks dont fit the box */
-    if(init(ETA, 1.0f)) return 1;
-
-    printf("Starting simulation:\n");
-    printf(" σ = %e\n", SIGMA);
-    printf(" η = %e\n\n", ETA);
-
-    print_pos();
-    print_mom();
-
-    set_temperature(5.0f);
-    printf(" K = %e\tP = %e\tT = %e\n", get_kinetic_energy(), get_total_momentum(), get_temperature() );
-
-    while( n_collisions < THERMALIZATION_TIME ) collide();
-    printf("Mixed for %d hits  ---->  K = %f\n", n_collisions, get_kinetic_energy() );
-    print_distribution();
-
-    reset_variables();
-
-    char filename[128];
-    FILE *f;
-
-    /* tcpdf */
-    sprintf(filename, "data/pdf_tc/%d/%f.dat", n_particles, ETA);
-    f = fopen(filename,"w");
-    while(runtime < n_history * time_step)
-        fprintf(f, "%e\n", n_particles * collide() / 2.0f);
+    char filename[50];
+    sprintf(filename, "hardcore2d_%d_%f.ppm", n_particles, ETA);
+    FILE *f = fopen(filename,"wb");
+    fprintf(f, "P6\n%d %d\n255\n", WIDTH, HEIGHT);
+    unsigned char *frame = (unsigned char*)malloc(3*WIDTH*HEIGHT*sizeof(unsigned char));
+    glReadPixels(0,0,WIDTH,HEIGHT,GL_RGB,GL_UNSIGNED_BYTE,frame);
+    fwrite(frame, sizeof(unsigned char), 3 * WIDTH * HEIGHT, f);
+    free(frame);
     fclose(f);
+}
 
-    printf("Number of collisions: %d\n", n_collisions);
+void keyboard(unsigned char key, int x, int y)
+{
+    switch(key){
+        case 'p': case 'P':
+            printf("Collisions: %d\t",n_collisions);
+            printf("Runtime: %f\n",runtime);
+            savePPM();
+            break;
+        case ' ':
+            ACTIVE = !ACTIVE;
+            break;
+        case 'f': case 'F':
+            glutFullScreenToggle();
+            break;
+        case 'q': case 'Q': case 27:
+            clear();
+            exit(0);
+            break;
+    }
+}
 
-    if(idx_history_time > n_history)
-        printf("ERROR \n");
+void specialKeyboard(int key, int x, int y)
+{
+    switch(key){
+            break;
+        case GLUT_KEY_F11:
+            glutFullScreenToggle();
+            break;
+        case GLUT_KEY_UP:
+            break;
+        case GLUT_KEY_DOWN:
+            break;
+        case GLUT_KEY_LEFT:
+            break;
+        case GLUT_KEY_RIGHT:
+            break;
+    }
+}
 
-    /* <dr²> */
-    sprintf(filename, "data/dr2/dr2_%d_%f.dat", (int)time(NULL), ETA); 
-    print_dr2(filename);
+void idle(void)
+{
+    if(ACTIVE) run();
+    glutPostRedisplay();
+}
 
-    /* collision times */
-    sprintf(filename, "data/tc/%d/tc%f.dat", n_particles, ETA);
-    f = fopen(filename,"a");
-    fprintf(f, "%e\t%e\n", ETA, runtime/(2*n_collisions)*(n_particles));
-    fclose(f);
+void initGL()
+{
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    gluOrtho2D(0.0-frame, 1.0+frame, 0.0-frame, 1.0+frame);
+    glClearColor(1.0,1.0,1.0,0.0);
+}
+ 
+void reshape(int w, int h)
+{
+    WIDTH = w;
+    HEIGHT = h;
+    glViewport(0, 0, (GLsizei)WIDTH, (GLsizei)HEIGHT);
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    if(WIDTH > HEIGHT)
+        gluOrtho2D((0.0-frame)-(WIDTH-HEIGHT)*(1+2*frame)/(2*HEIGHT), (1.0+frame)+(WIDTH-HEIGHT)*(1+2*frame)/(2*HEIGHT), 0.0-frame, 1.0+frame);
+    else
+        gluOrtho2D(0.0-frame, 1.0+frame, (0.0-frame)-(HEIGHT-WIDTH)*(1+2*frame)/(2*WIDTH), (1.0+frame)+(HEIGHT-WIDTH)*(1+2*frame)/(2*WIDTH));
+}
 
-    /* pressure */
-    sprintf(filename, "data/pressure/%d/pressure%f.dat", n_particles, ETA);
-    f = fopen(filename,"a");
-    fprintf(f,"%e\n", get_pressure() * (ETA/0.9069) );
-    fclose(f);
+void drawCircle(double *pos, double radius, char *color)
+{
+    double i;
+    glColor3ub(color[0],color[1],color[2]);
+    glBegin(GL_POLYGON);for(i=0;i<2*PI;i+=PI/24)glVertex2f(pos[0]+cos(i)*radius,pos[1]+sin(i)*radius);glEnd();
+    glBegin(GL_POLYGON);for(i=0;i<2*PI;i+=PI/24)glVertex2f(pos[0]-1.0+cos(i)*radius,pos[1]+sin(i)*radius);glEnd();
+    glBegin(GL_POLYGON);for(i=0;i<2*PI;i+=PI/24)glVertex2f(pos[0]+1.0+cos(i)*radius,pos[1]+sin(i)*radius);glEnd();
+    glBegin(GL_POLYGON);for(i=0;i<2*PI;i+=PI/24)glVertex2f(pos[0]+cos(i)*radius,pos[1]-1.0+sin(i)*radius);glEnd();
+    glBegin(GL_POLYGON);for(i=0;i<2*PI;i+=PI/24)glVertex2f(pos[0]+cos(i)*radius,pos[1]+1.0+sin(i)*radius);glEnd();
 
-    /* mean free path */
-    sprintf(filename, "data/mfp/%d/mfp%f.dat", n_particles, ETA);
-    f = fopen(filename,"a");
+}
+
+void display()
+{
+    glClear(GL_COLOR_BUFFER_BIT);
+    glEnable(GL_MULTISAMPLE_ARB);
+
+    char normal[3] = {33,102,172};
+    char bright[3] = {255,0,0};
     int i;
-    double mean_free_path = 0.0f;
-    for(i = 0; i < n_particles; i++)
-        mean_free_path += particle[i].distance / particle[i].n_collisions; 
-    mean_free_path /= n_particles;
-    fprintf(f, "%e\t%e\t\n", ETA, mean_free_path);
-    fclose(f);
+    for(i = 0; i < n_particles; i++){
+        if(i == collider[0]||i == collider[1])
+            drawCircle(particle[i].pos,SIGMA/2,bright);
+        else drawCircle(particle[i].pos,SIGMA/2,normal);
+    }
 
-    clear();
+    /* draw frame */
+    glColor3ub(0,0,0);
+    glLineWidth(3);
+    glBegin(GL_LINE_LOOP);
+        glVertex2f(0.0,0.0);
+        glVertex2f(1.0,0.0);
+        glVertex2f(1.0,1.0);
+        glVertex2f(0.0,1.0);
+    glEnd();
+
+    glutSwapBuffers();
+}
+
+int main(int argc, char **argv)
+{
+    n_particles = 100;
+    if(init( 0.3f, 1.0f )) return 1;
+
+    glutInit(&argc, argv);
+    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH | GLUT_MULTISAMPLE);
+    glutInitWindowSize(WIDTH, HEIGHT);
+    glutInitWindowPosition(50, 50);
+    glutCreateWindow("OpenGL - HardCore2D");
+    initGL();
+    glutDisplayFunc(display);
+    glutIdleFunc(idle);
+    glutKeyboardFunc(keyboard);
+    glutSpecialFunc(specialKeyboard);
+    glutReshapeFunc(reshape);
+
+    printf("%s\n%s\n",glGetString(GL_RENDERER),glGetString(GL_VERSION));
+
+    glutMainLoop();
     return 0;
 }
+

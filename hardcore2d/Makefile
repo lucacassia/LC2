@@ -19,7 +19,7 @@ all: rmxeq mkdep mkxeq rmpmk
 
 # main programs and required modules 
 
-MAIN = hardcore2d test opengl
+MAIN = hardcore2d
 
 RANDOM = mersenne
 
