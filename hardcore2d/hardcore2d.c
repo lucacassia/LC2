@@ -7,6 +7,8 @@ int WIDTH  = 600;
 int HEIGHT = 600;
 
 int ACTIVE = 0;
+int SINGLE_PARTICLE = 0;
+int WHICH_PARTICLE = 0;
 double frame = 0.025;
 
 void savePPM()
@@ -15,10 +17,10 @@ void savePPM()
     sprintf(filename, "hardcore2d_%d_%f.ppm", n_particles, ETA);
     FILE *f = fopen(filename,"wb");
     fprintf(f, "P6\n%d %d\n255\n", WIDTH, HEIGHT);
-    unsigned char *frame = (unsigned char*)malloc(3*WIDTH*HEIGHT*sizeof(unsigned char));
-    glReadPixels(0,0,WIDTH,HEIGHT,GL_RGB,GL_UNSIGNED_BYTE,frame);
-    fwrite(frame, sizeof(unsigned char), 3 * WIDTH * HEIGHT, f);
-    free(frame);
+    unsigned char *snapshot = (unsigned char*)malloc(3*WIDTH*HEIGHT*sizeof(unsigned char));
+    glReadPixels(0,0,WIDTH,HEIGHT,GL_RGB,GL_UNSIGNED_BYTE,snapshot);
+    fwrite(snapshot, sizeof(unsigned char), 3 * WIDTH * HEIGHT, f);
+    free(snapshot);
     fclose(f);
 }
 
@@ -49,6 +51,11 @@ void keyboard(unsigned char key, int x, int y)
 void specialKeyboard(int key, int x, int y)
 {
     switch(key){
+        case GLUT_KEY_F1:
+            SINGLE_PARTICLE = !SINGLE_PARTICLE;
+            break;
+        case GLUT_KEY_F2:
+            WHICH_PARTICLE = (WHICH_PARTICLE+1)%n_particles;
             break;
         case GLUT_KEY_F11:
             glutFullScreenToggle();
@@ -96,10 +103,10 @@ void drawCircle(double *pos, double radius, char *color)
     double i;
     glColor3ub(color[0],color[1],color[2]);
     glBegin(GL_POLYGON);for(i=0;i<2*PI;i+=PI/24)glVertex2f(pos[0]+cos(i)*radius,pos[1]+sin(i)*radius);glEnd();
-    glBegin(GL_POLYGON);for(i=0;i<2*PI;i+=PI/24)glVertex2f(pos[0]-1.0+cos(i)*radius,pos[1]+sin(i)*radius);glEnd();
-    glBegin(GL_POLYGON);for(i=0;i<2*PI;i+=PI/24)glVertex2f(pos[0]+1.0+cos(i)*radius,pos[1]+sin(i)*radius);glEnd();
-    glBegin(GL_POLYGON);for(i=0;i<2*PI;i+=PI/24)glVertex2f(pos[0]+cos(i)*radius,pos[1]-1.0+sin(i)*radius);glEnd();
-    glBegin(GL_POLYGON);for(i=0;i<2*PI;i+=PI/24)glVertex2f(pos[0]+cos(i)*radius,pos[1]+1.0+sin(i)*radius);glEnd();
+    if(pos[0]+radius>1){glBegin(GL_POLYGON);for(i=0;i<2*PI;i+=PI/24)glVertex2f(pos[0]-1.0+cos(i)*radius,pos[1]+sin(i)*radius);glEnd();}
+    if(pos[0]-radius<0){glBegin(GL_POLYGON);for(i=0;i<2*PI;i+=PI/24)glVertex2f(pos[0]+1.0+cos(i)*radius,pos[1]+sin(i)*radius);glEnd();}
+    if(pos[1]+radius>1){glBegin(GL_POLYGON);for(i=0;i<2*PI;i+=PI/24)glVertex2f(pos[0]+cos(i)*radius,pos[1]-1.0+sin(i)*radius);glEnd();}
+    if(pos[1]-radius<0){glBegin(GL_POLYGON);for(i=0;i<2*PI;i+=PI/24)glVertex2f(pos[0]+cos(i)*radius,pos[1]+1.0+sin(i)*radius);glEnd();}
 
 }
 
@@ -111,11 +118,17 @@ void display()
     char normal[3] = {33,102,172};
     char bright[3] = {255,0,0};
     int i;
-    for(i = 0; i < n_particles; i++){
-        if(i == collider[0]||i == collider[1])
-            drawCircle(particle[i].pos,SIGMA/2,bright);
-        else drawCircle(particle[i].pos,SIGMA/2,normal);
+    if(SINGLE_PARTICLE){
+        if(WHICH_PARTICLE == collider[0]||WHICH_PARTICLE == collider[1])
+            drawCircle(particle[WHICH_PARTICLE].pos,SIGMA/2,bright);
+        else drawCircle(particle[WHICH_PARTICLE].pos,SIGMA/2,normal);
     }
+    else
+        for(i = 0; i < n_particles; i++){
+            if(i == collider[0]||i == collider[1])
+                drawCircle(particle[i].pos,SIGMA/2,bright);
+            else drawCircle(particle[i].pos,SIGMA/2,normal);
+        }
 
     /* draw frame */
     glColor3ub(0,0,0);
