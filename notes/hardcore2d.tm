@@ -100,10 +100,8 @@
   </equation>
 
   <\equation>
-    <label|eq:temp>\<Rightarrow\><space|1em>T=<frac|1|d*N>*<big|sum><rsub|i=1><rsup|N><around*|\||<wide|v|\<vect\>><rsub|i>|\|><rsup|2>
+    <label|eq:temp>\<Rightarrow\><space|1em>k<rsub|b>T=<frac|m|d*N>*<big|sum><rsub|i=1><rsup|N><around*|\||<wide|v|\<vect\>><rsub|i>|\|><rsup|2>
   </equation>
-
-  where we set <math|k<rsub|b>=1=m>.
 
   \;
 
@@ -210,6 +208,19 @@
     \;
   </big-figure>
 
+  <with|font-shape|italic|Remark:> in this section we decide not to use
+  adimensional units for time <math|t> and temperature <math|k<rsub|b>T>
+  otherwise we would end up with only one distribution with
+  <math|k<rsub|b>T=1>. What we do is to set only <math|k<rsub|b>=1>, this way
+  we still have the freedom to set the temperature <math|T> by rescaling all
+  the momenta (and hence rescale time <math|t> of the right amount in order
+  to balance the change in <math|T>). For all the following sections we use
+  the rescaling <math|L=1,m=1> and <math|k<rsub|b>T=1> such that:
+
+  <\equation>
+    K=<frac|d|2>*N
+  </equation>
+
   <subsection|Phase Transition>
 
   In this section we study the <math|\<eta\>> dependence of some interesting
@@ -233,11 +244,11 @@
   runs (at the same <math|\<eta\>>).
 
   <big-figure|<image|../hardcore2d/collision_data/img/pressure.eps|0.75par|||>|Plot
-  of <math|<frac|P*V|N*T>-1> as a function of <math|\<eta\>> for a system of
-  100 particles. Every measurement is taken form the average of <math|50>
-  independent runs each collected after an initial thermalization time of
-  <math|5\<cdot\>10<rsup|5>> collisions. \ The errorbars represent the
-  standard errors of the averages.>
+  of <math|<frac|P*V|N*k<rsub|b>T>-1> as a function of <math|\<eta\>> for a
+  system of 100 particles. Every measurement is taken form the average of
+  <math|50> independent runs each collected after an initial thermalization
+  time of <math|5\<cdot\>10<rsup|5>> collisions. \ The errorbars represent
+  the standard errors of the averages.>
 
   Near <math|\<eta\>=0.7> we observe a first order phase transition
   characterized by a discontinuity in the pressure with respect to the
@@ -525,10 +536,10 @@
     <associate|eq:MC|<tuple|2|?>>
     <associate|eq:betac|<tuple|7|?>>
     <associate|eq:cosh|<tuple|22|10>>
-    <associate|eq:diffusion|<tuple|11|10>>
-    <associate|eq:msd|<tuple|10|9>>
-    <associate|eq:msd0|<tuple|15|10>>
-    <associate|eq:plateau|<tuple|16|10>>
+    <associate|eq:diffusion|<tuple|12|10>>
+    <associate|eq:msd|<tuple|11|9>>
+    <associate|eq:msd0|<tuple|16|10>>
+    <associate|eq:plateau|<tuple|17|10>>
     <associate|eq:scalingtau|<tuple|6|4>>
     <associate|eq:temp|<tuple|5|2>>
     <associate|eq:tint|<tuple|7|3>>
@@ -614,8 +625,8 @@
         \;
       </tuple|<pageref|auto-8>>
 
-      <tuple|normal|Plot of <with|mode|<quote|math>|<frac|P*V|N*T>-1> as a
-      function of <with|mode|<quote|math>|\<eta\>> for a system of 100
+      <tuple|normal|Plot of <with|mode|<quote|math>|<frac|P*V|N*k<rsub|b>T>-1>
+      as a function of <with|mode|<quote|math>|\<eta\>> for a system of 100
       particles. Every measurement is taken form the average of
       <with|mode|<quote|math>|50> independent runs each collected after an
       initial thermalization time of <with|mode|<quote|math>|5\<cdot\>10<rsup|5>>
