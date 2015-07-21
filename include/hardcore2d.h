@@ -85,8 +85,12 @@ double run()
         while( idx * time_step < runtime + min_time){
             for(i = 0; i < n_particles; i++)
                 for(j = 0; j < DIMENSION; j++){
-                    buffer[idx][i][j] = particle[i].pos[j]+particle[i].mom[j] * ( idx * time_step - runtime );
-                    buffer[idx][i][j] -= floor(buffer[idx][i][j]);
+                    if(UNFOLD_FLAG)
+                        buffer[idx][i][j] = particle[i].unf[j]+particle[i].mom[j] * ( idx * time_step - runtime );
+                    else{
+                        buffer[idx][i][j] = particle[i].pos[j]+particle[i].mom[j] * ( idx * time_step - runtime );
+                        buffer[idx][i][j] -= floor(buffer[idx][i][j]);
+                    }
                 }
             idx++;
             FULL_BUFFER_FLAG = !(idx < buffer_size);
@@ -105,6 +109,7 @@ double run()
     for(j = 0; j < DIMENSION; j++){
         for(i = 0; i < n_particles; i++){
             particle[i].pos[j] += particle[i].mom[j] * min_time;
+            particle[i].unf[j] += particle[i].mom[j] * min_time;
             particle[i].pos[j] -= floor(particle[i].pos[j]);
         }
         dr[j] = particle[collider[1]].pos[j] - particle[collider[0]].pos[j];

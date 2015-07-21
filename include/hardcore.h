@@ -11,6 +11,7 @@
 
 typedef struct body{
     double pos[DIMENSION];      /* position */
+    double unf[DIMENSION];      /* unfolded position */
     double mom[DIMENSION];      /* momentum */
     double distance;            /* distance traveled */
     double last_collision_time; /* time of the last collision of the particle */
@@ -22,6 +23,7 @@ double **collision_table = NULL;
 double ***buffer = NULL;
 int idx;
 int FULL_BUFFER_FLAG;
+int UNFOLD_FLAG = 0;
 
 double SIGMA;                   /* diameter of the disks */
 double ETA;                     /* packing density */
@@ -194,6 +196,11 @@ int init(double eta, double temperature)
 
     /* initialize position of particles */
     set_position();
+
+    /* unfolding */
+    for(i = 0; i < n_particles; i++)
+        for(j = 0; j < DIMENSION; j++)
+            particle[i].unf[j] = particle[i].pos[j];
 
     /* compute center of mass momentum */
     double com_momentum[DIMENSION] = {0.0f};

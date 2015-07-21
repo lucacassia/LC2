@@ -51,13 +51,47 @@ void drawStuff()
     int k;
     double red[3] = {1.0,0.2,0.2};
     double grey[3] = {0.2,0.2,0.2};
-    for(k = 0; k < n_particles; k++){
-        if((k==collider[0])||(k==collider[1]))
-            drawSphere(particle[k].pos, SIGMA/2, red);
+    if(SINGLE_PARTICLE){
+        if((WHICH_PARTICLE==collider[0])||(WHICH_PARTICLE==collider[1]))
+            drawSphere(particle[WHICH_PARTICLE].pos, SIGMA/2, red);
         else
-            drawSphere(particle[k].pos, SIGMA/2, grey);
-    }
+            drawSphere(particle[WHICH_PARTICLE].pos, SIGMA/2, grey);
+    }else
+        for(k = 0; k < n_particles; k++){
+            if((k==collider[0])||(k==collider[1]))
+                drawSphere(particle[k].pos, SIGMA/2, red);
+            else
+                drawSphere(particle[k].pos, SIGMA/2, grey);
+        }
     showInfo();
+}
+
+
+void specialKeyboardF(int key, int x, int y)
+{
+    switch(key){
+        case GLUT_KEY_F1:
+            SINGLE_PARTICLE = !SINGLE_PARTICLE;
+            break;
+        case GLUT_KEY_F2:
+            WHICH_PARTICLE = (WHICH_PARTICLE+1)%n_particles;
+            break;
+        case GLUT_KEY_F11:
+            glutFullScreenToggle();
+            break;
+        case GLUT_KEY_UP:
+            v_angle++;
+            break;
+        case GLUT_KEY_DOWN:
+            v_angle--;
+            break;
+        case GLUT_KEY_LEFT:
+            h_angle++;
+            break;
+        case GLUT_KEY_RIGHT:
+            h_angle--;
+            break;
+    }
 }
 
 void keyboardF(unsigned char key, int x, int y)
@@ -107,6 +141,12 @@ void keyboardF(unsigned char key, int x, int y)
             exit(0);
             break;
     }
+}
+
+void idleF(void)
+{
+    if(active) run();
+    glutPostRedisplay();
 }
 
 int main(int argc, char *argv[])

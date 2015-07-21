@@ -36,10 +36,10 @@ double get_collision_time(int i, int j)
 
 double get_sigma(double eta)
 {
-    double sigma = cbrt(ETA*1.909859317/n_particles);
+    double sigma = 1.240700981798800033336013624095556334701572400372003240197913 * cbrt(ETA/n_particles);
     /* check if disks fit the box */
     int k = 0; while( 2* k * k * k < n_particles ) k++;
-    if( sigma > 1.0f / k ) return -1;
+    if( sigma > 0.866025403784438646763723170752936183471402626905190314027903 / k ) return -1;
     else return sigma;
 }
 

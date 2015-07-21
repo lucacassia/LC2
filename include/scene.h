@@ -9,6 +9,10 @@ void drawStat();
 void drawStuff();
 double run();
 
+int SINGLE_PARTICLE = 0;
+int WHICH_PARTICLE = 0;
+
+
 GLuint selectBuf[BUFSIZE];
 int h_angle = 0;
 int v_angle = 0;
@@ -110,33 +114,5 @@ void glInit()
   glNewList(SPHERE, GL_COMPILE);
   glutSolidSphere(1, 50, 50);
   glEndList();
-}
-
-void idleF(void)
-{
-    if(active) run();
-    glutPostRedisplay();
-}
-
-void specialKeyboardF(int key, int x, int y)
-{
-    switch(key)
-    {
-        case GLUT_KEY_F11:
-            glutFullScreenToggle();
-            break;
-        case GLUT_KEY_UP:
-            v_angle++;
-            break;
-        case GLUT_KEY_DOWN:
-            v_angle--;
-            break;
-        case GLUT_KEY_LEFT:
-            h_angle++;
-            break;
-        case GLUT_KEY_RIGHT:
-            h_angle--;
-            break;
-    }
 }
 
