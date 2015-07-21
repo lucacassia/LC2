@@ -7,7 +7,7 @@
 void showInfo();
 void drawStat();
 void drawStuff();
-void run();
+double run();
 
 GLuint selectBuf[BUFSIZE];
 int h_angle = 0;
@@ -70,10 +70,10 @@ void displayF()
     glViewport (0, 0, (GLsizei) width, (GLsizei) height);
     glMatrixMode (GL_PROJECTION);
     glLoadIdentity ();
-    glFrustum (-width * 0.5 / height, width * 0.5 / height, -0.5, 0.5, 0.5, 2.0);
+    glFrustum (-width * 0.5 / height, width * 0.5 / height, -0.5, 0.5, 0.5, 50);
     glMatrixMode (GL_MODELVIEW);
     glLoadIdentity();
-    gluLookAt (0.0, 0.0, 1.1, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
+    gluLookAt (0.0, 0.0, 1, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
     glRotatef(v_angle, 1.0f, 0.0f, 0.0f);
     glRotatef(h_angle, 0.0f, 1.0f, 0.0f);
     glutWireCube (1.0);
