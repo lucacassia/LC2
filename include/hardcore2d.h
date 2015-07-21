@@ -14,7 +14,7 @@ typedef struct body{
     double mom[DIMENSION];      /* momentum */
     double distance;            /* distance traveled */
     double last_collision_time; /* time of the last collision of the particle */
-    int n_collisions;  /* collisions made */
+    int n_collisions;           /* collisions made */
 }body;
 
 body *particle = NULL;
@@ -72,9 +72,8 @@ void set_temperature(double temp)
     double energy = get_kinetic_energy();
     for(i = 0; i < n_particles; i++)
         for(j = 0; j < DIMENSION; j++)
-            particle[i].mom[j] *= sqrt(n_particles*temp/energy);
+            particle[i].mom[j] *= sqrt(DIMENSION*n_particles*temp/(2*energy));
 }
-
 
 double get_min_time()
 {
@@ -94,17 +93,16 @@ double get_min_time()
 
 double get_collision_time(int i, int j)
 {
-    double dr[DIMENSION], dv[DIMENSION];
-    double t, dx, dy, rr, rv, vv, delta, collision_time = DBL_MAX;
+    int k;
+    double dr[DIMENSION], dv[DIMENSION], dx[DIMENSION];
+    double t, rr, rv, vv, delta, collision_time = DBL_MAX;
 
-    for(dx = -1; dx <= 1 ; dx++){
-        for(dy = -1; dy <= 1; dy++){
-            dr[0] = dx + particle[j].pos[0] - particle[i].pos[0];
-            dr[1] = dy + particle[j].pos[1] - particle[i].pos[1];
-
-            dv[0] = particle[j].mom[0] - particle[i].mom[0];
-            dv[1] = particle[j].mom[1] - particle[i].mom[1];
-
+    for(dx[0] = -1; dx[0] <= 1 ; dx[0]++){
+        for(dx[1] = -1; dx[1] <= 1; dx[1]++){
+            for(k = 0; k < DIMENSION; k++){
+                dr[k] = dx[k] + particle[j].pos[k] - particle[i].pos[k];
+                dv[k] = particle[j].mom[k] - particle[i].mom[k];
+            }
             rr = scalar(dr, dr);
             rv = scalar(dr, dv);
             vv = scalar(dv, dv);
@@ -219,17 +217,14 @@ int init(double eta, double temperature)
         /* place disks on a square lattice */
         particle[i].pos[0] = (0.5f/k)+(i%k)*(1.0f/k);
         particle[i].pos[1] = (0.5f/k)+(i/k)*(1.0f/k);
-
-        /* set random initial momentum in [-1:1] */
-        particle[i].mom[0] = 2.0f * mersenne() - 1.0f;
-        particle[i].mom[1] = 2.0f * mersenne() - 1.0f;
     }
 
     /* compute center of mass momentum */
     double com_momentum[DIMENSION] = {0.0f};
     for(i = 0; i < n_particles; i++)
-        for(j = 0; j < DIMENSION; j++)    
-            com_momentum[j] += particle[i].mom[j];
+        for(j = 0; j < DIMENSION; j++)
+            /* set random initial momentum in [-1:1] */
+            com_momentum[j] += particle[i].mom[j] = 2.0f * mersenne() - 1.0f;
 
     /* boost in the center of mass frame */
     for(i = 0; i < n_particles; i++)
@@ -273,43 +268,35 @@ double run()
 
     double dr[DIMENSION], dv[DIMENSION], tmp[DIMENSION];
 
-    for(k = 0; k < n_particles; k++){
-        particle[k].pos[0] += particle[k].mom[0] * min_time;
-        particle[k].pos[1] += particle[k].mom[1] * min_time;
-
-        particle[k].pos[0] -= floor(particle[k].pos[0]);
-        particle[k].pos[1] -= floor(particle[k].pos[1]);
+    for(j = 0; j < DIMENSION; j++){
+        for(i = 0; i < n_particles; i++){
+            particle[i].pos[j] += particle[i].mom[j] * min_time;
+            particle[i].pos[j] -= floor(particle[i].pos[j]);
+        }
+        dr[j] = particle[collider[1]].pos[j] - particle[collider[0]].pos[j];
     }
 
-    dr[0] = particle[collider[1]].pos[0] - particle[collider[0]].pos[0];
-    dr[1] = particle[collider[1]].pos[1] - particle[collider[0]].pos[1];
+    double dx[DIMENSION];
+    for(dx[0] = -1; dx[0] <= 1 ; dx[0]++){
+        for(dx[1] = -1; dx[1] <= 1; dx[1]++){
+            for(j = 0; j < DIMENSION; j++)
+                tmp[j] = dx[j] + particle[collider[1]].pos[j] - particle[collider[0]].pos[j];
 
-    double dx, dy, dz;
-    for(dx = -1; dx <= 1 ; dx++){
-        for(dy = -1; dy <= 1; dy++){
-            for(dz = -1; dz <= 1; dz++){
-                tmp[0] = dx + particle[collider[1]].pos[0] - particle[collider[0]].pos[0];
-                tmp[1] = dy + particle[collider[1]].pos[1] - particle[collider[0]].pos[1];
-
-                if(scalar(tmp,tmp) < scalar(dr,dr)){
-                    for(k = 0; k < DIMENSION; k++)
-                        dr[k] = tmp[k];
-                }
+            if(scalar(tmp,tmp) < scalar(dr,dr)){
+                for(j = 0; j < DIMENSION; j++)
+                    dr[j] = tmp[j];
             }
         }
     }
 
-    dv[0] = particle[collider[0]].mom[0] - particle[collider[1]].mom[0];
-    dv[1] = particle[collider[0]].mom[1] - particle[collider[1]].mom[1];
+    for(j = 0; j < DIMENSION; j++)
+        dv[j] = particle[collider[0]].mom[j] - particle[collider[1]].mom[j];
 
-    tmp[0] = scalar(dv,dr)*dr[0]/scalar(dr,dr);
-    tmp[1] = scalar(dv,dr)*dr[1]/scalar(dr,dr);
-
-    particle[collider[0]].mom[0] -= tmp[0];
-    particle[collider[0]].mom[1] -= tmp[1];
-
-    particle[collider[1]].mom[0] += tmp[0];
-    particle[collider[1]].mom[1] += tmp[1];
+    for(j = 0; j < DIMENSION; j++){
+        tmp[j] = scalar(dv,dr)*dr[j]/scalar(dr,dr);
+        particle[collider[0]].mom[j] -= tmp[j];
+        particle[collider[1]].mom[j] += tmp[j];
+    }
 
     update_collision_table();
 
@@ -344,6 +331,19 @@ void print_pos()
             fprintf(f, "%e\t", particle[i].pos[j]);
         fprintf(f, "\n");
     }
+    fclose(f);
+}
+
+void print_single_pos(int i)
+{
+    char filename[64];
+    sprintf(filename, "data/position_%d_%d_%f.dat", i, n_particles, ETA);
+    FILE *f = fopen(filename,"a");
+    int j;
+    fprintf(f, "%e\t%e",ETA,runtime);
+    for(j = 0; j < DIMENSION; j++)
+        fprintf(f, "\t%e", particle[i].pos[j]);
+    fprintf(f, "\n");
     fclose(f);
 }
 
@@ -403,7 +403,7 @@ void print_dr2(char *filename)
         }
         mean /= count;
         error = sqrt( (error / count - mean * mean)/count );
-        fprintf(f,"%e\t%e\t%e\n", shift * time_step, mean, error );
+        fprintf(f,"%e\t%e\t%e\t%e\n", ETA, shift * time_step, mean, error );
     }
     fclose(f);
 }
