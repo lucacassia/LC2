@@ -1,18 +1,16 @@
-#ifndef VEC3
-#define VEC3
+#ifndef VEC
+#define VEC
 
 #include<math.h>
 
-#define DIMENSION 3
-
-void sum(double *a, double *b, double *c)
+void sum(double *c, double *a, double *b)
 {
 	int i;
 	for(i = 0; i < DIMENSION; i++)
 		c[i] = a[i] + b[i];
 }
 
-void subtract(double *a, double *b, double *c)
+void subtract(double *c, double *a, double *b)
 {
 	int i;
 	for(i = 0; i < DIMENSION; i++)
