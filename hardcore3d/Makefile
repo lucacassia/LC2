@@ -19,7 +19,7 @@ all: rmxeq mkdep mkxeq rmpmk
 
 # main programs and required modules 
 
-MAIN = hardcore2d hardcore3d test
+MAIN = 2DViewer 3DViewer
 
 RANDOM = mersenne
 

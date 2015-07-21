@@ -19,7 +19,7 @@ all: rmxeq mkdep mkxeq rmpmk
 
 # main programs and required modules 
 
-MAIN = hardcore2d
+MAIN = 2DViewer
 
 RANDOM = mersenne
 
