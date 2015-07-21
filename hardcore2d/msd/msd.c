@@ -20,10 +20,20 @@ int main (int argc, char *argv[])
     int t;for(t = 0; t < 50000; t++){ run(); } /* thermalization */
     printf("Thermalized\n");
     reset();
-    while(idx < buffer_size){ run(); }
+ 
+    char filename[64];
+    sprintf(filename, "data/position_%d_%d_%f.dat",n_particles/2, n_particles, ETA);
+    FILE *f = fopen(filename,"w");
+    while(idx < buffer_size){
+        run(); int j;
+        fprintf(f, "%e\t%e",ETA,runtime);
+        for(j = 0; j < DIMENSION; j++)
+            fprintf(f, "\t%e", particle[n_particles/2].pos[j]);
+        fprintf(f, "\n");
+    }
+    fclose(f);
     printf("Data gathered\n");
 
-    char filename[64];
     sprintf(filename,"data/%d_%.3f_msd.dat",n_particles,ETA);
     print_dr2(filename);
 
