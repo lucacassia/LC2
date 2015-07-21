@@ -33,7 +33,11 @@
 
     <with|par-left|1tab|1.4<space|2spc>Collision Times
     <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
-    <no-break><pageref|auto-12>>
+    <no-break><pageref|auto-13>>
+
+    <with|par-left|1tab|1.5<space|2spc>Mean Squared Displacement
+    <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
+    <no-break><pageref|auto-16>>
   </table-of-contents>
 
   <section|Hard-Core Molecular Dynamics in <math|2d>>
@@ -321,7 +325,8 @@
   MSD grows linearly with time:
 
   <\equation>
-    <label|eq:diffusion>MSD\<simeq\>2*d*D*\<Delta\>t
+    <label|eq:diffusion>MSD\<simeq\>2*d*D*\<Delta\>t<space|3em><text|<em|Einstein's
+    relation>>
   </equation>
 
   where <math|d> is the dimension of the space and <math|D> is the
@@ -374,19 +379,27 @@
     <around*|(|<wide|r|\<vect\>>-<wide|r|\<vect\>><rsub|0>|)><rsup|2>
     f<rsub|i><around*|(|<wide|r|\<vect\>><rsub|0>,t<rsub|0>|)>*f<rsub|i><around*|(|<wide|r|\<vect\>>,t|)>>>|<row|<cell|>|<cell|=>|<cell|<big|int><rsub|V>d*<wide|r|\<vect\>>*<big|int><rsub|V>d*<wide|r|\<vect\>><rsub|0>
     <around*|(|<around*|\||<wide|r|\<vect\>>|\|><rsup|2>-2*<wide|r|\<vect\>>\<cdot\><wide|r|\<vect\>><rsub|0>+<around*|\||<wide|r|\<vect\>><rsub|0>|\|><rsup|2>|)>
-    f<rsub|i><around*|(|<wide|r|\<vect\>><rsub|0>,t<rsub|0>|)>*f<rsub|i><around*|(|<wide|r|\<vect\>>,t|)>>>|<row|<cell|>|<cell|=>|<cell|<big|int><rsub|V>d*<wide|r|\<vect\>>
-    <around*|\||<wide|r|\<vect\>>|\|><rsup|2>*f<rsub|i><around*|(|<wide|r|\<vect\>>,t|)>*<big|int><rsub|V>d*<wide|r|\<vect\>><rsub|0>
-    f<rsub|i><around*|(|<wide|r|\<vect\>><rsub|0>,t<rsub|0>|)>-2<big|int><rsub|V>d*<wide|r|\<vect\>>*<big|int><rsub|V>d*<wide|r|\<vect\>><rsub|0>
-    <wide|r|\<vect\>>\<cdot\><wide|r|\<vect\>><rsub|0>*f<rsub|i><around*|(|<wide|r|\<vect\>><rsub|0>,t<rsub|0>|)>*f<rsub|i><around*|(|<wide|r|\<vect\>>,t|)>>>|<row|<cell|>|<cell|=>|<cell|*<frac|1|V><big|int><rsub|V>d*<wide|r|\<vect\>>
-    <around*|\||<wide|r|\<vect\>>|\|><rsup|2>-2*<around*|\<langle\>|<wide|r|\<vect\>><around*|(|t|)>|\<rangle\>>\<cdot\><around*|\<langle\>|<wide|r|\<vect\>><rsub|0><around*|(|t<rsub|0>|)>|\<rangle\>>>>|<row|<cell|>|<cell|=>|<cell|<frac|1|V><big|int><rsub|V>d*<wide|r|\<vect\>>
-    <around*|\||<wide|r|\<vect\>>|\|><rsup|2><eq-number>>>>>
+    f<rsub|i><around*|(|<wide|r|\<vect\>><rsub|0>,t<rsub|0>|)>*f<rsub|i><around*|(|<wide|r|\<vect\>>,t|)>>>|<row|<cell|>|<cell|=>|<cell|*<frac|1|V><big|int><rsub|V>d*<wide|r|\<vect\>>
+    <around*|\||<wide|r|\<vect\>>|\|><rsup|2>-2*<around*|\<langle\>|<wide|r|\<vect\>><around*|(|t|)>|\<rangle\>>\<cdot\><around*|\<langle\>|<wide|r|\<vect\>><rsub|0><around*|(|t<rsub|0>|)>|\<rangle\>>+<frac|1|V><big|int><rsub|V>d*<wide|r|\<vect\>><rsub|0>
+    <around*|\||<wide|r|\<vect\>><rsub|0>|\|><rsup|2>>>|<row|<cell|>|<cell|=>|<cell|<frac|2|V><big|int><rsub|V>d*<wide|r|\<vect\>>
+    <around*|\||<wide|r|\<vect\>>|\|><rsup|2><eq-number><label|eq:msd0>>>>>
   </eqnarray>
 
-  and finally, for a volume <math|V=L<rsup|d>> we find:
+  Where the factor 2 in the last step, counts both the displacement of
+  <math|<wide|r|\<vect\>>> and <math|<wide|r|\<vect\>><rsub|0>>, since they
+  are independent. We can fix the inital position of the particle to be 0 for
+  convenince and then look only at the displacement with respect to that
+  position. This is equivalent to considering only the final position
+  contribution, which is half the MSD of (<reference|eq:msd0>).
+
+  \;
+
+  Finally, for a volume <math|V=L<rsup|d>>, we obtain:
 
   <\eqnarray>
-    <tformat|<table|<row|<cell|<around*|\<langle\>|\<Delta\><wide|r|\<vect\>><around*|(|t,t<rsub|0>|)><rsup|2>|\<rangle\>>>|<cell|=>|<cell|<frac|1|L<rsup|d>><big|int><rsup|L/2><rsub|-L/2>d*x<rsub|d>*\<ldots\><big|int><rsup|L/2><rsub|-L/2>d*x<rsub|2><big|int><rsup|L/2><rsub|-L/2>d*x<rsub|1>
-    <around*|(|x<rsub|1><rsup|2>+x<rsub|2><rsup|2>+\<ldots\>+x<rsub|d><rsup|2>|)>>>|<row|<cell|>|<cell|=>|<cell|<frac|1|L<rsup|d>>*L<rsup|d-1>*<frac|2*d|3><around*|(|<frac|L|2>|)><rsup|3>=<frac|d|12>*L<rsup|2><long-arrow|\<rubber-rightarrow\>|L=1><choice|<tformat|<table|<row|<cell|1/6,>|<cell|d=2>>|<row|<cell|1/4,>|<cell|d=3>>>>><eq-number>>>>>
+    <tformat|<table|<row|<cell|<around*|\<langle\>|\<Delta\><wide|r|\<vect\>><around*|(|t,t<rsub|0>|)><rsup|2>|\<rangle\>>>|<cell|=>|<cell|<frac|1|V><big|int><rsub|V>d*<wide|r|\<vect\>>
+    <around*|\||<wide|r|\<vect\>>|\|><rsup|2>>>|<row|<cell|>|<cell|=>|<cell|<frac|1|L<rsup|d>><big|int><rsup|L/2><rsub|-L/2>d*x<rsub|d>*\<ldots\><big|int><rsup|L/2><rsub|-L/2>d*x<rsub|2><big|int><rsup|L/2><rsub|-L/2>d*x<rsub|1>
+    <around*|(|x<rsub|1><rsup|2>+x<rsub|2><rsup|2>+\<ldots\>+x<rsub|d><rsup|2>|)>>>|<row|<cell|>|<cell|=>|<cell|<frac|1|L<rsup|d>>*L<rsup|d-1>*<frac|2*d|3><around*|(|<frac|L|2>|)><rsup|3>=<frac|d|12>*L<rsup|2><long-arrow|\<rubber-rightarrow\>|L=1><choice|<tformat|<table|<row|<cell|1/6,>|<cell|d=2>>|<row|<cell|1/4,>|<cell|d=3>>>>><eq-number><label|eq:plateau>>>>>
   </eqnarray>
 
   \;
@@ -402,19 +415,58 @@
 
   with <math|t<rsub|S>> being the time of the simulation.
 
-  <big-figure|<image|../hardcore2d/msd/img/MSD.eps|0.75par|||>|Mean squared
-  displacement from a simulation of <math|N=100> particles. The measurements
-  are taken for a simulation time <math|t<rsub|S>=20> with a time step of
-  <math|0.003> after a thermalization of <math|5\<cdot\>10<rsup|5>>
-  collisions. The color palette represents different values of
-  <math|\<eta\>>. The solid line in black is the exact result for
-  <math|\<Delta\>t\<rightarrow\>\<infty\>>.>
+  \;
 
-  <big-figure|<image|../hardcore2d/msd/img/MSD2.eps|0.75par|||>|Mean squared
-  displacement from a simulation of <math|N=100> particles at
-  <math|\<eta\>=0.75>. The measurements are taken for a simulation time
-  <math|t<rsub|S>=100> with a time step of <math|0.01> after a thermalization
-  of <math|5\<cdot\>10<rsup|5>> collisions.>
+  We see from (Fig.<reference|fig:msd>) that initially the curves grow
+  linearly with the time separation as one would expect for a diffusive
+  process. For larger separations, though, the MSD reaches the plateau of
+  (<reference|eq:plateau>) and fluctuate around it. The measurement taken at
+  very large displacements (<math|\<Delta\>t\<approx\>t<rsub|S>>) are of
+  little significance because of the reduced amount of statistics we can
+  callect:
+
+  <\equation*>
+    N<rsub|samples><around*|(|\<Delta\>t|)>=<around*|(|t<rsub|S>-\<Delta\>t-t<rsub|0>+1|)><long-arrow|\<rubber-rightarrow\>||t\<sim\>t<rsub|S>>1
+  </equation*>
+
+  We can also see the phase transition of the system in the abrupt drop in
+  the self-diffusion coefficient of the initial diffusive parts of the
+  curves<\footnote>
+    As already mentioned in (<reference|eq:diffusion>), the first derivative
+    of the MSD with respect to time is proportional to the self-diffusion
+    coefficient <math|D>.
+  </footnote>.
+
+  <big-figure|<image|../hardcore2d/msd/img/MSD.eps|0.75par|||>|<label|fig:msd>Mean
+  squared displacement from a simulation of <math|N=100> particles. The
+  measurements are taken for a simulation time <math|t<rsub|S>=20> with a
+  time step of <math|0.003> after a thermalization of
+  <math|5\<cdot\>10<rsup|5>> collisions. The color palette represents
+  different values of <math|\<eta\>>. The solid line in black is the exact
+  result for <math|\<Delta\>t\<rightarrow\>\<infty\>>.>
+
+  As <math|\<eta\>> approaches large values, the particles are more and more
+  constrained by the increase in occupied volume and are less free to travel
+  around (Fig.<reference|fig:trajectory>). As a consequence they resent much
+  later of the finite size effect of the system, and continue to diffuse
+  linearly with time for much longer (Fig.<reference|fig:msd1>):
+
+  <big-figure|<image|../hardcore2d/msd/img/MSD3.eps|0.5par|||><image|../hardcore2d/msd/img/MSD2.eps|0.5par|||>|<label|fig:msd1>Mean
+  squared displacement from a simulation of <math|N=100> particles at
+  <math|\<eta\>=0.555> and <math|\<eta\>=0.725>. The measurements are taken
+  for a simulation time <math|t<rsub|S>=100> with a time step of <math|0.01>
+  after a thermalization of <math|5\<cdot\>10<rsup|5>> collisions.>
+
+  This is intuitively understood by looking at the trajectory on the right of
+  (Fig.<reference|fig:trajectory>) and realizing that the particle lives
+  mostly in the bulk of the box almost never travels around a loop of non
+  trivial homology.
+
+  <big-figure|<image|../hardcore2d/msd/img/trajectory2.eps|0.5par|||><image|../hardcore2d/msd/img/trajectory1.eps|0.5par|||>|<label|fig:trajectory>Trajectory
+  of a single particle at <math|\<eta\>=0.555> (left) and
+  <math|\<eta\>=0.725> (right) in a system with <math|N=100>. Both
+  simulations had a runtime of <math|t<rsub|S>=100> after a thermalization
+  time corresponding to <math|5\<cdot\>10<rsup|5>> collisions.>
 </body>
 
 <\initial>
@@ -438,12 +490,12 @@
     <associate|auto-12|<tuple|8|8>>
     <associate|auto-13|<tuple|1.4|8>>
     <associate|auto-14|<tuple|9|9>>
-    <associate|auto-15|<tuple|10|7>>
-    <associate|auto-16|<tuple|1.5|8>>
-    <associate|auto-17|<tuple|11|9>>
-    <associate|auto-18|<tuple|12|9>>
-    <associate|auto-19|<tuple|11|10>>
-    <associate|auto-2|<tuple|1.1|2>>
+    <associate|auto-15|<tuple|10|9>>
+    <associate|auto-16|<tuple|1.5|9>>
+    <associate|auto-17|<tuple|11|11>>
+    <associate|auto-18|<tuple|12|12>>
+    <associate|auto-19|<tuple|13|12>>
+    <associate|auto-2|<tuple|1.1|1>>
     <associate|auto-20|<tuple|12|11>>
     <associate|auto-21|<tuple|1.7|11>>
     <associate|auto-22|<tuple|2|11>>
@@ -464,7 +516,7 @@
     <associate|auto-36|<tuple|24|?>>
     <associate|auto-4|<tuple|2|3>>
     <associate|auto-5|<tuple|3|4>>
-    <associate|auto-6|<tuple|1.2|5>>
+    <associate|auto-6|<tuple|1.2|4>>
     <associate|auto-7|<tuple|4|5>>
     <associate|auto-8|<tuple|5|6>>
     <associate|auto-9|<tuple|1.3|6>>
@@ -473,15 +525,17 @@
     <associate|eq:MC|<tuple|2|?>>
     <associate|eq:betac|<tuple|7|?>>
     <associate|eq:cosh|<tuple|22|10>>
-    <associate|eq:diffusion|<tuple|11|?>>
-    <associate|eq:msd|<tuple|10|?>>
+    <associate|eq:diffusion|<tuple|11|10>>
+    <associate|eq:msd|<tuple|10|9>>
+    <associate|eq:msd0|<tuple|15|10>>
+    <associate|eq:plateau|<tuple|16|10>>
     <associate|eq:scalingtau|<tuple|6|4>>
     <associate|eq:temp|<tuple|5|2>>
     <associate|eq:tint|<tuple|7|3>>
     <associate|fig:autocorrelation1|<tuple|2|3>>
     <associate|fig:autocorrelation2|<tuple|4|5>>
     <associate|fig:autocorrelation_time|<tuple|2|3>>
-    <associate|fig:collision_time|<tuple|9|8>>
+    <associate|fig:collision_time|<tuple|9|9>>
     <associate|fig:corr|<tuple|11|10>>
     <associate|fig:energy_bin|<tuple|9|9>>
     <associate|fig:fss|<tuple|13|12>>
@@ -490,6 +544,8 @@
     <associate|fig:hist2|<tuple|5|6>>
     <associate|fig:lattice|<tuple|1|?>>
     <associate|fig:levels|<tuple|8|7>>
+    <associate|fig:msd|<tuple|11|11>>
+    <associate|fig:msd1|<tuple|12|12>>
     <associate|fig:packing|<tuple|1|2>>
     <associate|fig:pdfMH|<tuple|9|8>>
     <associate|fig:pdfSW|<tuple|13|7>>
@@ -503,8 +559,9 @@
     <associate|fig:thermalizationSW|<tuple|3|4>>
     <associate|fig:times|<tuple|10|9>>
     <associate|fig:toruseffect|<tuple|1|3>>
-    <associate|footnote-1|<tuple|1|?>>
-    <associate|footnr-1|<tuple|1|?>>
+    <associate|fig:trajectory|<tuple|13|12>>
+    <associate|footnote-1|<tuple|1|11>>
+    <associate|footnr-1|<tuple|1|11>>
     <associate|result_box|<tuple|8|?>>
     <associate|sec:betafss|<tuple|1.4|4>>
     <associate|sec:corr|<tuple|1.6|9>>
@@ -539,7 +596,7 @@
       of this larger system is much slower.|<pageref|auto-5>>
 
       <\tuple|normal>
-        Histogram of the module of the momenta for
+        Histogram of the modulus of the momenta for
         <with|mode|<quote|math>|N=100> particles. The measurements are taken
         after <with|mode|<quote|math>|10<rsup|5>> collisions from the start
         of the simulation, and after that every <with|mode|<quote|math>|500>
@@ -569,18 +626,52 @@
       <with|mode|<quote|math>|\<eta\>> for
       <with|mode|<quote|math>|N=100>.|<pageref|auto-11>>
 
+      <tuple|normal|Distribution of the mean free path
+      <with|mode|<quote|math>|l<rsub|c>> for <with|mode|<quote|math>|N=100>
+      and <with|mode|<quote|math>|\<eta\>=0.30,0.45,0.60,0.75>. The
+      histograms are obtained from a sample of
+      <with|mode|<quote|math>|10<rsup|6>> measurements and after a
+      thermalization time of <with|mode|<quote|math>|5\<cdot\>10<rsup|5>>
+      collisions.|<pageref|auto-12>>
+
       <tuple|normal|Distribution of the collision time
       <with|mode|<quote|math>|t<rsub|c>> for <with|mode|<quote|math>|N=100>
       and <with|mode|<quote|math>|\<eta\>=0.30,0.45,0.60,0.75>. The
       histograms are obtained from a sample of
       <with|mode|<quote|math>|10<rsup|6>> measurements and after a
       thermalization time of <with|mode|<quote|math>|5\<cdot\>10<rsup|5>>
-      collisions.|<pageref|auto-13>>
+      collisions.|<pageref|auto-14>>
 
       <tuple|normal|Plot of the mean collision time
       <with|mode|<quote|math>|<around*|\<langle\>|t<rsub|c>|\<rangle\>>>
       against <with|mode|<quote|math>|\<eta\>> for
-      <with|mode|<quote|math>|N=100>.|<pageref|auto-14>>
+      <with|mode|<quote|math>|N=100>.|<pageref|auto-15>>
+
+      <tuple|normal|Mean squared displacement from a simulation of
+      <with|mode|<quote|math>|N=100> particles. The measurements are taken
+      for a simulation time <with|mode|<quote|math>|t<rsub|S>=20> with a time
+      step of <with|mode|<quote|math>|0.003> after a thermalization of
+      <with|mode|<quote|math>|5\<cdot\>10<rsup|5>> collisions. The color
+      palette represents different values of
+      <with|mode|<quote|math>|\<eta\>>. The solid line in black is the exact
+      result for <with|mode|<quote|math>|\<Delta\>t\<rightarrow\>\<infty\>>.|<pageref|auto-17>>
+
+      <tuple|normal|Mean squared displacement from a simulation of
+      <with|mode|<quote|math>|N=100> particles at
+      <with|mode|<quote|math>|\<eta\>=0.555> and
+      <with|mode|<quote|math>|\<eta\>=0.725>. The measurements are taken for
+      a simulation time <with|mode|<quote|math>|t<rsub|S>=100> with a time
+      step of <with|mode|<quote|math>|0.01> after a thermalization of
+      <with|mode|<quote|math>|5\<cdot\>10<rsup|5>>
+      collisions.|<pageref|auto-18>>
+
+      <tuple|normal|Trajectory of a single particle at
+      <with|mode|<quote|math>|\<eta\>=0.555> (left) and
+      <with|mode|<quote|math>|\<eta\>=0.725> (right) in a system with
+      <with|mode|<quote|math>|N=100>. Both simulations had a runtime of
+      <with|mode|<quote|math>|t<rsub|S>=100> after a thermalization time
+      corresponding to <with|mode|<quote|math>|5\<cdot\>10<rsup|5>>
+      collisions.|<pageref|auto-19>>
     </associate>
     <\associate|toc>
       <vspace*|1fn><with|font-series|<quote|bold>|math-font-series|<quote|bold>|1<space|2spc>Hard-Core
@@ -602,7 +693,11 @@
 
       <with|par-left|<quote|1tab>|1.4<space|2spc>Collision Times
       <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
-      <no-break><pageref|auto-12>>
+      <no-break><pageref|auto-13>>
+
+      <with|par-left|<quote|1tab>|1.5<space|2spc>Mean Squared Displacement
+      <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
+      <no-break><pageref|auto-16>>
     </associate>
   </collection>
 </auxiliary>
