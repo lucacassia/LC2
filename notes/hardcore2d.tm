@@ -459,8 +459,8 @@
 
   This is intuitively understood by looking at the trajectory on the right of
   (Fig.<reference|fig:trajectory>) and realizing that the particle lives
-  mostly in the bulk of the box almost never travels around a loop of non
-  trivial homology.
+  mostly in the bulk of the box and that it almost never travels around a
+  loop of non trivial homology.
 
   <big-figure|<image|../hardcore2d/msd/img/trajectory2.eps|0.5par|||><image|../hardcore2d/msd/img/trajectory1.eps|0.5par|||>|<label|fig:trajectory>Trajectory
   of a single particle at <math|\<eta\>=0.555> (left) and
