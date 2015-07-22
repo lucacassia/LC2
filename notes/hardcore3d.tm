@@ -86,7 +86,7 @@
   also repeated for <math|N=400>.
 
   <\big-figure>
-    <image|../hardcore3d/thermalization/img/thermalization1.eps|0.5par|||><image|../hardcore3d/thermalization/img/thermalization5.eps|0.5par|||>
+    <image|../hardcore3d/thermalization/img/thermalization2.eps|0.5par|||><image|../hardcore3d/thermalization/img/thermalization6.eps|0.5par|||>
   </big-figure|<label|fig:therm1>Plot of the thermalization process of an
   hard-core interacting gas of <math|N=128> particles. On the left is the
   pressure as a function of the number of collisions, while on the right is
@@ -96,7 +96,7 @@
 
   \;
 
-  We consider the system thermalized after <math|5\<cdot\>10<rsup|5>>
+  We consider the system thermalized after <math|5\<cdot\>10<rsup|4>>
   collisions where we expect a momentum distribution of the Maxwell-Boltzmann
   type. The distribution obtained from the simulation confirms our choice of
   thermalization time:
@@ -106,7 +106,7 @@
   <\big-figure|<image|../hardcore3d/distribution/img/mdistribution.pdf|0.75par|||>>
     <label|fig:hist1>Histogram of the modulus of the momenta for <math|N=128>
     particles at <math|\<eta\>=0.5>. The measurements are taken after
-    <math|5\<cdot\>10<rsup|5>> collisions from the start of the simulation,
+    <math|5\<cdot\>10<rsup|4>> collisions from the start of the simulation,
     and after that every <math|500> collisions for a total of
     <math|10<rsup|4>> datasets each containing the momenta of <math|N>
     particles.
@@ -123,261 +123,83 @@
 
   <subsection|Phase Transition>
 
-  In this section we study the <math|\<eta\>> dependence of some interesting
-  quantities describing the system. First we look at the pressure <math|P> as
-  the packing density is increased. For a system such as those in
-  consideration, we define the pressure <math|P> using the formula:
+  In this section we study the <math|\<eta\>> dependence of the pressure
+  <math|P> for a system of <math|N=250> particles. As for the
+  <math|2>-dimensional case we use the formula:
 
   <\equation>
     <frac|P*V|N*k<rsub|b>T>=1+<frac|1|2K*t><big|sum><rsub|c=1><rsup|N<rsub|c>>m*\<sigma\><around*|\||\<Delta\><wide|v|\<vect\>><rsub|i*j><around*|(|t<rsub|c>|)>|\|>
   </equation>
 
-  with <math|m\<Delta\><wide|v|\<vect\>><rsub|i*j><around*|(|t<rsub|c>|)>>
-  being the exchanged momentum in the collision taking place at time
-  <math|t<rsub|c>>, <math|N<rsub|c>> the total number of collisions and
-  <math|t> the runtime of the simulation.
+  Again the measurements are taken by averaging over independent simulation
+  runs in order to reduce autocorrelation effects. Every point of in
+  (Fig.<reference|fig:pressure>) is the mean value of 10 independent
+  simulation thermalized for a time corresponding to
+  <math|5\<cdot\>10<rsup|4>> collisions.
 
-  \;
-
-  <em|Remark:> as a measure against autocorrelation effects we decide to
-  sample data each from an independent run and then take the average over all
-  runs (at the same <math|\<eta\>>).
-
-  <big-figure|<image|../hardcore2d/collision_data/img/pressure.eps|0.75par|||>|Plot
+  <big-figure|<image|../hardcore3d/collision_data/img/pressure.eps|0.75par|||>|<label|fig:pressure>Plot
   of <math|<frac|P*V|N*T>-1> as a function of <math|\<eta\>> for a system of
-  100 particles. Every measurement is taken form the average of <math|50>
+  250 particles. Every measurement is taken form the average of <math|10>
   independent runs each collected after an initial thermalization time of
-  <math|5\<cdot\>10<rsup|5>> collisions. \ The errorbars represent the
+  <math|5\<cdot\>10<rsup|4>> collisions. \ The errorbars represent the
   standard errors of the averages.>
 
-  Near <math|\<eta\>=0.7> we observe a first order phase transition
-  characterized by a discontinuity in the pressure with respect to the
-  thermodynamic variable <math|\<eta\>>. The system is found in a liquid
-  phase for values of the density <math|\<eta\>\<less\>0.7> and in a solid
-  phase for <math|\<eta\>\<gtr\>0.7>. This kind of phase transition displays
-  a plateau region where the transition takes place. In fact there is no well
-  defined critical point since multiple phases can coexist near the
-  transition.
-
-  \;
-
-  We also note that, since the hard-core potential has no attractive effect
-  on the particles, there cannot be a phase transition with respect to the
-  temperature. The order-disorder transition we observe is purely of
-  geometrical nature.
-
-  \;
-
-  Another thermodynamic quantity that shows discontinuity at the phase
-  transition is the mean free path, i.e., the average distance traveled by a
-  particle between successive impacts:
-
-  <\equation>
-    l<rsub|c>=<big|sum><rsub|c=1><rsup|N<rsup|i><rsub|c>><frac|<around*|\||\<Delta\><wide|r|\<vect\>><rsub|i><around*|(|t<rsub|c>,t<rsub|c-1>|)>|\|>|N<rsup|i><rsub|c>>
-  </equation>
-
-  To compute <math|l<rsub|c>>, we save the total distance travelled by every
-  particle <math|<big|sum><around*|\||\<Delta\><wide|r|\<vect\>><rsub|i>|\|>\<sim\><big|int><around*|\||d*<wide|r|\<vect\>><rsub|i>|\|>>
-  and the total number <math|N<rsup|i><rsub|c>> of collisions it had during
-  its path.
-
-  <big-figure|<image|../hardcore2d/collision_data/img/mfp.eps|0.75par|||>|Plot
-  of the mean free path against <math|\<eta\>> for <math|N=100>.>
-
-  We also plot the distribution of the mean free path:
-
-  <big-figure|<image|../hardcore2d/mean_free_path/img/mean_free_path.pdf|0.75par|||>|Distribution
-  of the mean free path <math|l<rsub|c>> for <math|N=100> and
-  <math|\<eta\>=0.30,0.45,0.60,0.75>. The histograms are obtained from a
-  sample of <math|10<rsup|6>> measurements and after a thermalization time of
-  <math|5\<cdot\>10<rsup|5>> collisions.>
-
-  \;
-
-  <subsection|Collision Times>
-
-  Yet another interesting quantity to look at is the collision time
-  <math|t<rsub|c>>, i.e., the time between two consecutive collisions. In
-  (Fig.<reference|fig:collision_time>) we present the distribution of
-  <math|t<rsub|c>> for increasing values of <math|\<eta\>>:
-
-  <big-figure|<image|../hardcore2d/collision_time/img/collision_time.pdf|0.75par|||>|<label|fig:collision_time>Distribution
-  of the collision time <math|t<rsub|c>> for <math|N=100> and
-  <math|\<eta\>=0.30,0.45,0.60,0.75>. The histograms are obtained from a
-  sample of <math|10<rsup|6>> measurements and after a thermalization time of
-  <math|5\<cdot\>10<rsup|5>> collisions.>
-
-  As the density of particles increases, the collisions become more frequent
-  because of the decrease in free space available for the particles to freely
-  travel. This implies that the distribution of the collision times must
-  become narrower for larger values of <math|\<eta\>>
-  (Fig.<reference|fig:collision_time>).
-
-  \;
-
-  Similarly to the case of the pressure and the mean free path,
-  <math|t<rsub|c>> also has a discontinuity at the phase transition, as we
-  can see from (Fig.<reference|fig:times>):
-
-  <big-figure|<image|../hardcore2d/collision_data/img/mct.eps|0.75par|||>|<label|fig:times>Plot
-  of the mean collision time <math|<around*|\<langle\>|t<rsub|c>|\<rangle\>>>
-  against <math|\<eta\>> for <math|N=100>.>
+  For the 3<nbsp>dimensional case of study, we notice a discontinuity of the
+  pressure around the value <math|\<eta\>\<sim\>0.5>. Near the transition
+  point the measurements are averaged over the two metastable branches of the
+  curve, thus forming almost a plateau, which is a typical property of first
+  order phase transitions.
 
   <subsection|Mean Squared Displacement>
 
-  The mean squared displacement (MSD), defined as:
+  Informations about the phase of the system and about its diffusive/confined
+  properties are also found by looking at the mean squared displacement:
 
   <\equation>
     <label|eq:msd>MSD=<around*|\<langle\>|<around*|(|<wide|r|\<vect\>><rsub|i><around*|(|t|)>-<wide|r|\<vect\>><rsub|i><around*|(|t<rsub|0>|)>|)><rsup|2>|\<rangle\>>=<around*|\<langle\>|\<Delta\><wide|r|\<vect\>><around*|(|t,t<rsub|0>|)><rsup|2>|\<rangle\>>
   </equation>
 
-  is a very common measure of the amount of the system ``explored'' by a
-  particle as the time passes. For diffusion precesses (random walks), the
-  MSD grows linearly with time:
+  which, for a 3<nbsp>dimensional system enclosed in a box with edge
+  <math|L=1>, has a plateau at:
 
   <\equation>
-    <label|eq:diffusion>MSD\<simeq\>2*d*D*\<Delta\>t<space|3em><text|<em|Einstein's
-    relation>>
+    lim<rsub|\<Delta\>t\<rightarrow\>\<infty\>>MSD<rsub|3d>=<frac|L<rsup|2>|4>=0.25
   </equation>
 
-  where <math|d> is the dimension of the space and <math|D> is the
-  self-diffusion constant. Usually one would plot the MSD as a function of
-  time and, in the limit of large times, a linear fit of the curve would
-  yield the diffusion coefficient of the precess. However, we will see that
-  the use of periodic boundary conditions will affect the linearity of
-  (<reference|eq:diffusion>). In fact, when a particle travels around a
-  closed loop of non trivial homology, the total displacement computed by
-  (<reference|eq:msd>) is approximately zero, while actually the particle has
-  travelled a distance of the order of the size <math|L> of the system. This
-  phenomenon will effectively confine the particle to a finite volume, and as
-  a consequence, the MSD will reach a plateau value. It is this plateau value
-  that provides the definition of <math|D> for a finite system.
-
-  For large <math|\<Delta\>t> this value can be computed exactly: let
-  <math|f<rsub|i><around*|(|<wide|r|\<vect\>><rsub|0>,<wide|r|\<vect\>>,t<rsub|0>,t|)>>
-  be the probability of a particle to go from
-  <math|<wide|r|\<vect\>><rsub|0>> to <math|<wide|r|\<vect\>>> after a time
-  <math|\<Delta\>t=t-t<rsub|0>>, then:
-
-  <\equation>
-    <around*|\<langle\>|<around*|(|<wide|r|\<vect\>><rsub|i><around*|(|t|)>-<wide|r|\<vect\>><rsub|i><around*|(|t<rsub|0>|)>|)><rsup|2>|\<rangle\>>=<big|int><rsub|V>d*<wide|r|\<vect\>>*<big|int><rsub|V>d*<wide|r|\<vect\>><rsub|0>
-    <around*|(|<wide|r|\<vect\>>-<wide|r|\<vect\>><rsub|0>|)><rsup|2>*f<rsub|i><around*|(|<wide|r|\<vect\>><rsub|0>,<wide|r|\<vect\>>,t<rsub|0>,t|)>
-  </equation>
-
-  <\equation>
-    f<around*|(|<wide|r|\<vect\>>,t|)>=<big|int><rsub|V>f<rsub|i><around*|(|<wide|r|\<vect\>><rsub|0>,<wide|r|\<vect\>>,t<rsub|0>,t|)>
-    d*<wide|r|\<vect\>><rsub|0>,<space|2em>f<around*|(|<wide|r|\<vect\>>,t|)>=<big|int><rsub|V>f<rsub|i><around*|(|<wide|r|\<vect\>><rsub|0>,<wide|r|\<vect\>>,t<rsub|0>,t|)>
-    d*<wide|r|\<vect\>><rsub|0>,<space|2em>f<around*|(|<wide|r|\<vect\>><rsub|0>,t<rsub|0>|)>=f<around*|(|<wide|r|\<vect\>>,t|)>=<frac|1|V>
-  </equation>
-
-  where the first two equalities are just the definitions of the marginal
-  probability distributions and the last is a consequence of spatial and
-  temporal homogeneity at thermal equilibrium.
-
-  After a long time has passed, the particle loses every information about
-  its past, and the joint probability distribution factorizes:
-
-  <\equation>
-    f<rsub|i><around*|(|<wide|r|\<vect\>><rsub|0>,<wide|r|\<vect\>>,t<rsub|0>,t|)><long-arrow|\<rubber-rightarrow\>||\<Delta\>t\<rightarrow\>\<infty\>>f<rsub|i><around*|(|<wide|r|\<vect\>><rsub|0>,t<rsub|0>|)>*f<rsub|i><around*|(|<wide|r|\<vect\>>,t|)>
-  </equation>
-
-  \;
-
-  The <math|MSD> can then be computed for large time separations as:
-
-  <\eqnarray>
-    <tformat|<table|<row|<cell|<around*|\<langle\>|\<Delta\><wide|r|\<vect\>><around*|(|t,t<rsub|0>|)><rsup|2>|\<rangle\>>>|<cell|=>|<cell|<big|int><rsub|V>d*<wide|r|\<vect\>>*<big|int><rsub|V>d*<wide|r|\<vect\>><rsub|0>
-    <around*|(|<wide|r|\<vect\>>-<wide|r|\<vect\>><rsub|0>|)><rsup|2>
-    f<rsub|i><around*|(|<wide|r|\<vect\>><rsub|0>,t<rsub|0>|)>*f<rsub|i><around*|(|<wide|r|\<vect\>>,t|)>>>|<row|<cell|>|<cell|=>|<cell|<big|int><rsub|V>d*<wide|r|\<vect\>>*<big|int><rsub|V>d*<wide|r|\<vect\>><rsub|0>
-    <around*|(|<around*|\||<wide|r|\<vect\>>|\|><rsup|2>-2*<wide|r|\<vect\>>\<cdot\><wide|r|\<vect\>><rsub|0>+<around*|\||<wide|r|\<vect\>><rsub|0>|\|><rsup|2>|)>
-    f<rsub|i><around*|(|<wide|r|\<vect\>><rsub|0>,t<rsub|0>|)>*f<rsub|i><around*|(|<wide|r|\<vect\>>,t|)>>>|<row|<cell|>|<cell|=>|<cell|*<frac|1|V><big|int><rsub|V>d*<wide|r|\<vect\>>
-    <around*|\||<wide|r|\<vect\>>|\|><rsup|2>-2*<around*|\<langle\>|<wide|r|\<vect\>><around*|(|t|)>|\<rangle\>>\<cdot\><around*|\<langle\>|<wide|r|\<vect\>><rsub|0><around*|(|t<rsub|0>|)>|\<rangle\>>+<frac|1|V><big|int><rsub|V>d*<wide|r|\<vect\>><rsub|0>
-    <around*|\||<wide|r|\<vect\>><rsub|0>|\|><rsup|2>>>|<row|<cell|>|<cell|=>|<cell|<frac|2|V><big|int><rsub|V>d*<wide|r|\<vect\>>
-    <around*|\||<wide|r|\<vect\>>|\|><rsup|2><eq-number><label|eq:msd0>>>>>
-  </eqnarray>
-
-  Where the factor 2 in the last step, counts both the displacement of
-  <math|<wide|r|\<vect\>>> and <math|<wide|r|\<vect\>><rsub|0>>, since they
-  are independent. We can fix the inital position of the particle to be 0 for
-  convenince and then look only at the displacement with respect to that
-  position. This is equivalent to considering only the final position
-  contribution, which is half the MSD of (<reference|eq:msd0>).
-
-  \;
-
-  Finally, for a volume <math|V=L<rsup|d>>, we obtain:
-
-  <\eqnarray>
-    <tformat|<table|<row|<cell|<around*|\<langle\>|\<Delta\><wide|r|\<vect\>><around*|(|t,t<rsub|0>|)><rsup|2>|\<rangle\>>>|<cell|=>|<cell|<frac|1|V><big|int><rsub|V>d*<wide|r|\<vect\>>
-    <around*|\||<wide|r|\<vect\>>|\|><rsup|2>>>|<row|<cell|>|<cell|=>|<cell|<frac|1|L<rsup|d>><big|int><rsup|L/2><rsub|-L/2>d*x<rsub|d>*\<ldots\><big|int><rsup|L/2><rsub|-L/2>d*x<rsub|2><big|int><rsup|L/2><rsub|-L/2>d*x<rsub|1>
-    <around*|(|x<rsub|1><rsup|2>+x<rsub|2><rsup|2>+\<ldots\>+x<rsub|d><rsup|2>|)>>>|<row|<cell|>|<cell|=>|<cell|<frac|1|L<rsup|d>>*L<rsup|d-1>*<frac|2*d|3><around*|(|<frac|L|2>|)><rsup|3>=<frac|d|12>*L<rsup|2><long-arrow|\<rubber-rightarrow\>|L=1><choice|<tformat|<table|<row|<cell|1/6,>|<cell|d=2>>|<row|<cell|1/4,>|<cell|d=3>>>>><eq-number><label|eq:plateau>>>>>
-  </eqnarray>
-
-  \;
-
-  By using the time translation invariance of the system (at thermalization)
-  and the fact that all the particles are identical, we can compute an
-  estimate of the MSD by averaging over every time interval
-  <math|<around*|[|t,t+\<Delta\>t|]>> and every particle <math|i>:
-
-  <\equation>
-    MSD<around*|(|\<Delta\>t|)>=<frac|1|N>*<big|sum><rsup|N><rsub|i=1>*<frac|1|<around*|(|t<rsub|S>-\<Delta\>t-t<rsub|0>+1|)>>*<big|sum><rsup|t<rsub|S>-\<Delta\>t><rsub|t=t<rsub|0>><around*|[|<wide|r|\<vect\>><rsub|i><around*|(|t+\<Delta\>t|)>-<wide|r|\<vect\>><rsub|i><around*|(|t|)>|]><rsup|2>
-  </equation>
-
-  with <math|t<rsub|S>> being the time of the simulation.
-
-  \;
-
-  We see from (Fig.<reference|fig:msd>) that initially the curves grow
-  linearly with the time separation as one would expect for a diffusive
-  process. For larger separations, though, the MSD reaches the plateau of
-  (<reference|eq:plateau>) and fluctuate around it. The measurement taken at
-  very large displacements (<math|\<Delta\>t\<approx\>t<rsub|S>>) are of
-  little significance because of the reduced amount of statistics we can
-  callect:
-
-  <\equation*>
-    N<rsub|samples><around*|(|\<Delta\>t|)>=<around*|(|t<rsub|S>-\<Delta\>t-t<rsub|0>+1|)><long-arrow|\<rubber-rightarrow\>||t\<sim\>t<rsub|S>>1
-  </equation*>
-
-  We can also see the phase transition of the system in the abrupt drop in
-  the self-diffusion coefficient of the initial diffusive parts of the
-  curves<\footnote>
-    As already mentioned in (<reference|eq:diffusion>), the first derivative
-    of the MSD with respect to time is proportional to the self-diffusion
-    coefficient <math|D>.
-  </footnote>.
-
-  <big-figure|<image|../hardcore2d/msd/img/MSD.eps|0.75par|||>|<label|fig:msd>Mean
-  squared displacement from a simulation of <math|N=100> particles. The
-  measurements are taken for a simulation time <math|t<rsub|S>=20> with a
-  time step of <math|0.003> after a thermalization of
+  <big-figure|<image|../hardcore3d/msd/img/MSD.eps|0.75par|||>|<label|fig:msd>Mean
+  squared displacement from a simulation of <math|N=250> particles. The
+  measurements are taken for a simulation time <math|t<rsub|S>=50> with a
+  time step of <math|0.005> after a thermalization of
   <math|5\<cdot\>10<rsup|5>> collisions. The color palette represents
   different values of <math|\<eta\>>. The solid line in black is the exact
   result for <math|\<Delta\>t\<rightarrow\>\<infty\>>.>
 
-  As <math|\<eta\>> approaches large values, the particles are more and more
-  constrained by the increase in occupied volume and are less free to travel
-  around (Fig.<reference|fig:trajectory>). As a consequence they resent much
-  later of the finite size effect of the system, and continue to diffuse
-  linearly with time for much longer (Fig.<reference|fig:msd1>):
+  From the growth of the MSD with time, we note a similar behavior to that of
+  the 2<nbsp>dimensional case. This time, though, the discontinuity in the
+  rate of change of the coefficient <math|D> with respect to <math|\<eta\>>
+  is even more drastic. For <math|\<eta\>\<less\>0.5> the particles have an
+  initial diffusive dynamics that becomes confined when the plateau value
+  0.25 is reached. Immediately after <math|\<eta\>\<sim\>0.5> the diffusion
+  coefficient drops almost to zero and we witness transition to a solid phase
+  of the system where the particles are strongly confined by the limited
+  space available.
 
-  <big-figure|<image|../hardcore2d/msd/img/MSD3.eps|0.5par|||><image|../hardcore2d/msd/img/MSD2.eps|0.5par|||>|<label|fig:msd1>Mean
-  squared displacement from a simulation of <math|N=100> particles at
-  <math|\<eta\>=0.555> and <math|\<eta\>=0.725>. The measurements are taken
-  for a simulation time <math|t<rsub|S>=100> with a time step of <math|0.01>
-  after a thermalization of <math|5\<cdot\>10<rsup|5>> collisions.>
+  <\big-figure>
+    <image|../hardcore3d/msd/img/trajectory_0.30.eps|0.5par|||><image|../hardcore3d/msd/img/trajectory_0.35.eps|0.5par|||>
 
-  This is intuitively understood by looking at the trajectory on the right of
-  (Fig.<reference|fig:trajectory>) and realizing that the particle lives
-  mostly in the bulk of the box and that it almost never travels around a
-  loop of non trivial homology.
+    <image|../hardcore3d/msd/img/trajectory_0.40.eps|0.5par|||><image|../hardcore3d/msd/img/trajectory_0.45.eps|0.5par|||>
 
-  <big-figure|<image|../hardcore2d/msd/img/trajectory2.eps|0.5par|||><image|../hardcore2d/msd/img/trajectory1.eps|0.5par|||>|<label|fig:trajectory>Trajectory
-  of a single particle at <math|\<eta\>=0.555> (left) and
-  <math|\<eta\>=0.725> (right) in a system with <math|N=100>. Both
-  simulations had a runtime of <math|t<rsub|S>=100> after a thermalization
-  time corresponding to <math|5\<cdot\>10<rsup|5>> collisions.>
+    <image|../hardcore3d/msd/img/trajectory_0.50.eps|0.5par|||><image|../hardcore3d/msd/img/trajectory_0.55.eps|0.5par|||>
+  </big-figure|Points visited by individual particles in a system of
+  <math|N=250> total particles, at different values of the packing density
+  <math|\<eta\>>. The first five picture represent the typical trajectories
+  of diffusion processes such as random walks (liquid phase). In the last
+  picture is evident the confining property of the solid phase of the
+  system.>
+
+  <subsection|Thermodynamic Limit>
+
+  \;
 </body>
 
 <\initial>
@@ -396,7 +218,7 @@
 <\references>
   <\collection>
     <associate|auto-1|<tuple|1|1>>
-    <associate|auto-10|<tuple|6|7>>
+    <associate|auto-10|<tuple|1.4|7>>
     <associate|auto-11|<tuple|7|8>>
     <associate|auto-12|<tuple|1.4|8>>
     <associate|auto-13|<tuple|8|8>>
@@ -428,18 +250,18 @@
     <associate|auto-4|<tuple|2|3>>
     <associate|auto-5|<tuple|1.2|4>>
     <associate|auto-6|<tuple|3|4>>
-    <associate|auto-7|<tuple|4|5>>
-    <associate|auto-8|<tuple|5|6>>
-    <associate|auto-9|<tuple|1.3|6>>
+    <associate|auto-7|<tuple|1.3|5>>
+    <associate|auto-8|<tuple|4|6>>
+    <associate|auto-9|<tuple|5|6>>
     <associate|cwos|<tuple|3|?>>
     <associate|diffusion|<tuple|11|?>>
     <associate|eq:MC|<tuple|2|?>>
     <associate|eq:betac|<tuple|7|?>>
     <associate|eq:cosh|<tuple|22|10>>
-    <associate|eq:diffusion|<tuple|9|10>>
-    <associate|eq:msd|<tuple|8|9>>
-    <associate|eq:msd0|<tuple|13|10>>
-    <associate|eq:plateau|<tuple|14|10>>
+    <associate|eq:diffusion|<tuple|8|10>>
+    <associate|eq:msd|<tuple|7|9>>
+    <associate|eq:msd0|<tuple|12|10>>
+    <associate|eq:plateau|<tuple|13|10>>
     <associate|eq:scalingtau|<tuple|6|4>>
     <associate|eq:temp|<tuple|5|2>>
     <associate|eq:tint|<tuple|7|3>>
@@ -455,11 +277,12 @@
     <associate|fig:hist2|<tuple|3|6>>
     <associate|fig:lattice|<tuple|1|?>>
     <associate|fig:levels|<tuple|8|7>>
-    <associate|fig:msd|<tuple|8|11>>
-    <associate|fig:msd1|<tuple|9|12>>
+    <associate|fig:msd|<tuple|4|11>>
+    <associate|fig:msd1|<tuple|5|12>>
     <associate|fig:packing|<tuple|1|2>>
     <associate|fig:pdfMH|<tuple|9|8>>
     <associate|fig:pdfSW|<tuple|13|7>>
+    <associate|fig:pressure|<tuple|3|?>>
     <associate|fig:susceptibility|<tuple|5|4>>
     <associate|fig:termalization|<tuple|1|2>>
     <associate|fig:termalizationMH|<tuple|1|?>>
@@ -470,7 +293,7 @@
     <associate|fig:thermalizationSW|<tuple|3|4>>
     <associate|fig:times|<tuple|7|9>>
     <associate|fig:toruseffect|<tuple|1|3>>
-    <associate|fig:trajectory|<tuple|10|12>>
+    <associate|fig:trajectory|<tuple|6|12>>
     <associate|footnote-1|<tuple|1|11>>
     <associate|footnr-1|<tuple|1|11>>
     <associate|result_box|<tuple|8|?>>

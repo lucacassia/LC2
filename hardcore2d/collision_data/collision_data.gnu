@@ -10,7 +10,7 @@ set grid
 
 ## pressure
 
-set ylabel 'pressure'
+set ylabel 'PV/NT-1'
 set output 'img/pressure.eps'
 plot 'data/100_multi.sort' u 1:2  w l lc rgb "#FF0000" notitle,\
      'data/100_multi.sort' u 1:2:3 w e lc 0 pt 1 notitle

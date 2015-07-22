@@ -466,7 +466,7 @@
   later of the finite size effect of the system, and continue to diffuse
   linearly with time for much longer (Fig.<reference|fig:msd1>):
 
-  <big-figure|<image|../hardcore2d/msd/img/MSD3.eps|0.5par|||><image|../hardcore2d/msd/img/MSD2.eps|0.5par|||>|<label|fig:msd1>Mean
+  <big-figure|<image|../hardcore2d/msd/img/MSD2.eps|0.5par|||><image|../hardcore2d/msd/img/MSD3.eps|0.5par|||>|<label|fig:msd1>Mean
   squared displacement from a simulation of <math|N=100> particles at
   <math|\<eta\>=0.555> and <math|\<eta\>=0.725>. The measurements are taken
   for a simulation time <math|t<rsub|S>=100> with a time step of <math|0.01>
@@ -477,11 +477,41 @@
   mostly in the bulk of the box and that it almost never travels around a
   loop of non trivial homology.
 
-  <big-figure|<image|../hardcore2d/msd/img/trajectory2.eps|0.5par|||><image|../hardcore2d/msd/img/trajectory1.eps|0.5par|||>|<label|fig:trajectory>Trajectory
+  <big-figure|<image|../hardcore2d/msd/img/trajectory1.eps|0.5par|||><image|../hardcore2d/msd/img/trajectory2.eps|0.5par|||>|<label|fig:trajectory>Trajectory
   of a single particle at <math|\<eta\>=0.555> (left) and
   <math|\<eta\>=0.725> (right) in a system with <math|N=100>. Both
   simulations had a runtime of <math|t<rsub|S>=100> after a thermalization
   time corresponding to <math|5\<cdot\>10<rsup|4>> collisions.>
+
+  Another approach is to consider the ``unfolded'' history (or unfolded
+  coordinates) of the particles, i.e., the trajectories that the particles
+  would have followed if there were no periodic boundary conditions but with
+  the same collisions happening in the ``folded'' history<\footnote>
+    The term ``folding'' refers to the procedure of obtaining a torus from a
+    quotient of the two<nbhyph>plane, usually the complex plane
+    <math|\<bbb-C\>>. Conversely, the unfolding corresponds to the inverse
+    procedure of obtaining a plane from copies of a torus.
+  </footnote>. The effect of using unfolded coordinates is immediately
+  visible from the plot of the MSD (Fig.<reference|fig:msd3>). Having removed
+  the effect of the boudary conditions, the diffusive nature of the process
+  is preserved even at large time intervals, expecially for
+  <math|\<eta\>\<ll\>1> where the confinement of the plateau <math|1/6> was
+  most evident.
+
+  <big-figure|<image|../hardcore2d/msd/img/trajectory1u.eps|0.5par|||><image|../hardcore2d/msd/img/trajectory2u.eps|0.5par|||>|<label|fig:trajectory2>Trajectorys
+  of the same particles of (Fig.<reference|fig:trajectory>) but in unfolded
+  coordinates.>
+
+  As we can see, the unfolding procedure is most effective for lower values
+  of the density, when the particles have more freedom of movement and can
+  cross many times the boundaries from many directions.
+
+  <big-figure|<image|../hardcore2d/msd/img/MSD4.eps|0.5par|||><image|../hardcore2d/msd/img/MSD5.eps|0.5par|||>|<label|fig:msd3>Mean
+  squared displacement from an unfolded simulation of <math|N=100> particles
+  at <math|\<eta\>=0.555> and <math|\<eta\>=0.725>. The measurements are
+  taken for a simulation time <math|t<rsub|S>=100> with a time step of
+  <math|0.01> after a thermalization of <math|5\<cdot\>10<rsup|4>>
+  collisions.>
 </body>
 
 <\initial>
@@ -511,8 +541,8 @@
     <associate|auto-18|<tuple|12|12>>
     <associate|auto-19|<tuple|13|12>>
     <associate|auto-2|<tuple|1.1|1>>
-    <associate|auto-20|<tuple|12|11>>
-    <associate|auto-21|<tuple|1.7|11>>
+    <associate|auto-20|<tuple|14|11>>
+    <associate|auto-21|<tuple|15|11>>
     <associate|auto-22|<tuple|2|11>>
     <associate|auto-23|<tuple|13|12>>
     <associate|auto-24|<tuple|3|9>>
@@ -561,6 +591,7 @@
     <associate|fig:levels|<tuple|8|7>>
     <associate|fig:msd|<tuple|11|11>>
     <associate|fig:msd1|<tuple|12|12>>
+    <associate|fig:msd3|<tuple|15|?>>
     <associate|fig:packing|<tuple|1|2>>
     <associate|fig:pdfMH|<tuple|9|8>>
     <associate|fig:pdfSW|<tuple|13|7>>
@@ -575,8 +606,11 @@
     <associate|fig:times|<tuple|10|9>>
     <associate|fig:toruseffect|<tuple|1|3>>
     <associate|fig:trajectory|<tuple|13|12>>
+    <associate|fig:trajectory2|<tuple|14|?>>
     <associate|footnote-1|<tuple|1|11>>
+    <associate|footnote-2|<tuple|2|?>>
     <associate|footnr-1|<tuple|1|11>>
+    <associate|footnr-2|<tuple|2|?>>
     <associate|result_box|<tuple|8|?>>
     <associate|sec:betafss|<tuple|1.4|4>>
     <associate|sec:corr|<tuple|1.6|9>>
@@ -693,6 +727,19 @@
       <with|mode|<quote|math>|t<rsub|S>=100> after a thermalization time
       corresponding to <with|mode|<quote|math>|5\<cdot\>10<rsup|4>>
       collisions.|<pageref|auto-19>>
+
+      <tuple|normal|Trajectorys of the same particles of
+      (Fig.<reference|fig:trajectory>) but in unfolded
+      coordinates.|<pageref|auto-20>>
+
+      <tuple|normal|Mean squared displacement from an unfolded simulation of
+      <with|mode|<quote|math>|N=100> particles at
+      <with|mode|<quote|math>|\<eta\>=0.555> and
+      <with|mode|<quote|math>|\<eta\>=0.725>. The measurements are taken for
+      a simulation time <with|mode|<quote|math>|t<rsub|S>=100> with a time
+      step of <with|mode|<quote|math>|0.01> after a thermalization of
+      <with|mode|<quote|math>|5\<cdot\>10<rsup|4>>
+      collisions.|<pageref|auto-21>>
     </associate>
     <\associate|toc>
       <vspace*|1fn><with|font-series|<quote|bold>|math-font-series|<quote|bold>|1<space|2spc>Hard-Core
