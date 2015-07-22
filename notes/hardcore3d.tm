@@ -144,7 +144,7 @@
   <math|5\<cdot\>10<rsup|4>> collisions. \ The errorbars represent the
   standard errors of the averages.>
 
-  For the 3<nbsp>dimensional case of study, we notice a discontinuity of the
+  For the 3<nbsp>dimensional case at study, we notice a discontinuity of the
   pressure around the value <math|\<eta\>\<sim\>0.5>. Near the transition
   point the measurements are averaged over the two metastable branches of the
   curve, thus forming almost a plateau, which is a typical property of first
@@ -170,7 +170,7 @@
   squared displacement from a simulation of <math|N=250> particles. The
   measurements are taken for a simulation time <math|t<rsub|S>=50> with a
   time step of <math|0.005> after a thermalization of
-  <math|5\<cdot\>10<rsup|5>> collisions. The color palette represents
+  <math|5\<cdot\>10<rsup|4>> collisions. The color palette represents
   different values of <math|\<eta\>>. The solid line in black is the exact
   result for <math|\<Delta\>t\<rightarrow\>\<infty\>>.>
 
@@ -180,8 +180,8 @@
   is even more drastic. For <math|\<eta\>\<less\>0.5> the particles have an
   initial diffusive dynamics that becomes confined when the plateau value
   0.25 is reached. Immediately after <math|\<eta\>\<sim\>0.5> the diffusion
-  coefficient drops almost to zero and we witness transition to a solid phase
-  of the system where the particles are strongly confined by the limited
+  coefficient drops almost to zero and we witness a transition to a solid
+  phase of the system where the particles are strongly confined by the small
   space available.
 
   <\big-figure>
@@ -199,7 +199,39 @@
 
   <subsection|Thermodynamic Limit>
 
+  Finally we study the thermodynamic limit of the pressure by taking several
+  measurements at growing values of <math|V> and <math|N> keeping the density
+  <math|\<eta\>> fixed (instead of actually scaling the volume <math|V> we
+  increase the number of particles and reduce their diameter so that
+  <math|\<eta\>=const>).
+
   \;
+
+  We consider systems with <math|N=32,64,128,256,512> and measure the
+  quantity:
+
+  <\equation>
+    <frac|P*V|N*k<rsub|b>T>-1=<frac|m*\<sigma\>|2K*t><big|sum><around*|\||\<Delta\><wide|v|\<vect\>><rsub|i*j><rsup|>|\|>
+  </equation>
+
+  at the fixed value <math|\<eta\>=0.3>. We then plot the results against
+  <math|1/L> and perform a linear fit of the form:
+
+  <\equation>
+    y=p<rsub|0>+p<rsub|1>x
+  </equation>
+
+  <big-figure|<image|../hardcore3d/thermo_limit/img/TL.eps|0.75par|||>|Plot
+  of <math|<frac|P*V|N*k<rsub|b>T>-1> as a funtction of <math|1/L>. Each
+  point is taken after thermalization and averaged over 10 independent
+  simulation runs. The errors are computed as the standar error on the mean
+  values.>
+
+  \ The result of the fit indicates that:
+
+  <\equation>
+    lim<rsub|N\<rightarrow\>\<infty\>><frac|P*V|N*k<rsub|b>T>-1=4.4662\<pm\>0.0044
+  </equation>
 </body>
 
 <\initial>
@@ -219,7 +251,7 @@
   <\collection>
     <associate|auto-1|<tuple|1|1>>
     <associate|auto-10|<tuple|1.4|7>>
-    <associate|auto-11|<tuple|7|8>>
+    <associate|auto-11|<tuple|6|8>>
     <associate|auto-12|<tuple|1.4|8>>
     <associate|auto-13|<tuple|8|8>>
     <associate|auto-14|<tuple|9|9>>
@@ -312,93 +344,42 @@
       left is the pressure as a function of the number of collisions, while
       on the right is the mean free path of the particles. Different colors
       represent the different values of <with|mode|<quote|math>|\<eta\>=0.25,0.35,0.45,0.55,0.65>
-      used for the simulations. On the right is the same process, after a
-      larger number of collisions. The mixing rate of the system (as a
-      function of the number of collisions) grows with
-      <with|mode|<quote|math>|\<eta\>> and the number of
-      particles.|<pageref|auto-3>>
-
-      <tuple|normal|Plot of the thermalization process of an hard-core
-      interacting gas of <with|mode|<quote|math>|N=400> particles. The mixing
-      of this larger system is much slower.|<pageref|auto-4>>
+      used for the simulations. |<pageref|auto-3>>
 
       <\tuple|normal>
         Histogram of the modulus of the momenta for
-        <with|mode|<quote|math>|N=100> particles. The measurements are taken
-        after <with|mode|<quote|math>|10<rsup|5>> collisions from the start
-        of the simulation, and after that every <with|mode|<quote|math>|500>
-        collisions for a total of <with|mode|<quote|math>|10<rsup|4>>
-        datasets each containing the momenta of <with|mode|<quote|math>|N>
-        particles. The system is initialized at temperatures
-        <with|mode|<quote|math>|T=1,4,16>.
-      </tuple|<pageref|auto-6>>
-
-      <\tuple|normal>
-        Histograms of the <with|mode|<quote|math>|x> (left) and
-        <with|mode|<quote|math>|y> (right) components of the momenta for
-        <with|mode|<quote|math>|N=100> particles.
-
-        \;
-      </tuple|<pageref|auto-7>>
+        <with|mode|<quote|math>|N=128> particles at
+        <with|mode|<quote|math>|\<eta\>=0.5>. The measurements are taken
+        after <with|mode|<quote|math>|5\<cdot\>10<rsup|4>> collisions from
+        the start of the simulation, and after that every
+        <with|mode|<quote|math>|500> collisions for a total of
+        <with|mode|<quote|math>|10<rsup|4>> datasets each containing the
+        momenta of <with|mode|<quote|math>|N> particles.
+      </tuple|<pageref|auto-4>>
 
       <tuple|normal|Plot of <with|mode|<quote|math>|<frac|P*V|N*T>-1> as a
-      function of <with|mode|<quote|math>|\<eta\>> for a system of 100
+      function of <with|mode|<quote|math>|\<eta\>> for a system of 250
       particles. Every measurement is taken form the average of
-      <with|mode|<quote|math>|50> independent runs each collected after an
-      initial thermalization time of <with|mode|<quote|math>|5\<cdot\>10<rsup|5>>
+      <with|mode|<quote|math>|10> independent runs each collected after an
+      initial thermalization time of <with|mode|<quote|math>|5\<cdot\>10<rsup|4>>
       collisions. \ The errorbars represent the standard errors of the
-      averages.|<pageref|auto-9>>
-
-      <tuple|normal|Plot of the mean free path against
-      <with|mode|<quote|math>|\<eta\>> for
-      <with|mode|<quote|math>|N=100>.|<pageref|auto-10>>
-
-      <tuple|normal|Distribution of the mean free path
-      <with|mode|<quote|math>|l<rsub|c>> for <with|mode|<quote|math>|N=100>
-      and <with|mode|<quote|math>|\<eta\>=0.30,0.45,0.60,0.75>. The
-      histograms are obtained from a sample of
-      <with|mode|<quote|math>|10<rsup|6>> measurements and after a
-      thermalization time of <with|mode|<quote|math>|5\<cdot\>10<rsup|5>>
-      collisions.|<pageref|auto-11>>
-
-      <tuple|normal|Distribution of the collision time
-      <with|mode|<quote|math>|t<rsub|c>> for <with|mode|<quote|math>|N=100>
-      and <with|mode|<quote|math>|\<eta\>=0.30,0.45,0.60,0.75>. The
-      histograms are obtained from a sample of
-      <with|mode|<quote|math>|10<rsup|6>> measurements and after a
-      thermalization time of <with|mode|<quote|math>|5\<cdot\>10<rsup|5>>
-      collisions.|<pageref|auto-13>>
-
-      <tuple|normal|Plot of the mean collision time
-      <with|mode|<quote|math>|<around*|\<langle\>|t<rsub|c>|\<rangle\>>>
-      against <with|mode|<quote|math>|\<eta\>> for
-      <with|mode|<quote|math>|N=100>.|<pageref|auto-14>>
+      averages.|<pageref|auto-6>>
 
       <tuple|normal|Mean squared displacement from a simulation of
-      <with|mode|<quote|math>|N=100> particles. The measurements are taken
-      for a simulation time <with|mode|<quote|math>|t<rsub|S>=20> with a time
-      step of <with|mode|<quote|math>|0.003> after a thermalization of
+      <with|mode|<quote|math>|N=250> particles. The measurements are taken
+      for a simulation time <with|mode|<quote|math>|t<rsub|S>=50> with a time
+      step of <with|mode|<quote|math>|0.005> after a thermalization of
       <with|mode|<quote|math>|5\<cdot\>10<rsup|5>> collisions. The color
       palette represents different values of
       <with|mode|<quote|math>|\<eta\>>. The solid line in black is the exact
-      result for <with|mode|<quote|math>|\<Delta\>t\<rightarrow\>\<infty\>>.|<pageref|auto-16>>
+      result for <with|mode|<quote|math>|\<Delta\>t\<rightarrow\>\<infty\>>.|<pageref|auto-8>>
 
-      <tuple|normal|Mean squared displacement from a simulation of
-      <with|mode|<quote|math>|N=100> particles at
-      <with|mode|<quote|math>|\<eta\>=0.555> and
-      <with|mode|<quote|math>|\<eta\>=0.725>. The measurements are taken for
-      a simulation time <with|mode|<quote|math>|t<rsub|S>=100> with a time
-      step of <with|mode|<quote|math>|0.01> after a thermalization of
-      <with|mode|<quote|math>|5\<cdot\>10<rsup|5>>
-      collisions.|<pageref|auto-17>>
-
-      <tuple|normal|Trajectory of a single particle at
-      <with|mode|<quote|math>|\<eta\>=0.555> (left) and
-      <with|mode|<quote|math>|\<eta\>=0.725> (right) in a system with
-      <with|mode|<quote|math>|N=100>. Both simulations had a runtime of
-      <with|mode|<quote|math>|t<rsub|S>=100> after a thermalization time
-      corresponding to <with|mode|<quote|math>|5\<cdot\>10<rsup|5>>
-      collisions.|<pageref|auto-18>>
+      <tuple|normal|Points visited by individual particles in a system of
+      <with|mode|<quote|math>|N=250> total particles, at different values of
+      the packing density <with|mode|<quote|math>|\<eta\>>. The first five
+      picture represent the typical trajectories of diffusion processes such
+      as random walks (liquid phase). In the last picture is evident the
+      confining property of the solid phase of the system.|<pageref|auto-9>>
     </associate>
     <\associate|toc>
       <vspace*|1fn><with|font-series|<quote|bold>|math-font-series|<quote|bold>|1<space|2spc>Hard-Core
@@ -410,21 +391,17 @@
       <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
       <no-break><pageref|auto-2>>
 
-      <with|par-left|<quote|1tab>|1.2<space|2spc>Momentum Distribution
+      <with|par-left|<quote|1tab>|1.2<space|2spc>Phase Transition
       <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
       <no-break><pageref|auto-5>>
 
-      <with|par-left|<quote|1tab>|1.3<space|2spc>Phase Transition
+      <with|par-left|<quote|1tab>|1.3<space|2spc>Mean Squared Displacement
       <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
-      <no-break><pageref|auto-8>>
+      <no-break><pageref|auto-7>>
 
-      <with|par-left|<quote|1tab>|1.4<space|2spc>Collision Times
+      <with|par-left|<quote|1tab>|1.4<space|2spc>Thermodynamic Limit
       <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
-      <no-break><pageref|auto-12>>
-
-      <with|par-left|<quote|1tab>|1.5<space|2spc>Mean Squared Displacement
-      <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
-      <no-break><pageref|auto-15>>
+      <no-break><pageref|auto-10>>
     </associate>
   </collection>
 </auxiliary>
