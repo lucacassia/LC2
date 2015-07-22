@@ -15,7 +15,7 @@
 
   <\table-of-contents|toc>
     <vspace*|1fn><with|font-series|bold|math-font-series|bold|1<space|2spc>Hard-Core
-    Molecular Dynamics in <with|mode|math|2d>>
+    Molecular Dynamics in <with|mode|math|3d>>
     <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
     <no-break><pageref|auto-1><vspace|0.5fn>
 
@@ -23,21 +23,17 @@
     <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
     <no-break><pageref|auto-2>>
 
-    <with|par-left|1tab|1.2<space|2spc>Momentum Distribution
+    <with|par-left|1tab|1.2<space|2spc>Phase Transition
     <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
-    <no-break><pageref|auto-6>>
+    <no-break><pageref|auto-5>>
 
-    <with|par-left|1tab|1.3<space|2spc>Phase Transition
+    <with|par-left|1tab|1.3<space|2spc>Mean Squared Displacement
     <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
-    <no-break><pageref|auto-9>>
+    <no-break><pageref|auto-7>>
 
-    <with|par-left|1tab|1.4<space|2spc>Collision Times
+    <with|par-left|1tab|1.4<space|2spc>Thermodynamic Limit
     <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
-    <no-break><pageref|auto-13>>
-
-    <with|par-left|1tab|1.5<space|2spc>Mean Squared Displacement
-    <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
-    <no-break><pageref|auto-16>>
+    <no-break><pageref|auto-10>>
   </table-of-contents>
 
   <section|Hard-Core Molecular Dynamics in <math|3d>>
@@ -103,7 +99,7 @@
 
   \;
 
-  <\big-figure|<image|../hardcore3d/distribution/img/mdistribution.pdf|0.75par|||>>
+  <\big-figure|<image|../hardcore3d/distribution/img/mdistribution.eps|0.75par|||>>
     <label|fig:hist1>Histogram of the modulus of the momenta for <math|N=128>
     particles at <math|\<eta\>=0.5>. The measurements are taken after
     <math|5\<cdot\>10<rsup|4>> collisions from the start of the simulation,
@@ -250,8 +246,8 @@
 <\references>
   <\collection>
     <associate|auto-1|<tuple|1|1>>
-    <associate|auto-10|<tuple|1.4|7>>
-    <associate|auto-11|<tuple|6|8>>
+    <associate|auto-10|<tuple|1.4|5>>
+    <associate|auto-11|<tuple|6|6>>
     <associate|auto-12|<tuple|1.4|8>>
     <associate|auto-13|<tuple|8|8>>
     <associate|auto-14|<tuple|9|9>>
@@ -279,19 +275,19 @@
     <associate|auto-34|<tuple|3|23>>
     <associate|auto-35|<tuple|23|24>>
     <associate|auto-36|<tuple|24|?>>
-    <associate|auto-4|<tuple|2|3>>
-    <associate|auto-5|<tuple|1.2|4>>
-    <associate|auto-6|<tuple|3|4>>
-    <associate|auto-7|<tuple|1.3|5>>
-    <associate|auto-8|<tuple|4|6>>
-    <associate|auto-9|<tuple|5|6>>
+    <associate|auto-4|<tuple|2|2>>
+    <associate|auto-5|<tuple|1.2|3>>
+    <associate|auto-6|<tuple|3|3>>
+    <associate|auto-7|<tuple|1.3|4>>
+    <associate|auto-8|<tuple|4|4>>
+    <associate|auto-9|<tuple|5|5>>
     <associate|cwos|<tuple|3|?>>
     <associate|diffusion|<tuple|11|?>>
     <associate|eq:MC|<tuple|2|?>>
     <associate|eq:betac|<tuple|7|?>>
     <associate|eq:cosh|<tuple|22|10>>
     <associate|eq:diffusion|<tuple|8|10>>
-    <associate|eq:msd|<tuple|7|9>>
+    <associate|eq:msd|<tuple|7|4>>
     <associate|eq:msd0|<tuple|12|10>>
     <associate|eq:plateau|<tuple|13|10>>
     <associate|eq:scalingtau|<tuple|6|4>>
@@ -305,20 +301,20 @@
     <associate|fig:energy_bin|<tuple|9|9>>
     <associate|fig:fss|<tuple|13|12>>
     <associate|fig:heatcapacity|<tuple|5|5>>
-    <associate|fig:hist1|<tuple|2|5>>
+    <associate|fig:hist1|<tuple|2|2>>
     <associate|fig:hist2|<tuple|3|6>>
     <associate|fig:lattice|<tuple|1|?>>
     <associate|fig:levels|<tuple|8|7>>
-    <associate|fig:msd|<tuple|4|11>>
+    <associate|fig:msd|<tuple|4|4>>
     <associate|fig:msd1|<tuple|5|12>>
     <associate|fig:packing|<tuple|1|2>>
     <associate|fig:pdfMH|<tuple|9|8>>
     <associate|fig:pdfSW|<tuple|13|7>>
-    <associate|fig:pressure|<tuple|3|?>>
+    <associate|fig:pressure|<tuple|3|3>>
     <associate|fig:susceptibility|<tuple|5|4>>
     <associate|fig:termalization|<tuple|1|2>>
     <associate|fig:termalizationMH|<tuple|1|?>>
-    <associate|fig:therm1|<tuple|1|3>>
+    <associate|fig:therm1|<tuple|1|2>>
     <associate|fig:therm2|<tuple|2|4>>
     <associate|fig:thermalization|<tuple|1|2>>
     <associate|fig:thermalizationMH|<tuple|2|3>>
@@ -369,7 +365,7 @@
       <with|mode|<quote|math>|N=250> particles. The measurements are taken
       for a simulation time <with|mode|<quote|math>|t<rsub|S>=50> with a time
       step of <with|mode|<quote|math>|0.005> after a thermalization of
-      <with|mode|<quote|math>|5\<cdot\>10<rsup|5>> collisions. The color
+      <with|mode|<quote|math>|5\<cdot\>10<rsup|4>> collisions. The color
       palette represents different values of
       <with|mode|<quote|math>|\<eta\>>. The solid line in black is the exact
       result for <with|mode|<quote|math>|\<Delta\>t\<rightarrow\>\<infty\>>.|<pageref|auto-8>>
@@ -380,6 +376,12 @@
       picture represent the typical trajectories of diffusion processes such
       as random walks (liquid phase). In the last picture is evident the
       confining property of the solid phase of the system.|<pageref|auto-9>>
+
+      <tuple|normal|Plot of <with|mode|<quote|math>|<frac|P*V|N*k<rsub|b>T>-1>
+      as a funtction of <with|mode|<quote|math>|1/L>. Each point is taken
+      after thermalization and averaged over 10 independent simulation runs.
+      The errors are computed as the standar error on the mean
+      values.|<pageref|auto-11>>
     </associate>
     <\associate|toc>
       <vspace*|1fn><with|font-series|<quote|bold>|math-font-series|<quote|bold>|1<space|2spc>Hard-Core

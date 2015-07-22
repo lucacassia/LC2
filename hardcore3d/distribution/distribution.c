@@ -4,7 +4,8 @@ int main()
 {
     ETA = 0.5;
     n_particles = 128;
-    printf("\nparticles: %d\n\n",n_particles);
+    printf("\nDIMENSION = %d\n\n", DIMENSION );
+    printf("\N = %d\n\n",n_particles);
     printf("ETA = %f\n\n",ETA);
     init( ETA, 1.0f );
 

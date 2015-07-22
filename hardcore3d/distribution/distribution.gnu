@@ -21,7 +21,7 @@ binstart = -100
 
 #set xrange[0:15]
 set xlabel "|v|"
-set output "img/mdistribution.pdf"
+set output "img/mdistribution.eps"
 hist = 'u (binwidth*(floor(($3-binstart)/binwidth)+0.5)+binstart):(1.0) smooth freq'
 
 # store data in a temporary file for fitting
