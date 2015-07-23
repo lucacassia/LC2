@@ -12,6 +12,7 @@ typedef struct body{
     double  acc[DIMENSION];  /* acceleration */
 }body;
 
+int **table = NULL; /* neighbors table */
 
 double Rc = 2.5;    /* cutoff radius */
 double Uc;          /* potential at the cutoff */
@@ -31,6 +32,14 @@ void clear(body *particle)
     if(particle)
         free(particle);
     particle = NULL;
+
+    if(table){
+        int i;
+        for(i = 0; i < n_particles; i++)
+            if(table[i])
+                free(table[i]);
+        free(table);
+    }table = NULL;
 }
 
 double potential(double r)
@@ -71,6 +80,75 @@ double PBC(double x)
     return x;
 } 
 
+void get_table(body *particle)
+{
+    int i,j,k;
+    int x[DIMENSION];
+    int FOUND_FLAG;
+    double r2, dr[DIMENSION];
+    int count;
+    for(i = 0; i < n_particles-1; i++){
+        count = 0;
+        for(j = i+1; j < n_particles; j++){
+            FOUND_FLAG = 0;
+            for(x[0] = -1; x[0] <= 1 ; x[0]++){
+                for(x[1] = -1; x[1] < 1 ; x[1]++){
+                    for(x[2] = -1; x[2] < 1; x[2]++){
+                        if(!FOUND_FLAG){
+                            r2 = 0;
+                            for(k = 0; k < DIMENSION; k++){
+                                dr[k] = x[k]*L + PBC(particle[j].pos[k]) - PBC(particle[i].pos[k]);
+                                r2 += dr[k]*dr[k];
+                            }
+                            if(r2 < Rc*Rc ){
+                                FOUND_FLAG = 1;
+                                table[i][count+1] = j;
+                                count++;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        table[i][0] = count;
+    }
+}
+
+/* use table of neighbors */
+void get_acc_table(body *particle)
+{
+    int i,j,k;
+    double r, r2, dr[DIMENSION];
+
+    /* initialize energy and accelerations to zero */
+    U = 0;
+
+    for(i = 0; i < n_particles; i++){
+        for(k = 0; k < DIMENSION; k++){
+            particle[i].acc[k] = 0;
+        }
+    }
+
+    /* determine interaction for each pair of particles (i,j) */
+    for(i = 0; i < n_particles-1; i++){
+        for(j = 0; j < table[i][0]; j++){
+            r2 = 0;
+            for(k = 0; k < DIMENSION; k++){
+                dr[k] = PBC(particle[i].pos[k] - particle[table[i][j]].pos[k]);
+                r2 += dr[k]*dr[k];
+            }
+            if( r2 < Rc*Rc ){
+                r = sqrt(r2);
+                U += potential(r);
+                for(k = 0; k < DIMENSION; k++){
+                    particle[i].acc[k] += force(r)*dr[k]/r;
+                    particle[table[i][0]].acc[k] -= force(r)*dr[k]/r;
+                }
+            }
+        }
+    }
+}
+
 /* function to compute forces */
 void get_acc(body *particle)
 {
@@ -98,8 +176,8 @@ void get_acc(body *particle)
                 r = sqrt(r2);
                 U += potential(r);
                 for(k = 0; k < DIMENSION; k++){
-                    particle[i].acc[k] = particle[i].acc[k] + force(r)*dr[k]/r;
-                    particle[j].acc[k] = particle[j].acc[k] - force(r)*dr[k]/r;
+                    particle[i].acc[k] += force(r)*dr[k]/r;
+                    particle[j].acc[k] -= force(r)*dr[k]/r;
                 }
             }
         }
@@ -147,6 +225,12 @@ void init(body *particle)
             particle[i].mom[j] *= sqrt(3*n_particles*T/(2*K));
 
     T = 2*K/(3*n_particles);
+
+    /* create table of neighbors */
+    table = (int**)malloc(n_particles*sizeof(int*));
+    for(i = 0; i < n_particles; i++)
+        table[i] = (int*)malloc(n_particles*sizeof(int));
+    get_table(particle);
 
     get_acc(particle);
 
