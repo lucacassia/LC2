@@ -19,16 +19,18 @@ all: rmxeq mkdep mkxeq rmpmk
 
 # main programs and required modules 
 
-MAIN = soft_core
+MAIN = soft_core 2DViewer
 
-MODULES = 
+RANDOM = mersenne
+
+MODULES = $(RANDOM)
 
 
 # search path for modules
 
-MDIR = 
+MDIR = ../modules
 
-VPATH = 
+VPATH = $(MDIR)/random
 
 
 # additional include directories

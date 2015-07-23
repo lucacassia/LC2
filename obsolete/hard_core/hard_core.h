@@ -3,7 +3,9 @@
 #include <stdio.h>
 
 #include "mersenne.h"
-#include "vec3.h"
+
+#define DIMENSION 3
+#include "vec.h"
 
 typedef struct body{
     double pos[DIMENSION];
@@ -307,4 +309,5 @@ void print()
     fclose(v);
     fclose(f);
 }
+
 
