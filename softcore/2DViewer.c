@@ -15,12 +15,15 @@ int WHICH_PARTICLE = 0;
 int SHOW_TABLE = 0;
 double FRAME = 0.025;
 
-body *particle = NULL;
+double dt = 0.001;
+double runtime = 0;
+
+body *particle = NULL;;
 
 void savePPM()
 {
     char filename[50];
-    sprintf(filename, "hardcore2d_%d_%f.ppm", n_particles, rho);
+    sprintf(filename, "hardcore2d_%d_%f.ppm", N, rho);
     FILE *f = fopen(filename,"wb");
     fprintf(f, "P6\n%d %d\n255\n", WIDTH, HEIGHT);
     unsigned char *snapshot = (unsigned char*)malloc(3*WIDTH*HEIGHT*sizeof(unsigned char));
@@ -34,10 +37,10 @@ void keyboard(unsigned char key, int x, int y)
 {
     switch(key){
         case 'p': case 'P':
-            printf("N: %d\n",n_particles);
+            printf("N: %d\n",N);
             printf("rho: %f\n",rho);
             printf("Runtime: %f\n",runtime);
-            printf("time_step: %f\n",time_step);
+            printf("dt: %f\n",dt);
             printf("T = %f\n",T);
             printf("H = %f\n",H);
             printf("K = %f\n",K);
@@ -51,7 +54,6 @@ void keyboard(unsigned char key, int x, int y)
             glutFullScreenToggle();
             break;
         case 'q': case 'Q': case 27:
-            clear(particle);
             exit(0);
             break;
     }
@@ -64,7 +66,7 @@ void specialKeyboard(int key, int x, int y)
             SINGLE_PARTICLE = !SINGLE_PARTICLE;
             break;
         case GLUT_KEY_F2:
-            WHICH_PARTICLE = (WHICH_PARTICLE+1)%n_particles;
+            WHICH_PARTICLE = (WHICH_PARTICLE+1)%N;
             break;
         case GLUT_KEY_F3:
             SHOW_TABLE = !SHOW_TABLE;
@@ -73,10 +75,10 @@ void specialKeyboard(int key, int x, int y)
             glutFullScreenToggle();
             break;
         case GLUT_KEY_UP:
-            time_step *= 1.1;
+            dt *= 1.1;
             break;
         case GLUT_KEY_DOWN:
-            time_step /= 1.1;
+            dt /= 1.1;
             break;
         case GLUT_KEY_LEFT:
             rho /= 1.1;
@@ -91,7 +93,7 @@ void specialKeyboard(int key, int x, int y)
 
 void idle(void)
 {
-    if(ACTIVE) integrate(particle);
+    if(ACTIVE){ integrate(particle); runtime += dt;}
     glutPostRedisplay();
 }
 
@@ -99,7 +101,7 @@ void initGL()
 {
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    gluOrtho2D(0.0-FRAME, 1.0+FRAME, 0.0-FRAME, 1.0+FRAME);
+    gluOrtho2D((0.0-FRAME)*L, (1.0+FRAME)*L, (0.0-FRAME)*L, (1.0+FRAME)*L);
     glClearColor(1.0,1.0,1.0,0.0);
 }
  
@@ -143,9 +145,9 @@ void display()
 /*        if(SHOW_TABLE){
             for(i = 0; i < neighbor[i][0]; i++)
                 drawCircle(particle[neighbor[WHICH_PARTICLE][i+1]].pos,1,bright);
-        }else{for(i = 0; i < n_particles; i++) drawCircle(particle[i].pos,1,bright);}*/
+        }else{for(i = 0; i < N; i++) drawCircle(particle[i].pos,1,bright);}*/
         drawCircle(particle[WHICH_PARTICLE].pos,1,dark);
-    }else for(i = 0; i < n_particles; i++) drawCircle(particle[i].pos,1,normal);
+    }else for(i = 0; i < N; i++) drawCircle(particle[i].pos,1,normal);
 
     /* draw frame */
     glColor3ub(0,0,0);
@@ -162,11 +164,11 @@ void display()
 
 int main(int argc, char **argv)
 {
-    n_particles = 108;
+    N = 108;
     rho = 0.7;
     T = 1.19;
-    time_step = 0.001;
-    particle = (body*)malloc(n_particles*sizeof(body));
+    body alias[N];
+    particle = alias;
     init(particle);
 
     glutInit(&argc, argv);

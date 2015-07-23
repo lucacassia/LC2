@@ -1,76 +1,97 @@
-/*
- *  usage: ./softcore < input > output
- */
+#include <stdio.h>
+#include <math.h>
+#include <stdlib.h>
+#include <time.h>
+#include <float.h>
 
-#define DIMENSION 3
+#include"lib.h"
 
-#include"softcore.h"
-
-int main()
+int main (int argc, char *argv[])
 {
-   /* read parameters */
-   fflush(stdout);
-   scanf("%d", &n_particles);
-   fflush(stdout);
-   scanf("%lf", &rho);
-   fflush(stdout);
-   scanf("%lf", &T);
-   fflush(stdout);
-   scanf("%lf", &runtime);
-   fflush(stdout);
-   scanf("%lf", &time_step);
-   fflush(stdout);
-   scanf("%lf", &thermalization_time);
+    rho = 0.7;
+    NUMBER_OF_PARTICLES = 108;
+    L = cbrt(NUMBER_OF_PARTICLES/rho);
+    TEMPERATURE = 1.19;
+    Rc = 2.5;
+    Rm = 2.8;
+    dF = -24*(2/pow(Rc,13)-1/pow(Rc,7));
+    Uc = 4*(1/(pow(Rc,12))-1/(pow(Rc,6)));
+    dt = 0.001;
 
-    L = cbrt(n_particles/rho);
+    /* print header with infos */
+    printf("#rho = %f N = %d L = %f T = %f dt = %f\n", rho, NUMBER_OF_PARTICLES, L, TEMPERATURE, dt );
 
-    /* print header */
-    printf("#N=%d L=%f T=%f runtime=%f dt=%f thermalization=%f\n", n_particles, L, T, runtime, time_step, thermalization_time);
+    unsigned int step_MSD = 100;    /* step with which MSD measurements are taken */
+    buffer_size = 300;              /* total number of measurements MSD */
 
-    int numSteps = (int)(runtime/time_step + 0.5);
-    int burninSteps = (int)(thermalization_time/time_step + 0.5);    
-    int count;             /* counts time steps */
-    int numPoints = 0;  /* counts measurements */
-    double sumH = 0;  /* total energy accumulated over steps */
-    double sumH2 = 0;  /* total energy squared accumulated */
-    double avgH, avgH2, fluctH;  /* average energy, square, fluctuations */
+    /* allocate memory */
+    particleList = (body*)malloc(NUMBER_OF_PARTICLES * sizeof(body));
+    neighboursList = malloc(NUMBER_OF_PARTICLES * NUMBER_OF_PARTICLES * sizeof(body));
+    buffer = malloc(buffer_size * NUMBER_OF_PARTICLES * sizeof(body));
 
-    /* initialization */
-    body *particle = (body*)malloc(n_particles*sizeof(body));
-    init(particle);
-    printf("#   time           E             U            K            T        <[H-<H>]²>\n");
-    printf("%e %e %e %e %e %e\n", 0.0, H/n_particles, U/n_particles, K/n_particles, T, 0.0);
+    init();
+    PBC(particleList);
+    print_coordinate();
+    create_list();
+    set_temperature(TEMPERATURE);
 
-    FILE*f = fopen("trajectory.dat","w");
+    /* thermalizartion */
+    runtime = 0;
+    int iteration = 0;
+    printf("#t\tH\tP\n");
+    while(iteration < 1e4){
+        printf("%d\t%e\t%e\n", iteration*dt, total_energy(), total_momentum() );
 
-    /* thermalization */
-    for(count = 0; count < burninSteps; count++){
-        integrate(particle);
-
-        fprintf(f,"%e\t%e\t%e\ti\n",PBC(particle[0].pos[0]),PBC(particle[0].pos[1]),PBC(particle[0].pos[2]));
-        printf("%e %e %e %e %e %e\n", count*time_step, H/n_particles, U/n_particles, K/n_particles, T, 0.0);
+        /* update list every 10 cycles */
+        /*  and reset the temperature  */
+        if(iteration%10 == 0){
+            create_list();
+            set_temperature(TEMPERATURE);
+        }
+        verlet(particleList);
+        runtime += dt;
+        iteration++;
     }
 
-    /* collect data */
-    for(count = burninSteps; count < numSteps; count++){
-        integrate(particle);
-        fprintf(f,"%e\t%e\t%e\ti\n",PBC(particle[0].pos[0]),PBC(particle[0].pos[1]),PBC(particle[0].pos[2]));
+    /* measurements */
+    runtime = 0;
+    iteration = 0;
+    int buffer_index = 0;
+    printf("#i\tH\tP\n");
+    while(iteration < buffer_size * step_MSD){
+        if(iteration%1000 == 0){
+            printf("%d\t%e\t%e\n", iteration, total_energy(), total_momentum() );
+            print_distribution();
+        }
 
-        /* accumulate energy and its square */
-        sumH  = sumH + H;
-        sumH2 = sumH2 + H*H;
-        numPoints++;
+        /* update list every 10 cycles */
+        if(iteration%10==0){ create_list(); }
 
-        /* determine averages and fluctuations */
-        avgH    = sumH/numPoints;
-        avgH2  = sumH2/numPoints;
-        fluctH = sqrt(avgH2 - avgH*avgH);
+        verlet(particleList);
+        runtime += dt;
 
-        printf("%e %e %e %e %e %e\n", count*time_step, H/n_particles, U/n_particles, K/n_particles, T, fluctH/n_particles);
+        int i,j;
+        if(iteration%step_MSD == 0){
+            for(i = 0; i < NUMBER_OF_PARTICLES; i++)
+                for(j = 0; j < DIMENSION; j++)
+                    buffer[buffer_index * NUMBER_OF_PARTICLES + i] = particleList[i];
+            buffer_index++;
+        }
+        if(iteration%20 == 0){
+            print_energy();
+            print_momentum();
+        }
+        iteration++;
     }
-    fclose(f);
 
-    clear(particle);
+    /* compute the MSD */
+    printf("# MSD saved to: data/MSD.dat\n");
+    print_MSD("data/MSD.dat");
+
+    /* free memory */
+    free(particleList);
+    free(neighboursList);
+    free(buffer);
 
     return 0;
 }
