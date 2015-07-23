@@ -17,8 +17,8 @@ GLuint selectBuf[BUFSIZE];
 int h_angle = 0;
 int v_angle = 0;
 int active = 0;
-int width = 500;
-int height = 500;
+int WIDTH = 500;
+int HEIGHT = 500;
 int MODE = 0;
 
 void drawString(int x, int y, char *format,...)
@@ -64,17 +64,17 @@ void drawSphere(double *pos, double radius, double *col)
 
 void reshapeF(int w, int h)
 {
-    glViewport(0, 0, width = w, height = h); 
+    glViewport(0, 0, WIDTH = w, HEIGHT = h); 
 }
 
 void displayF()
 {
     glClearColor(0,0,0,0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glViewport (0, 0, (GLsizei) width, (GLsizei) height);
+    glViewport (0, 0, (GLsizei) WIDTH, (GLsizei) HEIGHT);
     glMatrixMode (GL_PROJECTION);
     glLoadIdentity ();
-    glFrustum (-width * 0.5 / height, width * 0.5 / height, -0.5, 0.5, 0.5, 50);
+    glFrustum (-WIDTH * 0.5 / HEIGHT, WIDTH * 0.5 / HEIGHT, -0.5, 0.5, 0.5, 50);
     glMatrixMode (GL_MODELVIEW);
     glLoadIdentity();
     gluLookAt (0.0, 0.0, 1, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
@@ -114,5 +114,38 @@ void glInit()
   glNewList(SPHERE, GL_COMPILE);
   glutSolidSphere(1, 50, 50);
   glEndList();
+}
+
+void idleF(void)
+{
+    if(active) run();
+    glutPostRedisplay();
+}
+
+void specialKeyboardF(int key, int x, int y)
+{
+    switch(key){
+        case GLUT_KEY_F1:
+            SINGLE_PARTICLE = !SINGLE_PARTICLE;
+            break;
+        case GLUT_KEY_F2:
+            WHICH_PARTICLE = (WHICH_PARTICLE+1)%n_particles;
+            break;
+        case GLUT_KEY_F11:
+            glutFullScreenToggle();
+            break;
+        case GLUT_KEY_UP:
+            v_angle++;
+            break;
+        case GLUT_KEY_DOWN:
+            v_angle--;
+            break;
+        case GLUT_KEY_LEFT:
+            h_angle++;
+            break;
+        case GLUT_KEY_RIGHT:
+            h_angle--;
+            break;
+    }
 }
 

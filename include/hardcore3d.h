@@ -63,7 +63,7 @@ void set_position()
 
 /* compute <dr²(dt)> by averaging on every particle at t,dt fixed. for each particle take the distance with its nearest copy */
 
-double get_dr2(double **list0, double **list1)
+double get_MSD(double **list0, double **list1)
 {
     int i,j;
     int dx[DIMENSION];

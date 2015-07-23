@@ -36,7 +36,7 @@ int main (int argc, char *argv[])
     printf("Data gathered\n");
 
     sprintf(filename,"data/%d_%.3f_msd.dat",n_particles,ETA);
-    print_dr2(filename);
+    print_MSD(filename);
 
     clear();
     return 0;

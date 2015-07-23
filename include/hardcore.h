@@ -38,12 +38,12 @@ double min_time;
 double dp;
 int n_collisions;
 
-/* these are the prototypes for the d-dependent functions               */
+/* these are the prototypes for the dimensional dependent functions     */
 /* to be defined in the appropriate library: hardcore2d.h or hardcore3d */
 double get_collision_time(int i, int j);
 double get_sigma(double eta);
 void set_position();
-double get_dr2(double **list0, double **list1);
+double get_MSD(double **list0, double **list1);
 double run();
 
 /* these are the d-independent functions */
@@ -280,7 +280,7 @@ void print_mom()
 }
 
 /* compute <dr²(dt)> for every dt and write to file */
-void print_dr2(char *filename)
+void print_MSD(char *filename)
 {
     FILE *f = fopen(filename, "w");
     int count, start, shift;
@@ -289,7 +289,7 @@ void print_dr2(char *filename)
     for(shift = 0; shift < buffer_size; shift++){
         error = mean = count = 0.0f;
         for(start = 0; (start + shift) < buffer_size; start++){
-            tmp = get_dr2( buffer[start], buffer[start+shift] );
+            tmp = get_MSD( buffer[start], buffer[start+shift] );
             mean += tmp;
             error += tmp*tmp;
             count++;

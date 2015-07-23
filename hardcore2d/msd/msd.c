@@ -45,7 +45,7 @@ int main (int argc, char *argv[])
     if(UNFOLD_FLAG) sprintf(filename,"data/%d_%.3f_unf_msd.dat",n_particles,ETA);
     else            sprintf(filename,"data/%d_%.3f_msd.dat",n_particles,ETA);
     printf("UF: %d\n",UNFOLD_FLAG);
-    print_dr2(filename);
+    print_MSD(filename);
 
     clear();
     return 0;
