@@ -16,10 +16,10 @@ int WHICH_PARTICLE = 0;
 GLuint selectBuf[BUFSIZE];
 int h_angle = 0;
 int v_angle = 0;
-int active = 0;
 int WIDTH = 500;
 int HEIGHT = 500;
 int MODE = 0;
+int ACTIVE = 0;
 
 void drawString(int x, int y, char *format,...)
 {
@@ -116,12 +116,6 @@ void glInit()
   glEndList();
 }
 
-void idleF(void)
-{
-    if(active) run();
-    glutPostRedisplay();
-}
-
 void specialKeyboardF(int key, int x, int y)
 {
     switch(key){
@@ -129,7 +123,7 @@ void specialKeyboardF(int key, int x, int y)
             SINGLE_PARTICLE = !SINGLE_PARTICLE;
             break;
         case GLUT_KEY_F2:
-            WHICH_PARTICLE = (WHICH_PARTICLE+1)%n_particles;
+            WHICH_PARTICLE++;;
             break;
         case GLUT_KEY_F11:
             glutFullScreenToggle();

@@ -5,7 +5,7 @@
 
 #include "hardcore.h"
 
-double get_collision_time(int i, int j)
+double get_table_entry(int i, int j)
 {
     int k;
     double dr[DIMENSION], dv[DIMENSION], dx[DIMENSION];
@@ -32,14 +32,45 @@ double get_collision_time(int i, int j)
     return collision_time;
 }
 
-double get_sigma(double eta)
+void get_table()
 {
+    int i, j;
+    collider[0] = 0;
+    collider[1] = 1;
+    double minimum = DBL_MAX;
+    for(i = 0; i < n_particles; i++)
+        for(j = i+1; j < n_particles; j++){
+            table[i][j] = get_table_entry(i,j);
+            if(table[i][j] <= minimum){
+                minimum = table[i][j];
+                collider[0] = i;
+                collider[1] = j;
+            }
+        }
+}
+
+void update_table()
+{
+    int i, j;
+    for(i = 0; i < n_particles; i++)
+        for(j = i+1; j < n_particles; j++)
+            if(i == collider[0] || j == collider[0] || i == collider[1] || j == collider[1])
+                table[i][j] = get_table_entry(i,j);
+            else
+                table[i][j] -= min_time;
+}
+
+double get_params(double eta)
+{
+    ETA = eta;
     double sigma = 1.1283791671 * sqrt( ETA/n_particles );
     /* check if disks fit the box */
     int k = 0; while( k * k < n_particles ) k++;
     if( sigma > 1.0f / k ) return -1;
-    else return sigma;
+    else return SIGMA = sigma;
 }
+
+/* square packing initialization in 2d */
 void set_position()
 {
     int i, k = 0; while( k * k < n_particles ) k++;
@@ -95,7 +126,7 @@ double run()
             idx++;
             FULL_BUFFER_FLAG = !(idx < buffer_size);
         }
-    }else FULL_BUFFER_FLAG = 1;
+    }
 
 
     for(k = 0; k < 2; k++){
@@ -137,7 +168,7 @@ double run()
         particle[collider[1]].mom[j] += tmp[j];
     }
 
-    update_collision_table();
+    update_table();
 
     n_collisions++;
     runtime += min_time;

@@ -13,35 +13,45 @@ typedef struct body{
     double pos[DIMENSION];      /* position */
     double unf[DIMENSION];      /* unfolded position */
     double mom[DIMENSION];      /* momentum */
+    double acc[DIMENSION];      /* acceleration */
     double distance;            /* distance traveled */
-    double last_collision_time; /* time of the last collision of the particle */
-    int n_collisions;           /* collisions made */
+    double last_collision_time; /* time of the last collision */
+    int n_collisions;           /* number of collisions made */
 }body;
 
-body *particle = NULL;
-double **collision_table = NULL;
-double ***buffer = NULL;
-int idx;
-int FULL_BUFFER_FLAG;
-int UNFOLD_FLAG = 0;
-
-double SIGMA;                   /* diameter of the disks */
-double ETA;                     /* packing density */
+body *particle = NULL;          /* particle list */
 int n_particles = 100;          /* number of particles */
-int buffer_size = 10000;        /* number of time steps of the simulation */
-double time_step = 0.5f;
+
+double ***buffer = NULL;        /* history of the system */
+int buffer_size = 10000;        /* size of the buffer */
+int idx;                        /* buffer index counter */
+
+double **table = NULL;          /* hard-core: collision table */
+int **neighbors = NULL;         /* soft-core: neighbor table */
+
+int FULL_BUFFER_FLAG;           /* flag that is set when buffer is full */
+int UNFOLD_FLAG = 0;            /* flag to set unfolded coordinates calculations */
+
+double SIGMA;                   /* diameter of the particles */
+double ETA;                     /* packing density */
+
+double time_step = 0.001f;      /* time interval of the simulation */
+double box_size = 1.0f;         /* size of the system */
+double runtime;                 /* time of the simulation */
+int int_time;
 
 int collider[2];
-
-double runtime;
+int n_collisions;
 double min_time;
 double dp;
-int n_collisions;
 
 /* these are the prototypes for the dimensional dependent functions     */
 /* to be defined in the appropriate library: hardcore2d.h or hardcore3d */
-double get_collision_time(int i, int j);
-double get_sigma(double eta);
+double get_table_entry(int i, int j);
+void get_table();
+void update_table();
+double get_params(double eta);
+void get_other_data();
 void set_position();
 double get_MSD(double **list0, double **list1);
 double run();
@@ -81,10 +91,10 @@ double get_total_momentum(){
 void set_temperature(double temp)
 {
     int i,j;
-    double energy = get_kinetic_energy();
+    double old_temp = get_temperature();
     for(i = 0; i < n_particles; i++)
         for(j = 0; j < DIMENSION; j++)
-            particle[i].mom[j] *= sqrt(DIMENSION*n_particles*temp/(2*energy));
+            particle[i].mom[j] *= sqrt(temp/old_temp);
 }
 
 double get_min_time()
@@ -92,46 +102,34 @@ double get_min_time()
     int i,j;
     collider[0] = 0;
     collider[1] = 1;
-    double minimum = collision_table[collider[0]][collider[1]];
+    double minimum = table[collider[0]][collider[1]];
     for(i = 0; i < n_particles; i++)
         for(j = i+1; j < n_particles; j++)
-            if(collision_table[i][j] <= minimum){
-                minimum = collision_table[i][j];
+            if(table[i][j] <= minimum){
+                minimum = table[i][j];
                 collider[0] = i;
                 collider[1] = j;
             }
     return minimum;
 }
 
-void get_collision_table()
-{
-    int i, j;
-    for(i = 0; i < n_particles; i++)
-        for(j = i+1; j < n_particles; j++)
-            collision_table[i][j] = get_collision_time(i,j);
-}
-
-void update_collision_table()
-{
-    int i, j;
-    for(i = 0; i < n_particles; i++)
-        for(j = i+1; j < n_particles; j++)
-            if(i == collider[0] || j == collider[0] || i == collider[1] || j == collider[1])
-                collision_table[i][j] = get_collision_time(i,j);
-            else
-                collision_table[i][j] -= min_time;
-}
 
 void clear()
 {
     int i,j;
     if(particle != NULL)
         free(particle);
-    if(collision_table){
+    if(table){
         for(i = 0; i < n_particles; i++)
-            if(collision_table[i])
-                free(collision_table[i]);
-        free(collision_table);
+            if(table[i])
+                free(table[i]);
+        free(table);
+    }
+    if(neighbors){
+        for(i = 0; i < n_particles; i++)
+            if(neighbors[i])
+                free(neighbors[i]);
+        free(neighbors);
     }
     if(buffer){
         for(i = 0; i < buffer_size; i++)
@@ -144,7 +142,8 @@ void clear()
         free(buffer);
     }
     particle = NULL;
-    collision_table = NULL;
+    table = NULL;
+    neighbors = NULL;
     buffer = NULL;
 }
 
@@ -158,6 +157,7 @@ void reset()
     }
 
     runtime = 0;
+    int_time = 0;
     n_collisions = 1;
     dp = 0;
     idx = 0;
@@ -165,12 +165,10 @@ void reset()
 }
 
 /* initialization */
-int init(double eta, double temperature)
+int init(double density, double temperature)
 {
-    ETA = eta;
-    SIGMA = get_sigma(ETA);
-    if(SIGMA == -1){
-        printf("\nParticles are too close!\n");
+    if(get_params(density) == -1){
+        printf("\nINIT ERROR!\n");
         return 1;
     }
 
@@ -183,9 +181,14 @@ int init(double eta, double temperature)
     /* allocate memory */
     clear();
     particle = (body*)malloc( n_particles * sizeof(body) );
-    collision_table = (double**)malloc( n_particles * sizeof(double*) );
+
+    table = (double**)malloc( n_particles * sizeof(double*) );
     for(i = 0; i < n_particles; i++)
-        collision_table[i] = (double*)malloc( n_particles * sizeof(double) );
+        table[i] = (double*)malloc( n_particles * sizeof(double) );
+
+    neighbors = (int**)malloc( n_particles * sizeof(int*) );
+    for(i = 0; i < n_particles; i++)
+        neighbors[i] = (int*)malloc( n_particles * sizeof(int) );
 
     buffer = (double***)malloc( buffer_size * sizeof(double**) );
     for(i = 0; i < buffer_size; i++){
@@ -216,9 +219,8 @@ int init(double eta, double temperature)
 
     set_temperature(temperature);
 
-    /* init stuff */
-    get_collision_table();
-    get_min_time();
+    /* init other stuff */
+    get_table();
     reset();
 
     return 0;

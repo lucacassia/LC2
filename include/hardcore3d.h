@@ -5,7 +5,7 @@
 
 #include "hardcore.h"
 
-double get_collision_time(int i, int j)
+double get_table_entry(int i, int j)
 {
     int k;
     double dr[DIMENSION], dv[DIMENSION], dx[DIMENSION];
@@ -34,16 +34,45 @@ double get_collision_time(int i, int j)
     return collision_time;
 }
 
-double get_sigma(double eta)
+void get_table()
 {
+    int i, j;
+    collider[0] = 0;
+    collider[1] = 1;
+    double minimum = DBL_MAX;
+    for(i = 0; i < n_particles; i++)
+        for(j = i+1; j < n_particles; j++){
+            table[i][j] = get_table_entry(i,j);
+            if(table[i][j] <= minimum){
+                minimum = table[i][j];
+                collider[0] = i;
+                collider[1] = j;
+            }
+        }
+}
+
+void update_table()
+{
+    int i, j;
+    for(i = 0; i < n_particles; i++)
+        for(j = i+1; j < n_particles; j++)
+            if(i == collider[0] || j == collider[0] || i == collider[1] || j == collider[1])
+                table[i][j] = get_table_entry(i,j);
+            else
+                table[i][j] -= min_time;
+}
+
+double get_params(double eta)
+{
+    ETA = eta;
     double sigma = 1.240700981798800033336013624095556334701572400372003240197913 * cbrt(ETA/n_particles);
     /* check if disks fit the box */
     int k = 0; while( 2* k * k * k < n_particles ) k++;
     if( sigma > 0.866025403784438646763723170752936183471402626905190314027903 / k ) return -1;
-    else return sigma;
+    else return SIGMA = sigma;
 }
 
-/* BCC initialization */
+/* BCC initialization in 3d */
 void set_position()
 {
     int n = 0; while(2 * n * n * n < n_particles ) n++;
@@ -62,7 +91,6 @@ void set_position()
 }
 
 /* compute <dr²(dt)> by averaging on every particle at t,dt fixed. for each particle take the distance with its nearest copy */
-
 double get_MSD(double **list0, double **list1)
 {
     int i,j;
@@ -105,7 +133,7 @@ double run()
             idx++;
             FULL_BUFFER_FLAG = !(idx < buffer_size);
         }
-    }else FULL_BUFFER_FLAG = 1;
+    }
 
 
     for(k = 0; k < 2; k++){
@@ -163,7 +191,7 @@ double run()
         particle[collider[1]].mom[j] += tmp[j];
     }
 
-    update_collision_table();
+    update_table();
 
     n_collisions++;
     runtime += min_time;
