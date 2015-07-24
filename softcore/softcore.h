@@ -82,7 +82,7 @@ void init_mom(obj list[], int N)
             list[i].mom[j] -= drift[j] / N;
             K += list[i].mom[j] * list[i].mom[j];
         }
-
+    T = K/(DIMENSION*N);
     K = K/2;
 }
 
@@ -95,7 +95,35 @@ void reset_mom(obj list[], int N, double r)
             list[i].mom[j] *= sqrt(r);
             K += list[i].mom[j] * list[i].mom[j];
         }
+    T = K/(DIMENSION*N);
     K = K/2;
+}
+
+void destroy_table(int **table, int N)
+{
+    if(table){
+        int i;
+        for(i = 0; i < N; i++)
+            if(table[i])
+                free(table[i]);
+        free(table);
+    }
+}
+
+void create_table(int **table, int N)
+{
+    destroy_table(table,N);
+    table = (int**)malloc(N*sizeof(int*));
+    int i;
+    for(i = 0; i < N; i++){
+        table[i] = (int*)malloc(N*sizeof(int));
+        table[i][0] = 0;
+    }
+}
+
+void compute_table(obj list[], int **table, int N)
+{
+    
 }
 
 void get_acc(obj list[], int N)
@@ -107,7 +135,7 @@ void get_acc(obj list[], int N)
             list[i].acc[j] = 0.0f;
 }
 
-double periodicBC(double x, double L)
+double PBC(double x, double L)
 {
     while(x > L) x -= L;
     while(x < 0) x += L;
@@ -120,7 +148,7 @@ void integrate(obj list[], int N, double L, double dt)
     for(i = 0; i < N; i++)
         for(j = 0; j < DIMENSION; j++){
             list[i].mom[j] += 0.5 * list[i].acc[j] * dt;
-            list[i].pos[j] = periodicBC(list[i].pos[j] + list[i].mom[j] * dt, L);
+            list[i].pos[j] = PBC(list[i].pos[j] + list[i].mom[j] * dt, L);
         }
     get_acc(list,N);
     K = 0.0f;
