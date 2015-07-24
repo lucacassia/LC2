@@ -41,10 +41,7 @@ void keyboard(unsigned char key, int x, int y)
 {
     switch(key){
         case 'p': case 'P':
-            printf("N: %d\n",N);
-            printf("rho: %f\n",rho);
-            printf("Runtime: %f\n",runtime);
-            printf("dt: %f\n",dt);
+            printf("t = %f H = %f K = %f U = %f T = %f\n",runtime,H,K,U,T);
             savePPM();
             break;
         case ' ':
@@ -96,7 +93,7 @@ void specialKeyboard(int key, int x, int y)
 void idle(void)
 {
     if(ACTIVE){
-        integrate(particle,N,dt);
+        integrate(particle,N,L,dt);
         runtime += dt;
     }
     glutPostRedisplay();
@@ -168,6 +165,8 @@ void display()
 
 int main(int argc, char **argv)
 {
+    printf("%s\n%s\n",glGetString(GL_RENDERER),glGetString(GL_VERSION));
+
     N = 100;
     rho = 0.5;
     L = pow(N/rho, 1.0f/DIMENSION);
@@ -175,11 +174,14 @@ int main(int argc, char **argv)
     runtime = 0.0;
     dt = 0.001;
 
+    printf("# N = %d rho = %f dt = %f\n\n",N,rho,dt);
+
     obj alias[N];
     particle = alias;
 
     init_pos(particle,N,L,0.5);
     init_mom(particle,N);
+    get_acc(particle,N);
 
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH | GLUT_MULTISAMPLE);
@@ -192,8 +194,6 @@ int main(int argc, char **argv)
     glutKeyboardFunc(keyboard);
     glutSpecialFunc(specialKeyboard);
     glutReshapeFunc(reshape);
-
-    printf("%s\n%s\n",glGetString(GL_RENDERER),glGetString(GL_VERSION));
 
     glutMainLoop();
     return 0;
