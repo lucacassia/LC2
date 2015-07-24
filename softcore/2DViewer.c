@@ -52,6 +52,7 @@ void keyboard(unsigned char key, int x, int y)
             glutFullScreenToggle();
             break;
         case 'q': case 'Q': case 27:
+            destroy_table(neighbour,N);
             exit(0);
             break;
     }
@@ -136,7 +137,7 @@ void display()
     glClear(GL_COLOR_BUFFER_BIT);
 
     char normal[3] = {33,102,172};
-/*    char bright[3] = {127,205,187};*/
+    char bright[3] = {127,205,187};
     char dark[3] = {8,29,88};
     char halo[3] = {237,248,177};
     char bighalo[3] = {255,255,217};
@@ -144,10 +145,10 @@ void display()
     if(SINGLE_PARTICLE){
         drawCircle(particle[WHICH_PARTICLE].pos,rc+0.3,bighalo);
         drawCircle(particle[WHICH_PARTICLE].pos,rc,halo);
-/*        if(SHOW_TABLE){
+        if(SHOW_TABLE){
             for(i = 0; i < neighbour[i][0]; i++)
-                drawCircle(particle[neighbour[WHICH_PARTICLE][i+1]].pos,1,bright);
-        }else{for(i = 0; i < N; i++) drawCircle(particle[i].pos,0.5,bright);}*/
+                drawCircle(particle[neighbour[WHICH_PARTICLE][i+1]].pos,0.5,bright);
+        }else{for(i = 0; i < N; i++) drawCircle(particle[i].pos,0.5,bright);}
         drawCircle(particle[WHICH_PARTICLE].pos,0.5,dark);
     }else for(i = 0; i < N; i++) drawCircle(particle[i].pos,0.5,normal);
 
@@ -179,7 +180,7 @@ int main(int argc, char **argv)
     glutSpecialFunc(specialKeyboard);
     glutReshapeFunc(reshape);
 
-    printf("%s\n%s\n",glGetString(GL_RENDERER),glGetString(GL_VERSION));
+    printf("%s\n%s\n\n",glGetString(GL_RENDERER),glGetString(GL_VERSION));
 
     /* MD settings */
     N = 100;
@@ -191,14 +192,14 @@ int main(int argc, char **argv)
 
     obj alias[N];
     particle = alias;
-    create_table(neighbour,N);
+    neighbour = create_table(neighbour,N);
 
 
-    init_pos(particle,N,L,0.5);     /* square lattice        */
-    init_mom(particle,N);           /* flat distribution     */
-    reset_mom(particle,N,1.19/T);   /* set temperature       */
-    get_acc(particle,N);            /* compute accelerations */
-    compute_table(particle,neighbour,N);
+    init_pos(particle,N,L,0.5);         /* square lattice        */
+    init_mom(particle,N);               /* flat distribution     */
+    reset_mom(particle,N,1.19/T);       /* set temperature       */
+    compute_table(particle,neighbour,N);/* table of neighbours   */
+    get_acc(particle,N);                /* compute accelerations */
 
     printf("# N = %d rho = %f dt = %f\n\n",N,rho,dt);
 

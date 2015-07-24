@@ -110,7 +110,7 @@ void destroy_table(int **table, int N)
     }
 }
 
-void create_table(int **table, int N)
+int **create_table(int **table, int N)
 {
     destroy_table(table,N);
     table = (int**)malloc(N*sizeof(int*));
@@ -119,6 +119,7 @@ void create_table(int **table, int N)
         table[i] = (int*)malloc(N*sizeof(int));
         table[i][0] = 0;
     }
+    return table;
 }
 
 void compute_table(obj list[], int **table, int N)
