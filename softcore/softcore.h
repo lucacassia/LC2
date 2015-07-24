@@ -11,7 +11,7 @@ double dt;
 double dF;
 double Uc;
 double L;
-double TEMPERATURE;
+double TEMPERATURE, H, U, K, T;
 
 double runtime;
 double V_MAX = 0.1;
@@ -33,11 +33,11 @@ unsigned int buffer_size;
 void print_coordinate()
 {
     FILE *f = fopen ("data/pack.dat","w");
-    int i = 0;
+    int i,j;
     for(i = 0; i< NUMBER_OF_PARTICLES ; i++){
-        fprintf(f,"%e\t", particleList[i].pos[0]);
-        fprintf(f,"%e\t", particleList[i].pos[1]);
-        fprintf(f,"%e\n", particleList[i].pos[2]);
+        for(j = 0; j < DIMENSION; j++)
+            fprintf(f,"%e\t", particleList[i].pos[j]);
+        fprintf(f,"\n");
     }
     fclose(f);
 }
@@ -67,11 +67,11 @@ void scalar_mult(double scalar, double* vec)
 
 double kinetic()
 {
-    int i = 0;
-    double  sum = 0;
-    for ( i = 0; i < NUMBER_OF_PARTICLES; i++)
+    int i;
+    double sum = 0;
+    for(i = 0; i < NUMBER_OF_PARTICLES; i++)
         sum += 0.5 * scalar(particleList[i].mom, particleList[i].mom);
-    return (sum/(double)DIMENSION);
+    return sum;
 }
 
 double total_momentum()
@@ -81,7 +81,7 @@ double total_momentum()
     for(i = 0; i < NUMBER_OF_PARTICLES; i++)
         for(j = 0; j < DIMENSION; j++)
             sum += particleList[i].mom[j];
-    return (sum);
+    return sum;
 }
 
 void PBC(body *particleList)
@@ -255,11 +255,10 @@ void verlet(body *list)
     }
 }
 
-double total_energy()
+double get_dynamical_variables()
 {
+    K = U = 0;
     int i,j;
-    double K = 0;
-    double U = 0;
     double v[DIMENSION];
     for(i = 0; i < NUMBER_OF_PARTICLES-1; i++){
         K += 0.5 * scalar(particleList[i].mom, particleList[i].mom);
@@ -268,15 +267,17 @@ double total_energy()
             U += potential(sqrt(scalar(v,v)));
         }
     }
-    return ((K+U)/(double)NUMBER_OF_PARTICLES);
+    T = (2*K)/(DIMENSION*NUMBER_OF_PARTICLES);
+    H = U + K;
+    return H;
 }
 
 void set_temperature(double new_temp){
     int i,j;
-    double K = kinetic();
+    double tmp = kinetic();
     for(i = 0; i < NUMBER_OF_PARTICLES; i++)
         for(j = 0; j < DIMENSION; j++)
-            particleList[i].mom[j] *= sqrt(new_temp/K);
+            particleList[i].mom[j] *= sqrt(new_temp/tmp);
 }
 
 double get_MSD(body *list0, body *list1)
@@ -329,14 +330,7 @@ void print_MSD(char *filename)
 void print_energy()
 {
     FILE *f = fopen("data/energy.dat","a");
-    fprintf(f,"%e\t%e\n",runtime,total_energy() );
-    fclose(f);
-}
-
-void print_momentum()
-{
-    FILE *f = fopen("data/momentum.dat","a");
-    fprintf(f,"%e\t%e\n",runtime,total_momentum() );
+    fprintf(f,"%e\t%e\t%e\t%e\t%e\n", runtime, H, U, K, T );
     fclose(f);
 }
 

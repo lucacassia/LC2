@@ -1,6 +1,6 @@
 #include<GL/freeglut.h>
 
-#define DIMENSION 3
+#define DIMENSION 2
 
 #include "softcore.h"
 
@@ -15,15 +15,19 @@ int WHICH_PARTICLE = 0;
 int SHOW_TABLE = 0;
 double FRAME = 0.025;
 
-double dt = 0.001;
-double runtime = 0;
+int N;
+double rho;
+double rc;
+double L;
+double dt;
+double runtime;
 
-body *particle = NULL;;
+obj *particle = NULL;;
 
 void savePPM()
 {
     char filename[50];
-    sprintf(filename, "hardcore2d_%d_%f.ppm", N, rho);
+    sprintf(filename, "softcore2d%d_%f.ppm", N, rho);
     FILE *f = fopen(filename,"wb");
     fprintf(f, "P6\n%d %d\n255\n", WIDTH, HEIGHT);
     unsigned char *snapshot = (unsigned char*)malloc(3*WIDTH*HEIGHT*sizeof(unsigned char));
@@ -41,10 +45,6 @@ void keyboard(unsigned char key, int x, int y)
             printf("rho: %f\n",rho);
             printf("Runtime: %f\n",runtime);
             printf("dt: %f\n",dt);
-            printf("T = %f\n",T);
-            printf("H = %f\n",H);
-            printf("K = %f\n",K);
-            printf("U = %f\n",U);
             savePPM();
             break;
         case ' ':
@@ -82,18 +82,23 @@ void specialKeyboard(int key, int x, int y)
             break;
         case GLUT_KEY_LEFT:
             rho /= 1.1;
-            init(particle);
+            L = pow(N/rho, 1.0f/DIMENSION);
+            init_pos(particle,N,L,0.5);
             break;
         case GLUT_KEY_RIGHT:
             rho *= 1.1;
-            init(particle);
+            L = pow(N/rho, 1.0f/DIMENSION);
+            init_pos(particle,N,L,0.5);
             break;
     }
 }
 
 void idle(void)
 {
-    if(ACTIVE){ integrate(particle); runtime += dt;}
+    if(ACTIVE){
+        integrate(particle,N,dt);
+        runtime += dt;
+    }
     glutPostRedisplay();
 }
 
@@ -101,7 +106,7 @@ void initGL()
 {
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    gluOrtho2D((0.0-FRAME)*L, (1.0+FRAME)*L, (0.0-FRAME)*L, (1.0+FRAME)*L);
+    gluOrtho2D( 0.0-FRAME, 1.0+FRAME, 0.0-FRAME, 1.0+FRAME);
     glClearColor(1.0,1.0,1.0,0.0);
 }
  
@@ -121,17 +126,16 @@ void reshape(int w, int h)
 void drawCircle(double *pos, double radius, char *color)
 {
     double i;
-    glColor3ub(color[0],color[1],color[2]);
+    glColor4ub(color[0],color[1],color[2],0.5);
     glBegin(GL_POLYGON);
     for(i=0;i<2*PI;i+=PI/24)
-        glVertex2f(0.5+PBC(pos[0])/L+cos(i)*radius/L,0.5+PBC(pos[1])/L+sin(i)*radius/L);
+        glVertex2f( (pos[0]+cos(i)*radius)/L, (pos[1]+sin(i)*radius)/L );
     glEnd();
 }
 
 void display()
 {
     glClear(GL_COLOR_BUFFER_BIT);
-    glEnable(GL_MULTISAMPLE_ARB);
 
     char normal[3] = {33,102,172};
 /*    char bright[3] = {127,205,187};*/
@@ -140,8 +144,8 @@ void display()
     char halo1[3] = {255,255,217};
     int i;
     if(SINGLE_PARTICLE){
-        drawCircle(particle[WHICH_PARTICLE].pos,Rc+0.3,halo1);
-        drawCircle(particle[WHICH_PARTICLE].pos,Rc,halo);
+        drawCircle(particle[WHICH_PARTICLE].pos,rc+0.3,halo1);
+        drawCircle(particle[WHICH_PARTICLE].pos,rc,halo);
 /*        if(SHOW_TABLE){
             for(i = 0; i < neighbor[i][0]; i++)
                 drawCircle(particle[neighbor[WHICH_PARTICLE][i+1]].pos,1,bright);
@@ -164,12 +168,18 @@ void display()
 
 int main(int argc, char **argv)
 {
-    N = 108;
-    rho = 0.7;
-    T = 1.19;
-    body alias[N];
+    N = 100;
+    rho = 0.5;
+    L = pow(N/rho, 1.0f/DIMENSION);
+    rc = 2.5;
+    runtime = 0.0;
+    dt = 0.001;
+
+    obj alias[N];
     particle = alias;
-    init(particle);
+
+    init_pos(particle,N,L,0.5);
+    init_mom(particle,N);
 
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH | GLUT_MULTISAMPLE);

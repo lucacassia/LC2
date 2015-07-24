@@ -19,7 +19,7 @@ all: rmxeq mkdep mkxeq rmpmk
 
 # main programs and required modules 
 
-MAIN = softcore
+MAIN = 2DViewer
 
 RANDOM = mersenne
 
