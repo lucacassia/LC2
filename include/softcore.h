@@ -147,7 +147,7 @@ double PBC(double x)
     while(x <= 0) x += L;
     return x;
 }
-
+/*
 void compute_full_table(obj list[], int **table)
 {
     int i,j,k;
@@ -233,6 +233,83 @@ void get_acc(obj list[], int **table)
                     r[k] *= force(modr)/modr;
                     list[i].acc[k] -= r[k];
                     list[table[i][1+j]].acc[k] += r[k];
+                }
+            }
+        }
+    }
+}
+*/
+double distPBC(double x)
+{
+    while(x >= 0.5 * L) x -= L;
+    while(x < -0.5 * L) x += L;
+    return x;
+}
+
+void compute_full_table(obj list[], int **table)
+{
+    int i,j,k;
+    double r2,r[DIMENSION];
+    for(i = 0; i < N; i++){
+        table[i][0] = 0;
+        for(j = 0; j < N; j++){
+            r2 = 0.0f;
+            for(k = 0; k < DIMENSION; k++){
+                r[k] = distPBC(list[j].pos[k] - list[i].pos[k]);
+                r2 += r[k] * r[k];
+            }
+            if((i!=j)&&(r2 < rm*rm)){
+                table[i][0]++;
+                table[i][table[i][0]] = j;
+            }
+        }
+    }
+}
+
+void compute_table(obj list[], int **table)
+{
+    int i,j,k;
+    double r2,r[DIMENSION];
+    for(i = 0; i < N; i++){
+        table[i][0] = 0;
+        for(j = i+1; j < N; j++){
+            r2 = 0.0f;
+            for(k = 0; k < DIMENSION; k++){
+                r[k] = distPBC(list[j].pos[k] - list[i].pos[k]);
+                r2 += r[k] * r[k];
+            }
+            if(r2 < rm*rm){
+                table[i][0]++;
+                table[i][table[i][0]] = j;
+            }
+        }
+    }
+}
+
+void get_acc(obj list[], int **table)
+{
+    int i,j,k;
+    double r[DIMENSION],tmp;
+    for(i = 0; i < N; i++)
+        for(k = 0; k < DIMENSION; k++)
+            list[i].acc[k] = 0.0f;
+
+    U = 0.0f;
+
+    for(i = 0; i < N; i++){
+        for(j = 0; j < table[i][0]; j++){
+            tmp = 0.0f;
+            for(k = 0; k < DIMENSION; k++){
+                r[k] = distPBC(list[table[i][j+1]].pos[k] - list[i].pos[k]);
+                tmp += r[k] * r[k];
+            }
+            if(tmp < rc*rc){
+                tmp = sqrt(tmp);
+                U += potential(tmp);
+                tmp = force(tmp)/tmp;
+                for(k = 0; k < DIMENSION; k++){
+                    list[i].acc[k] -= tmp*r[k];
+                    list[table[i][j+1]].acc[k] += tmp*r[k];
                 }
             }
         }

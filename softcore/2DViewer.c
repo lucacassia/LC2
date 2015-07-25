@@ -19,6 +19,7 @@ int steps;
 
 obj *particle = NULL;
 int **neighbour = NULL;
+int **full_neighbour = NULL;
 
 void initSC()
 {
@@ -30,12 +31,15 @@ void initSC()
 
     particle = (obj*)malloc(N*sizeof(obj));
     neighbour = create_table(neighbour);
+    full_neighbour = create_table(full_neighbour);
 
     init_pos(particle,N,0.5);         /* square lattice        */
     init_mom(particle);               /* flat distribution     */
     reset_mom(particle,0.01/T);       /* set temperature       */
-    compute_full_table(particle,neighbour);/* table of neighbours   */
+    compute_table(particle,neighbour);/* table of neighbours   */
+    compute_full_table(particle,full_neighbour);
     get_acc(particle,neighbour);      /* compute accelerations */
+
 
     printf("# N = %d rho = %f dt = %f\n\n",N,rho,dt);
 }
@@ -43,7 +47,10 @@ void initSC()
 void idle(void)
 {
     if(ACTIVE){
-        if(!(steps%10)) compute_full_table(particle,neighbour);
+        if(!(steps%10)){
+            compute_table(particle,neighbour);
+            compute_full_table(particle,full_neighbour);
+        }
         integrate(particle,neighbour);
         steps++;
     }
@@ -78,6 +85,7 @@ void keyboard(unsigned char key, int x, int y)
             break;
         case 'q': case 'Q': case 27:
             destroy_table(neighbour);
+            destroy_table(full_neighbour);
             free(particle);
             exit(0);
             break;
@@ -109,13 +117,15 @@ void specialKeyboard(int key, int x, int y)
             rho /= 1.1;
             L = pow(N/rho, 1.0f/DIMENSION);
             init_pos(particle,N,0.5);
-            compute_full_table(particle,neighbour);
+            compute_table(particle,neighbour);
+            compute_full_table(particle,full_neighbour);
             break;
         case GLUT_KEY_RIGHT:
             rho *= 1.1;
             L = pow(N/rho, 1.0f/DIMENSION);
             init_pos(particle,N,0.5);
-            compute_full_table(particle,neighbour);
+            compute_table(particle,neighbour);
+            compute_full_table(particle,full_neighbour);
             break;
     }
 }
@@ -193,8 +203,8 @@ void display()
         drawCircle(particle[WHICH_PARTICLE].pos,rc,halo);
         for(i = 0; i < N; i++)
             drawCircle(particle[i].pos,0.5,light);
-        for(i = 0; i < neighbour[WHICH_PARTICLE][0]; i++)
-            drawCircle(particle[neighbour[WHICH_PARTICLE][i+1]].pos,0.5,bright);
+        for(i = 0; i < full_neighbour[WHICH_PARTICLE][0]; i++)
+            drawCircle(particle[full_neighbour[WHICH_PARTICLE][i+1]].pos,0.5,bright);
         drawCircle(particle[WHICH_PARTICLE].pos,0.5,normal);
     }
     if(SINGLE_PARTICLE && !SHOW_TABLE)
