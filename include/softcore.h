@@ -148,6 +148,33 @@ double PBC(double x)
     return x;
 }
 
+void compute_full_table(obj list[], int **table)
+{
+    int i,j,k;
+    int FOUND_FLAG;
+    int l,lmax = ipow(3,DIMENSION);
+    int index[DIMENSION];
+    double r2,r[DIMENSION];
+
+    for(i = 0; i < N; i++){
+        table[i][0] = 0;
+        for(j = 0; j < N; j++)if(i!=j){
+            FOUND_FLAG = 0;
+            for(k = 0; k < DIMENSION; k++) index[k] = -1;
+            for(l = 0; l < lmax && !FOUND_FLAG; l++){
+                for(k = 0; k < DIMENSION; k++) r[k] = index[k] * L + list[j].pos[k] - list[i].pos[k];
+                r2 = scalar(r,r);
+                FOUND_FLAG = (r2 < rm*rm);
+                increment(index,-1,2,DIMENSION);
+            }
+            if(FOUND_FLAG){
+                table[i][0]++;
+                table[i][table[i][0]] = j;
+            }
+        }
+    }
+}
+
 void compute_table(obj list[], int **table)
 {
     int i,j,k;
@@ -158,7 +185,7 @@ void compute_table(obj list[], int **table)
 
     for(i = 0; i < N; i++){
         table[i][0] = 0;
-        for(j = i+1; j < N; j++)if(i!=j){
+        for(j = i+1; j < N; j++){
             FOUND_FLAG = 0;
             for(k = 0; k < DIMENSION; k++) index[k] = -1;
             for(l = 0; l < lmax && !FOUND_FLAG; l++){

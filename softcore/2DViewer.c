@@ -34,7 +34,7 @@ void initSC()
     init_pos(particle,N,0.5);         /* square lattice        */
     init_mom(particle);               /* flat distribution     */
     reset_mom(particle,0.01/T);       /* set temperature       */
-    compute_table(particle,neighbour);/* table of neighbours   */
+    compute_full_table(particle,neighbour);/* table of neighbours   */
     get_acc(particle,neighbour);      /* compute accelerations */
 
     printf("# N = %d rho = %f dt = %f\n\n",N,rho,dt);
@@ -43,7 +43,7 @@ void initSC()
 void idle(void)
 {
     if(ACTIVE){
-        if(!(steps%10)) compute_table(particle,neighbour);
+        if(!(steps%10)) compute_full_table(particle,neighbour);
         integrate(particle,neighbour);
         steps++;
     }
@@ -109,13 +109,13 @@ void specialKeyboard(int key, int x, int y)
             rho /= 1.1;
             L = pow(N/rho, 1.0f/DIMENSION);
             init_pos(particle,N,0.5);
-            compute_table(particle,neighbour);
+            compute_full_table(particle,neighbour);
             break;
         case GLUT_KEY_RIGHT:
             rho *= 1.1;
             L = pow(N/rho, 1.0f/DIMENSION);
             init_pos(particle,N,0.5);
-            compute_table(particle,neighbour);
+            compute_full_table(particle,neighbour);
             break;
     }
 }
