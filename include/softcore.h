@@ -158,7 +158,7 @@ void compute_table(obj list[], int **table)
 
     for(i = 0; i < N; i++){
         table[i][0] = 0;
-        for(j = 0; j < N; j++)if(i!=j){
+        for(j = i+1; j < N; j++)if(i!=j){
             FOUND_FLAG = 0;
             for(k = 0; k < DIMENSION; k++) index[k] = -1;
             for(l = 0; l < lmax && !FOUND_FLAG; l++){
@@ -177,32 +177,36 @@ void compute_table(obj list[], int **table)
 
 void get_acc(obj list[], int **table)
 {
+    U = 0.0f;
+
     int i,j,k;
     for(i = 0; i < N; i++)
         for(k = 0; k < DIMENSION; k++)
             list[i].acc[k] = 0.0f;
 
-    U = 0.0f;
-
     double r2,modr;
     double r[DIMENSION];
     int l,lmax = ipow(3,DIMENSION);
     int index[DIMENSION];
+    int FOUND_FLAG;
     for(i = 0; i < N; i++){
         for(j = 0; j < table[i][0]; j++){
+            FOUND_FLAG = 0;
             for(k = 0; k < DIMENSION; k++) index[k] = -1;
-            for(l = 0; l < lmax; l++){
+            for(l = 0; l < lmax && !FOUND_FLAG; l++){
                 for(k = 0; k < DIMENSION; k++) r[k] = index[k] * L + list[table[i][1+j]].pos[k] - list[i].pos[k];
                 r2 = scalar(r,r);
-                if(r2 < rc*rc){
-                    modr = sqrt(r2);
-                    U += potential(modr);
-                    for(k = 0; k < DIMENSION; k++){
-                        list[i].acc[k] -= force(modr)*r[k]/modr;
-                        list[table[i][1+j]].acc[k] += force(modr)*r[k]/modr;
-                    }
-                }
+                FOUND_FLAG = (r2 < rc*rc);
                 increment(index,-1,2,DIMENSION);
+            }
+            if(FOUND_FLAG){
+                modr = sqrt(r2);
+                U += potential(modr);
+                for(k = 0; k < DIMENSION; k++){
+                    r[k] *= force(modr)/modr;
+                    list[i].acc[k] -= r[k];
+                    list[table[i][1+j]].acc[k] += r[k];
+                }
             }
         }
     }
