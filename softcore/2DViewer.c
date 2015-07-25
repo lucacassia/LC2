@@ -150,6 +150,16 @@ void drawCircle(double *pos, double radius, char *color)
     if((pos[0]-radius)/L<0){glBegin(GL_POLYGON);for(i=0;i<2*PI;i+=PI/24)glVertex2f((pos[0]+cos(i)*radius)/L+1,(pos[1]+sin(i)*radius)/L);glEnd();}
     if((pos[1]+radius)/L>1){glBegin(GL_POLYGON);for(i=0;i<2*PI;i+=PI/24)glVertex2f((pos[0]+cos(i)*radius)/L,(pos[1]+sin(i)*radius)/L-1);glEnd();}
     if((pos[1]-radius)/L<0){glBegin(GL_POLYGON);for(i=0;i<2*PI;i+=PI/24)glVertex2f((pos[0]+cos(i)*radius)/L,(pos[1]+sin(i)*radius)/L+1);glEnd();}
+
+    if( ((pos[0]+radius)/L>1)&&((pos[1]+radius)/L>1) )
+        {glBegin(GL_POLYGON);for(i=0;i<2*PI;i+=PI/24)glVertex2f((pos[0]+cos(i)*radius)/L-1,(pos[1]+sin(i)*radius)/L-1);glEnd();}
+    if( ((pos[0]+radius)/L>1)&&((pos[1]-radius)/L<0) )
+        {glBegin(GL_POLYGON);for(i=0;i<2*PI;i+=PI/24)glVertex2f((pos[0]+cos(i)*radius)/L-1,(pos[1]+sin(i)*radius)/L+1);glEnd();}
+    if( ((pos[0]-radius)/L<0)&&((pos[1]+radius)/L>1) )
+        {glBegin(GL_POLYGON);for(i=0;i<2*PI;i+=PI/24)glVertex2f((pos[0]+cos(i)*radius)/L+1,(pos[1]+sin(i)*radius)/L-1);glEnd();}
+    if( ((pos[0]-radius)/L<0)&&((pos[1]-radius)/L<0) )
+        {glBegin(GL_POLYGON);for(i=0;i<2*PI;i+=PI/24)glVertex2f((pos[0]+cos(i)*radius)/L+1,(pos[1]+sin(i)*radius)/L+1);glEnd();}
+
 }
 
 void display()
@@ -177,14 +187,32 @@ void display()
     }else for(i = 0; i < N; i++) drawCircle(particle[i].pos,0.5,normal);
 
     /* draw window */
-/*    glColor3ub(1,1,1);
+    glColor3ub(255,255,255);
     glBegin(GL_POLYGON);
-        glVertex2f(0.0,0.0);
-        glVertex2f(1.0,0.0);
-        glVertex2f(1.0,1.0);
-        glVertex2f(0.0,1.0);
+        glVertex2f(wleft,wbottom);
+        glVertex2f(wright,wbottom);
+        glVertex2f(wright,0.0);
+        glVertex2f(wleft,0.0);
     glEnd();
-*/
+    glBegin(GL_POLYGON);
+        glVertex2f(wleft,1.0);
+        glVertex2f(wright,1.0);
+        glVertex2f(wright,wtop);
+        glVertex2f(wleft,wtop);
+    glEnd();
+    glBegin(GL_POLYGON);
+        glVertex2f(1.0,0.0);
+        glVertex2f(wright,0.0);
+        glVertex2f(wright,1.0);
+        glVertex2f(1.0,1.0);
+    glEnd();
+    glBegin(GL_POLYGON);
+        glVertex2f(wleft,0.0);
+        glVertex2f(0.0,0.0);
+        glVertex2f(0.0,1.0);
+        glVertex2f(wleft,1.0);
+    glEnd();
+
     /* draw frame */
     glColor3ub(0,0,0);
     glLineWidth(3);
