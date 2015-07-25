@@ -17,8 +17,8 @@ double FRAME = 0.025;
 double wleft,wright,wbottom,wtop;
 
 int N;
+int steps;
 double rho;
-double runtime;
 
 obj *particle = NULL;
 int **neighbour = NULL;
@@ -40,7 +40,7 @@ void keyboard(unsigned char key, int x, int y)
 {
     switch(key){
         case 'p': case 'P':
-            printf("t = %f H = %f K = %f U = %f T = %f\n",runtime,H,K,U,T);
+            printf("t = %f H = %f K = %f U = %f T = %f\n",steps*dt,H,K,U,T);
             savePPM();
             break;
         case ' ':
@@ -95,9 +95,10 @@ void specialKeyboard(int key, int x, int y)
 void idle(void)
 {
     if(ACTIVE){
-        compute_table(particle,neighbour,N);
+        if(!(steps%10)) compute_table(particle,neighbour,N);
         integrate(particle,neighbour,N);
-        runtime += dt;
+        reset_mom(particle,N,1.19/T);
+        steps++;
     }
     glutPostRedisplay();
 }
@@ -139,7 +140,7 @@ void reshape(int w, int h)
 void drawCircle(double *pos, double radius, char *color)
 {
     double i;
-    glColor4ub(color[0],color[1],color[2],0.5);
+    glColor3ub(color[0],color[1],color[2]);
     /* first copy */
     glBegin(GL_POLYGON);
     for(i=0;i<2*PI;i+=PI/24)
@@ -248,7 +249,9 @@ int main(int argc, char **argv)
     L = pow(N/rho, 1.0f/DIMENSION);
     rc = 2.5;
     rm = rc + 0.3;
-    runtime = 0.0;
+    dF = -24*(2/pow(rc,13)-1/pow(rc,7));
+    Uc = 4*(1/(pow(rc,12))-1/(pow(rc,6)));
+    steps = 0;
     dt = 0.001;
 
     obj alias[N];

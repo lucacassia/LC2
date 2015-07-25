@@ -7,8 +7,19 @@
 #include<time.h>
 
 double H,K,U,T;
-double L,rc,rm;
+double L,rc,rm,Uc,dF;
 double dt;
+
+double potential(double r)
+{
+    if(r < rc) return (( 4*(1/(pow(r,12))-1/(pow(r,6)))) - Uc - dF*(r-rc));
+    return 0;
+}
+
+double force(double r)
+{
+    return (24*(2*pow(1/r,13) - pow(1/r,7))+ dF);
+}
 
 typedef struct obj{
     double pos[DIMENSION];
@@ -160,11 +171,32 @@ void compute_table(obj list[], int **table, int N)
 
 void get_acc(obj list[], int **table, int N)
 {
-    int i,j;
-    U = 0.0f;
+    int i,j,k;
+    double r[DIMENSION],tmp;
     for(i = 0; i < N; i++)
-        for(j = 0; j < DIMENSION; j++)
-            list[i].acc[j] = 0.0f;
+        for(k = 0; k < DIMENSION; k++)
+            list[i].acc[k] = 0.0f;
+
+    U = 0.0f;
+
+    for(i = 0; i < N; i++){
+        for(j = 0; j < table[i][0]; j++){
+            tmp = 0.0f;
+            for(k = 0; k < DIMENSION; k++){
+                r[k] = distPBC(list[table[i][j+1]].pos[k] - list[i].pos[k]);
+                tmp += r[k] * r[k];
+            }
+            if(tmp < rc*rc){
+                tmp = sqrt(tmp);
+                U += potential(tmp);
+                tmp = force(tmp)/tmp;
+                for(k = 0; k < DIMENSION; k++){
+                    list[i].acc[k] -= tmp*r[k];
+                    list[table[i][j+1]].acc[k] += tmp*r[k];
+                }
+            }
+        }
+    }
 }
 
 void integrate(obj list[],int **table, int N)
