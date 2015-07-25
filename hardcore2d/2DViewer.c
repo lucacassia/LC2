@@ -9,7 +9,8 @@ int HEIGHT = 600;
 int ACTIVE = 0;
 int SINGLE_PARTICLE = 0;
 int WHICH_PARTICLE = 0;
-double frame = 0.025;
+double FRAME = 0.025;
+double wleft,wright,wbottom,wtop;
 
 void savePPM()
 {
@@ -79,9 +80,14 @@ void idle(void)
 
 void initGL()
 {
+    wleft =  0.0 - FRAME;
+    wright =  1.0 + FRAME;
+    wbottom =  0.0 - FRAME;
+    wtop =  1.0 + FRAME;
+
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    gluOrtho2D(0.0-frame, 1.0+frame, 0.0-frame, 1.0+frame);
+    gluOrtho2D(wleft, wright, wbottom, wtop);
     glClearColor(1.0,1.0,1.0,0.0);
 }
  
@@ -92,21 +98,43 @@ void reshape(int w, int h)
     glViewport(0, 0, (GLsizei)WIDTH, (GLsizei)HEIGHT);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    if(WIDTH > HEIGHT)
-        gluOrtho2D((0.0-frame)-(WIDTH-HEIGHT)*(1+2*frame)/(2*HEIGHT), (1.0+frame)+(WIDTH-HEIGHT)*(1+2*frame)/(2*HEIGHT), 0.0-frame, 1.0+frame);
-    else
-        gluOrtho2D(0.0-frame, 1.0+frame, (0.0-frame)-(HEIGHT-WIDTH)*(1+2*frame)/(2*WIDTH), (1.0+frame)+(HEIGHT-WIDTH)*(1+2*frame)/(2*WIDTH));
+    if(WIDTH > HEIGHT){
+        wleft = (0.0-FRAME) -(WIDTH-HEIGHT)*(1+2*FRAME)/(2*HEIGHT);
+        wright = (1.0+FRAME)+(WIDTH-HEIGHT)*(1+2*FRAME)/(2*HEIGHT);
+        wbottom = (0.0-FRAME);
+        wtop = (1.0+FRAME);
+    }else{
+        wleft = (0.0-FRAME);
+        wright = (1.0+FRAME);
+        wbottom = (0.0-FRAME)-(HEIGHT-WIDTH)*(1+2*FRAME)/(2*WIDTH);
+        wtop = (1.0+FRAME)+(HEIGHT-WIDTH)*(1+2*FRAME)/(2*WIDTH);
+    }
+    gluOrtho2D(wleft, wright, wbottom, wtop);
 }
 
 void drawCircle(double *pos, double radius, char *color)
 {
     double i;
-    glColor3ub(color[0],color[1],color[2]);
-    glBegin(GL_POLYGON);for(i=0;i<2*PI;i+=PI/24)glVertex2f(pos[0]+cos(i)*radius,pos[1]+sin(i)*radius);glEnd();
-    if(pos[0]+radius>1){glBegin(GL_POLYGON);for(i=0;i<2*PI;i+=PI/24)glVertex2f(pos[0]-1.0+cos(i)*radius,pos[1]+sin(i)*radius);glEnd();}
-    if(pos[0]-radius<0){glBegin(GL_POLYGON);for(i=0;i<2*PI;i+=PI/24)glVertex2f(pos[0]+1.0+cos(i)*radius,pos[1]+sin(i)*radius);glEnd();}
-    if(pos[1]+radius>1){glBegin(GL_POLYGON);for(i=0;i<2*PI;i+=PI/24)glVertex2f(pos[0]+cos(i)*radius,pos[1]-1.0+sin(i)*radius);glEnd();}
-    if(pos[1]-radius<0){glBegin(GL_POLYGON);for(i=0;i<2*PI;i+=PI/24)glVertex2f(pos[0]+cos(i)*radius,pos[1]+1.0+sin(i)*radius);glEnd();}
+    glColor4ub(color[0],color[1],color[2],0.5);
+    /* first copy */
+    glBegin(GL_POLYGON);
+    for(i=0;i<2*PI;i+=PI/24)
+        glVertex2f( (pos[0]+cos(i)*radius), (pos[1]+sin(i)*radius) );
+    glEnd();
+    /* other copies */
+    if((pos[0]+radius)>1){glBegin(GL_POLYGON);for(i=0;i<2*PI;i+=PI/24)glVertex2f((pos[0]+cos(i)*radius)-1,(pos[1]+sin(i)*radius));glEnd();}
+    if((pos[0]-radius)<0){glBegin(GL_POLYGON);for(i=0;i<2*PI;i+=PI/24)glVertex2f((pos[0]+cos(i)*radius)+1,(pos[1]+sin(i)*radius));glEnd();}
+    if((pos[1]+radius)>1){glBegin(GL_POLYGON);for(i=0;i<2*PI;i+=PI/24)glVertex2f((pos[0]+cos(i)*radius),(pos[1]+sin(i)*radius)-1);glEnd();}
+    if((pos[1]-radius)<0){glBegin(GL_POLYGON);for(i=0;i<2*PI;i+=PI/24)glVertex2f((pos[0]+cos(i)*radius),(pos[1]+sin(i)*radius)+1);glEnd();}
+
+    if( ((pos[0]+radius)>1)&&((pos[1]+radius)>1) )
+        {glBegin(GL_POLYGON);for(i=0;i<2*PI;i+=PI/24)glVertex2f((pos[0]+cos(i)*radius)-1,(pos[1]+sin(i)*radius)-1);glEnd();}
+    if( ((pos[0]+radius)>1)&&((pos[1]-radius)<0) )
+        {glBegin(GL_POLYGON);for(i=0;i<2*PI;i+=PI/24)glVertex2f((pos[0]+cos(i)*radius)-1,(pos[1]+sin(i)*radius)+1);glEnd();}
+    if( ((pos[0]-radius)<0)&&((pos[1]+radius)>1) )
+        {glBegin(GL_POLYGON);for(i=0;i<2*PI;i+=PI/24)glVertex2f((pos[0]+cos(i)*radius)+1,(pos[1]+sin(i)*radius)-1);glEnd();}
+    if( ((pos[0]-radius)<0)&&((pos[1]-radius)<0) )
+        {glBegin(GL_POLYGON);for(i=0;i<2*PI;i+=PI/24)glVertex2f((pos[0]+cos(i)*radius)+1,(pos[1]+sin(i)*radius)+1);glEnd();}
 
 }
 
@@ -129,6 +157,33 @@ void display()
                 drawCircle(particle[i].pos,SIGMA/2,bright);
             else drawCircle(particle[i].pos,SIGMA/2,normal);
         }
+
+    /* draw window */
+    glColor3ub(255,255,255);
+    glBegin(GL_POLYGON);
+        glVertex2f(wleft,wbottom);
+        glVertex2f(wright,wbottom);
+        glVertex2f(wright,0.0);
+        glVertex2f(wleft,0.0);
+    glEnd();
+    glBegin(GL_POLYGON);
+        glVertex2f(wleft,1.0);
+        glVertex2f(wright,1.0);
+        glVertex2f(wright,wtop);
+        glVertex2f(wleft,wtop);
+    glEnd();
+    glBegin(GL_POLYGON);
+        glVertex2f(1.0,0.0);
+        glVertex2f(wright,0.0);
+        glVertex2f(wright,1.0);
+        glVertex2f(1.0,1.0);
+    glEnd();
+    glBegin(GL_POLYGON);
+        glVertex2f(wleft,0.0);
+        glVertex2f(0.0,0.0);
+        glVertex2f(0.0,1.0);
+        glVertex2f(wleft,1.0);
+    glEnd();
 
     /* draw frame */
     glColor3ub(0,0,0);
