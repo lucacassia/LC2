@@ -8,13 +8,12 @@
  
 int WIDTH  = 600;
 int HEIGHT = 600;
-
+double FRAME = 0.025;
+double wleft,wright,wbottom,wtop;
 int ACTIVE = 0;
 int SINGLE_PARTICLE = 0;
 int WHICH_PARTICLE = 0;
 int SHOW_TABLE = 0;
-double FRAME = 0.025;
-double wleft,wright,wbottom,wtop;
 
 int N;
 int steps;
@@ -22,6 +21,41 @@ double rho;
 
 obj *particle = NULL;
 int **neighbour = NULL;
+
+void initSC()
+{
+    /* MD settings */
+    N = 100;
+    rho = 0.5;
+    L = pow(N/rho, 1.0f/DIMENSION);
+    rc = 2.5;
+    rm = rc + 0.3;
+    dF = -24*(2/pow(rc,13)-1/pow(rc,7));
+    Uc = 4*(1/(pow(rc,12))-1/(pow(rc,6)));
+    steps = 0;
+    dt = 0.001;
+
+    particle = (obj*)malloc(N*sizeof(obj));
+    neighbour = create_table(neighbour,N);
+
+    init_pos(particle,N,0.5);           /* square lattice        */
+    init_mom(particle,N);               /* flat distribution     */
+    reset_mom(particle,N,1.19/T);       /* set temperature       */
+    compute_table(particle,neighbour,N);/* table of neighbours   */
+    get_acc(particle,neighbour,N);      /* compute accelerations */
+
+    printf("# N = %d rho = %f dt = %f\n\n",N,rho,dt);
+}
+
+void idle(void)
+{
+    if(ACTIVE){
+        if(!(steps%10)) compute_table(particle,neighbour,N);
+        integrate(particle,neighbour,N);
+        steps++;
+    }
+    glutPostRedisplay();
+}
 
 void savePPM()
 {
@@ -51,6 +85,7 @@ void keyboard(unsigned char key, int x, int y)
             break;
         case 'q': case 'Q': case 27:
             destroy_table(neighbour,N);
+            free(particle);
             exit(0);
             break;
     }
@@ -92,16 +127,6 @@ void specialKeyboard(int key, int x, int y)
     }
 }
 
-void idle(void)
-{
-    if(ACTIVE){
-        if(!(steps%10)) compute_table(particle,neighbour,N);
-        integrate(particle,neighbour,N);
-        steps++;
-    }
-    glutPostRedisplay();
-}
-
 void initGL()
 {
     wleft =  0.0 - FRAME;
@@ -140,24 +165,21 @@ void drawCircle(double *pos, double radius, char *color)
 {
     double i;
     glColor3ub(color[0],color[1],color[2]);
-    /* first copy */
-    glBegin(GL_POLYGON);
-    for(i=0;i<2*PI;i+=PI/24)
-        glVertex2f( (pos[0]+cos(i)*radius)/L, (pos[1]+sin(i)*radius)/L );
-    glEnd();
-    /* other copies */
+    /* original copy */
+    glBegin(GL_POLYGON);for(i=0;i<2*PI;i+=PI/24)glVertex2f((pos[0]+cos(i)*radius)/L,(pos[1]+sin(i)*radius)/L);glEnd();
+    /* copies overflowing at the edges */
     if((pos[0]+radius)/L>1){glBegin(GL_POLYGON);for(i=0;i<2*PI;i+=PI/24)glVertex2f((pos[0]+cos(i)*radius)/L-1,(pos[1]+sin(i)*radius)/L);glEnd();}
     if((pos[0]-radius)/L<0){glBegin(GL_POLYGON);for(i=0;i<2*PI;i+=PI/24)glVertex2f((pos[0]+cos(i)*radius)/L+1,(pos[1]+sin(i)*radius)/L);glEnd();}
     if((pos[1]+radius)/L>1){glBegin(GL_POLYGON);for(i=0;i<2*PI;i+=PI/24)glVertex2f((pos[0]+cos(i)*radius)/L,(pos[1]+sin(i)*radius)/L-1);glEnd();}
     if((pos[1]-radius)/L<0){glBegin(GL_POLYGON);for(i=0;i<2*PI;i+=PI/24)glVertex2f((pos[0]+cos(i)*radius)/L,(pos[1]+sin(i)*radius)/L+1);glEnd();}
-
-    if( ((pos[0]+radius)/L>1)&&((pos[1]+radius)/L>1) )
+    /* copies overflowing at the corners */
+    if(((pos[0]+radius)/L>1)&&((pos[1]+radius)/L>1))
         {glBegin(GL_POLYGON);for(i=0;i<2*PI;i+=PI/24)glVertex2f((pos[0]+cos(i)*radius)/L-1,(pos[1]+sin(i)*radius)/L-1);glEnd();}
-    if( ((pos[0]+radius)/L>1)&&((pos[1]-radius)/L<0) )
+    if(((pos[0]+radius)/L>1)&&((pos[1]-radius)/L<0))
         {glBegin(GL_POLYGON);for(i=0;i<2*PI;i+=PI/24)glVertex2f((pos[0]+cos(i)*radius)/L-1,(pos[1]+sin(i)*radius)/L+1);glEnd();}
-    if( ((pos[0]-radius)/L<0)&&((pos[1]+radius)/L>1) )
+    if(((pos[0]-radius)/L<0)&&((pos[1]+radius)/L>1))
         {glBegin(GL_POLYGON);for(i=0;i<2*PI;i+=PI/24)glVertex2f((pos[0]+cos(i)*radius)/L+1,(pos[1]+sin(i)*radius)/L-1);glEnd();}
-    if( ((pos[0]-radius)/L<0)&&((pos[1]-radius)/L<0) )
+    if(((pos[0]-radius)/L<0)&&((pos[1]-radius)/L<0))
         {glBegin(GL_POLYGON);for(i=0;i<2*PI;i+=PI/24)glVertex2f((pos[0]+cos(i)*radius)/L+1,(pos[1]+sin(i)*radius)/L+1);glEnd();}
 
 }
@@ -167,24 +189,26 @@ void display()
     glClear(GL_COLOR_BUFFER_BIT);
 
     char normal[3] = {33,102,172};
-    char bright[3] = {127,205,187};
-    char dark[3] = {8,29,88};
+    char light[3] = {127,205,187};
+    char bright[3] = {78,179,211};
     char halo[3] = {237,248,177};
     char bighalo[3] = {255,255,217};
 
     int i;
-    if(SINGLE_PARTICLE){
+    if(SHOW_TABLE){
         drawCircle(particle[WHICH_PARTICLE].pos,rm,bighalo);
         drawCircle(particle[WHICH_PARTICLE].pos,rc,halo);
-        if(SHOW_TABLE){
-            for(i = 0; i < neighbour[WHICH_PARTICLE][0]; i++)
-                drawCircle(particle[neighbour[WHICH_PARTICLE][i+1]].pos,0.5,bright);
-        }else{
-            for(i = 0; i < N; i++)
-                drawCircle(particle[i].pos,0.5,bright);
-        }
-        drawCircle(particle[WHICH_PARTICLE].pos,0.5,dark);
-    }else for(i = 0; i < N; i++) drawCircle(particle[i].pos,0.5,normal);
+        for(i = 0; i < N; i++)
+            drawCircle(particle[i].pos,0.5,light);
+        for(i = 0; i < neighbour[WHICH_PARTICLE][0]; i++)
+            drawCircle(particle[neighbour[WHICH_PARTICLE][i+1]].pos,0.5,bright);
+        drawCircle(particle[WHICH_PARTICLE].pos,0.5,normal);
+    }
+    if(SINGLE_PARTICLE && !SHOW_TABLE)
+        drawCircle(particle[WHICH_PARTICLE].pos,0.5,normal);
+    if(!SINGLE_PARTICLE && !SHOW_TABLE)
+        for(i = 0; i < N; i++)
+            drawCircle(particle[i].pos,0.5,normal);
 
     /* draw window */
     glColor3ub(255,255,255);
@@ -242,29 +266,7 @@ int main(int argc, char **argv)
     glutReshapeFunc(reshape);
     printf("%s\n%s\n\n",glGetString(GL_RENDERER),glGetString(GL_VERSION));
 
-    /* MD settings */
-    N = 100;
-    rho = 0.5;
-    L = pow(N/rho, 1.0f/DIMENSION);
-    rc = 2.5;
-    rm = rc + 0.3;
-    dF = -24*(2/pow(rc,13)-1/pow(rc,7));
-    Uc = 4*(1/(pow(rc,12))-1/(pow(rc,6)));
-    steps = 0;
-    dt = 0.001;
-
-    obj alias[N];
-    particle = alias;
-    neighbour = create_table(neighbour,N);
-
-
-    init_pos(particle,N,0.5);           /* square lattice        */
-    init_mom(particle,N);               /* flat distribution     */
-    reset_mom(particle,N,1.19/T);       /* set temperature       */
-    compute_table(particle,neighbour,N);/* table of neighbours   */
-    get_acc(particle,neighbour,N);      /* compute accelerations */
-
-    printf("# N = %d rho = %f dt = %f\n\n",N,rho,dt);
+    initSC();
 
     glutMainLoop();
     return 0;
