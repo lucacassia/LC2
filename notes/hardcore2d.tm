@@ -83,11 +83,12 @@
 
   \ 
 
-  <big-figure|<image|../hardcore2d/thermalization/img/pack1.ppm|0.45par|||><space|2em><image|../hardcore2d/thermalization/img/pack2.ppm|0.45par|||>|<label|fig:packing>On
+  <big-figure|<image|../hardcore2d/thermalization/img/img1.ppm|0.45par|||><space|2em><image|../hardcore2d/thermalization/img/img2.ppm|0.45par|||>|<label|fig:packing>On
   the left we illustrate the initial spatial configuration of a system of
-  <math|100> particles at temperature <math|T=1> and <math|\<eta\>=0.75>. On
-  the right we show the same system after <math|2\<cdot\>10<rsup|5>>
-  collisions. The red disks indicate two particles colliding.>
+  <math|100> particles at temperature <math|k<rsub|b>T=1> and
+  <math|\<eta\>=0.78>. On the right we show the same system after
+  <math|10<rsup|5>> collisions. The red disks indicate two particles
+  colliding.>
 
   The momenta of the particles are initializated with uniform distribution
   inside the range <math|<around*|[|-1,1|]>> with total momentum equal to
@@ -498,7 +499,7 @@
   <math|\<eta\>\<ll\>1> where the confinement of the plateau <math|1/6> was
   most evident.
 
-  <big-figure|<image|../hardcore2d/msd/img/trajectory1u.eps|0.5par|||><image|../hardcore2d/msd/img/trajectory2u.eps|0.5par|||>|<label|fig:trajectory2>Trajectorys
+  <big-figure|<image|../hardcore2d/msd/img/trajectory1u.eps|0.5par|||><image|../hardcore2d/msd/img/trajectory2u.eps|0.5par|||>|<label|fig:trajectory2>Trajectories
   of the same particles of (Fig.<reference|fig:trajectory>) but in unfolded
   coordinates.>
 
@@ -624,10 +625,10 @@
     <\associate|figure>
       <tuple|normal|On the left we illustrate the initial spatial
       configuration of a system of <with|mode|<quote|math>|100> particles at
-      temperature <with|mode|<quote|math>|T=1> and
-      <with|mode|<quote|math>|\<eta\>=0.75>. On the right we show the same
-      system after <with|mode|<quote|math>|2\<cdot\>10<rsup|5>> collisions.
-      The red disks indicate two particles colliding.|<pageref|auto-3>>
+      temperature <with|mode|<quote|math>|k<rsub|b>T=1> and
+      <with|mode|<quote|math>|\<eta\>=0.78>. On the right we show the same
+      system after <with|mode|<quote|math>|10<rsup|5>> collisions. The red
+      disks indicate two particles colliding.|<pageref|auto-3>>
 
       <tuple|normal|Plot of the thermalization process of an hard-core
       interacting gas of <with|mode|<quote|math>|N=100> particles. The top

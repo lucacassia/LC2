@@ -424,6 +424,16 @@
     <image|../ising/observables/img/64MH1.eps|0.5par|||><image|../ising/observables/img/64MH2.eps|0.5par|||>
   </big-figure|Fit of the heat capacity and susceptibility peaks (MH).>
 
+  <\big-figure>
+    <image|../ising/observables/img/8SW1.eps|0.5par|||><image|../ising/observables/img/8SW2.eps|0.5par|||>
+
+    <image|../ising/observables/img/16SW1.eps|0.5par|||><image|../ising/observables/img/16SW2.eps|0.5par|||>
+
+    <image|../ising/observables/img/32SW1.eps|0.5par|||><image|../ising/observables/img/32SW2.eps|0.5par|||>
+
+    <image|../ising/observables/img/64SW1.eps|0.5par|||><image|../ising/observables/img/64SW2.eps|0.5par|||>
+  </big-figure|Fit of the heat capacity and susceptibility peaks (SW).>
+
   <big-table|<block|<tformat|<cwith|1|-1|1|-1|cell-halign|c>|<table|<row|<cell|<math|L>>|<cell|<math|\<beta\><rsub|max><around*|(|C|)>>>|<cell|<math|\<beta\><rsub|max><around*|(|\<chi\>|)>>>>|<row|<cell|<math|8>>|<cell|<math|0.42400\<pm\>0.00043>>|<cell|<math|0.39448\<pm\>0.00051>>>|<row|<cell|<math|16>>|<cell|<math|0.43086\<pm\>0.00086>>|<cell|<math|0.41541\<pm\>0.00055>>>|<row|<cell|<math|32>>|<cell|<math|0.43613\<pm\>0.00103>>|<cell|<math|0.42620\<pm\>0.00141>>>|<row|<cell|<math|64>>|<cell|<math|0.43718\<pm\>0.00065>>|<cell|<math|0.43405\<pm\>0.00075>>>>>>|Pseudocritical
   <math|\<beta\>>-values obtained by polynomial fit of the peaks of <math|C>
   and <math|\<chi\>> (MH).>
@@ -437,15 +447,7 @@
   where we omitted the term of order one since it should be zero near the
   maximum of the function.
 
-  <\big-figure>
-    <image|../ising/observables/img/8SW1.eps|0.5par|||><image|../ising/observables/img/8SW2.eps|0.5par|||>
-
-    <image|../ising/observables/img/16SW1.eps|0.5par|||><image|../ising/observables/img/16SW2.eps|0.5par|||>
-
-    <image|../ising/observables/img/32SW1.eps|0.5par|||><image|../ising/observables/img/32SW2.eps|0.5par|||>
-
-    <image|../ising/observables/img/64SW1.eps|0.5par|||><image|../ising/observables/img/64SW2.eps|0.5par|||>
-  </big-figure|Fit of the heat capacity and susceptibility peaks (SW).>
+  \;
 
   <big-table|<block|<tformat|<cwith|1|-1|1|-1|cell-halign|c>|<table|<row|<cell|<math|L>>|<cell|<math|\<beta\><rsub|max><around*|(|C|)>>>|<cell|<math|\<beta\><rsub|max><around*|(|\<chi\>|)>>>>|<row|<cell|<math|8>>|<cell|<math|0.42296\<pm\>0.00073>>|<cell|<math|0.39295\<pm\>0.00059>>>|<row|<cell|<math|16>>|<cell|<math|0.43174\<pm\>0.00090>>|<cell|<math|0.41729\<pm\>0.00061>>>|<row|<cell|<math|32>>|<cell|<math|0.43524\<pm\>0.00078>>|<cell|<math|0.42686\<pm\>0.00078>>>|<row|<cell|<math|64>>|<cell|<math|0.43788\<pm\>0.00040>>|<cell|<math|0.43481\<pm\>0.00042>>>>>>|Pseudocritical
   <math|\<beta\>>-values obtained by polynomial fit of the peaks of <math|C>
@@ -748,7 +750,7 @@
   <\collection>
     <associate|page-even-footer|>
     <associate|page-even-header|>
-    <associate|page-medium|papyrus>
+    <associate|page-medium|paper>
     <associate|page-odd-footer|>
     <associate|page-odd-header|>
     <associate|page-screen-margin|false>
@@ -772,8 +774,8 @@
     <associate|auto-19|<tuple|1.5|11>>
     <associate|auto-2|<tuple|1.1|1>>
     <associate|auto-20|<tuple|14|12>>
-    <associate|auto-21|<tuple|1|13>>
-    <associate|auto-22|<tuple|15|14>>
+    <associate|auto-21|<tuple|15|13>>
+    <associate|auto-22|<tuple|1|14>>
     <associate|auto-23|<tuple|2|15>>
     <associate|auto-24|<tuple|16|15>>
     <associate|auto-25|<tuple|1.6|16>>
