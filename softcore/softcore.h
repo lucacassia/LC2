@@ -7,6 +7,8 @@
 #include<time.h>
 
 double H,K,U,T;
+double L,rc,rm;
+double dt;
 
 typedef struct obj{
     double pos[DIMENSION];
@@ -44,16 +46,16 @@ int ipow(int base, int exp)
     return result;
 }
 
-void increment(int *counter, int max, int left)
+void increment(int *counter, int min, int max, int left)
 {
     counter[0]++;
     if(counter[0] == max){
-        counter[0] = 0;
-        if(left>1) increment(&counter[1],max,left-1);
+        counter[0] = min;
+        if(left>1) increment(&counter[1],min,max,left-1);
     }
 }
 
-void init_pos(obj list[], int N, double L, double offset)
+void init_pos(obj list[], int N, double offset)
 {
     int index[DIMENSION] = {0};
     int i,j,k = 0;
@@ -62,8 +64,8 @@ void init_pos(obj list[], int N, double L, double offset)
     for(i = 0; i < N; i++){
         for(j = 0; j < DIMENSION; j++)
             list[i].pos[j] = (offset + index[j]) * L / k;
-        increment(index,k,DIMENSION);
-    }    
+        increment(index,0,k,DIMENSION);
+    }
 }
 
 void init_mom(obj list[], int N)
@@ -86,13 +88,13 @@ void init_mom(obj list[], int N)
     K = K/2;
 }
 
-void reset_mom(obj list[], int N, double r)
+void reset_mom(obj list[], int N, double y)
 {
     int i,j;
     K = 0.0f;
     for(i = 0; i < N; i++)
         for(j = 0; j < DIMENSION; j++){
-            list[i].mom[j] *= sqrt(r);
+            list[i].mom[j] *= sqrt(y);
             K += list[i].mom[j] * list[i].mom[j];
         }
     T = K/(DIMENSION*N);
@@ -122,12 +124,41 @@ int **create_table(int **table, int N)
     return table;
 }
 
-void compute_table(obj list[], int **table, int N)
+double PBC(double x)
 {
-    
+    while(x >  L) x -= L;
+    while(x <= 0) x += L;
+    return x;
 }
 
-void get_acc(obj list[], int N)
+double distPBC(double x)
+{
+    while(x >= 0.5 * L) x -= L;
+    while(x < -0.5 * L) x += L;
+    return x;
+}
+
+void compute_table(obj list[], int **table, int N)
+{
+    int i,j,k;
+    double r2,r[DIMENSION];
+    for(i = 0; i < N; i++){
+        table[i][0] = 0;
+        for(j = 0; j < N; j++){
+            r2 = 0.0f;
+            for(k = 0; k < DIMENSION; k++){
+                r[k] = distPBC(list[j].pos[k] - list[i].pos[k]);
+                r2 += r[k] * r[k];
+            }
+            if((i!=j)&&(r2 < rm*rm)){
+                table[i][0]++;
+                table[i][table[i][0]] = j;
+            }
+        }
+    }
+}
+
+void get_acc(obj list[], int **table, int N)
 {
     int i,j;
     U = 0.0f;
@@ -136,22 +167,15 @@ void get_acc(obj list[], int N)
             list[i].acc[j] = 0.0f;
 }
 
-double PBC(double x, double L)
-{
-    while(x > L) x -= L;
-    while(x < 0) x += L;
-    return x;
-}
-
-void integrate(obj list[], int N, double L, double dt)
+void integrate(obj list[],int **table, int N)
 {
     int i,j;
     for(i = 0; i < N; i++)
         for(j = 0; j < DIMENSION; j++){
             list[i].mom[j] += 0.5 * list[i].acc[j] * dt;
-            list[i].pos[j] = PBC(list[i].pos[j] + list[i].mom[j] * dt, L);
+            list[i].pos[j] = PBC(list[i].pos[j] + list[i].mom[j] * dt);
         }
-    get_acc(list,N);
+    get_acc(list,table,N);
     K = 0.0f;
     for(i = 0; i < N; i++)
         for(j = 0; j < DIMENSION; j++){

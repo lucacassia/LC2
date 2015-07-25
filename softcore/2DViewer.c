@@ -14,12 +14,10 @@ int SINGLE_PARTICLE = 0;
 int WHICH_PARTICLE = 0;
 int SHOW_TABLE = 0;
 double FRAME = 0.025;
+double wleft,wright,wbottom,wtop;
 
 int N;
 double rho;
-double rc;
-double L;
-double dt;
 double runtime;
 
 obj *particle = NULL;
@@ -82,12 +80,14 @@ void specialKeyboard(int key, int x, int y)
         case GLUT_KEY_LEFT:
             rho /= 1.1;
             L = pow(N/rho, 1.0f/DIMENSION);
-            init_pos(particle,N,L,0.5);
+            init_pos(particle,N,0.5);
+            compute_table(particle,neighbour,N);
             break;
         case GLUT_KEY_RIGHT:
             rho *= 1.1;
             L = pow(N/rho, 1.0f/DIMENSION);
-            init_pos(particle,N,L,0.5);
+            init_pos(particle,N,0.5);
+            compute_table(particle,neighbour,N);
             break;
     }
 }
@@ -95,7 +95,8 @@ void specialKeyboard(int key, int x, int y)
 void idle(void)
 {
     if(ACTIVE){
-        integrate(particle,N,L,dt);
+        compute_table(particle,neighbour,N);
+        integrate(particle,neighbour,N);
         runtime += dt;
     }
     glutPostRedisplay();
@@ -103,9 +104,14 @@ void idle(void)
 
 void initGL()
 {
+    wleft =  0.0 - FRAME;
+    wright =  1.0 + FRAME;
+    wbottom =  0.0 - FRAME;
+    wtop =  1.0 + FRAME;
+
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    gluOrtho2D( 0.0-FRAME, 1.0+FRAME, 0.0-FRAME, 1.0+FRAME);
+    gluOrtho2D(wleft, wright, wbottom, wtop);
     glClearColor(1.0,1.0,1.0,0.0);
 }
  
@@ -116,20 +122,34 @@ void reshape(int w, int h)
     glViewport(0, 0, (GLsizei)WIDTH, (GLsizei)HEIGHT);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    if(WIDTH > HEIGHT)
-        gluOrtho2D((0.0-FRAME)-(WIDTH-HEIGHT)*(1+2*FRAME)/(2*HEIGHT), (1.0+FRAME)+(WIDTH-HEIGHT)*(1+2*FRAME)/(2*HEIGHT), 0.0-FRAME, 1.0+FRAME);
-    else
-        gluOrtho2D(0.0-FRAME, 1.0+FRAME, (0.0-FRAME)-(HEIGHT-WIDTH)*(1+2*FRAME)/(2*WIDTH), (1.0+FRAME)+(HEIGHT-WIDTH)*(1+2*FRAME)/(2*WIDTH));
+    if(WIDTH > HEIGHT){
+        wleft = (0.0-FRAME) -(WIDTH-HEIGHT)*(1+2*FRAME)/(2*HEIGHT);
+        wright = (1.0+FRAME)+(WIDTH-HEIGHT)*(1+2*FRAME)/(2*HEIGHT);
+        wbottom = (0.0-FRAME);
+        wtop = (1.0+FRAME);
+    }else{
+        wleft = (0.0-FRAME);
+        wright = (1.0+FRAME);
+        wbottom = (0.0-FRAME)-(HEIGHT-WIDTH)*(1+2*FRAME)/(2*WIDTH);
+        wtop = (1.0+FRAME)+(HEIGHT-WIDTH)*(1+2*FRAME)/(2*WIDTH);
+    }
+    gluOrtho2D(wleft, wright, wbottom, wtop);
 }
 
 void drawCircle(double *pos, double radius, char *color)
 {
     double i;
     glColor4ub(color[0],color[1],color[2],0.5);
+    /* first copy */
     glBegin(GL_POLYGON);
     for(i=0;i<2*PI;i+=PI/24)
         glVertex2f( (pos[0]+cos(i)*radius)/L, (pos[1]+sin(i)*radius)/L );
     glEnd();
+    /* other copies */
+    if((pos[0]+radius)/L>1){glBegin(GL_POLYGON);for(i=0;i<2*PI;i+=PI/24)glVertex2f((pos[0]+cos(i)*radius)/L-1,(pos[1]+sin(i)*radius)/L);glEnd();}
+    if((pos[0]-radius)/L<0){glBegin(GL_POLYGON);for(i=0;i<2*PI;i+=PI/24)glVertex2f((pos[0]+cos(i)*radius)/L+1,(pos[1]+sin(i)*radius)/L);glEnd();}
+    if((pos[1]+radius)/L>1){glBegin(GL_POLYGON);for(i=0;i<2*PI;i+=PI/24)glVertex2f((pos[0]+cos(i)*radius)/L,(pos[1]+sin(i)*radius)/L-1);glEnd();}
+    if((pos[1]-radius)/L<0){glBegin(GL_POLYGON);for(i=0;i<2*PI;i+=PI/24)glVertex2f((pos[0]+cos(i)*radius)/L,(pos[1]+sin(i)*radius)/L+1);glEnd();}
 }
 
 void display()
@@ -141,17 +161,30 @@ void display()
     char dark[3] = {8,29,88};
     char halo[3] = {237,248,177};
     char bighalo[3] = {255,255,217};
+
     int i;
     if(SINGLE_PARTICLE){
-        drawCircle(particle[WHICH_PARTICLE].pos,rc+0.3,bighalo);
+        drawCircle(particle[WHICH_PARTICLE].pos,rm,bighalo);
         drawCircle(particle[WHICH_PARTICLE].pos,rc,halo);
         if(SHOW_TABLE){
-            for(i = 0; i < neighbour[i][0]; i++)
+            for(i = 0; i < neighbour[WHICH_PARTICLE][0]; i++)
                 drawCircle(particle[neighbour[WHICH_PARTICLE][i+1]].pos,0.5,bright);
-        }else{for(i = 0; i < N; i++) drawCircle(particle[i].pos,0.5,bright);}
+        }else{
+            for(i = 0; i < N; i++)
+                drawCircle(particle[i].pos,0.5,bright);
+        }
         drawCircle(particle[WHICH_PARTICLE].pos,0.5,dark);
     }else for(i = 0; i < N; i++) drawCircle(particle[i].pos,0.5,normal);
 
+    /* draw window */
+/*    glColor3ub(1,1,1);
+    glBegin(GL_POLYGON);
+        glVertex2f(0.0,0.0);
+        glVertex2f(1.0,0.0);
+        glVertex2f(1.0,1.0);
+        glVertex2f(0.0,1.0);
+    glEnd();
+*/
     /* draw frame */
     glColor3ub(0,0,0);
     glLineWidth(3);
@@ -179,7 +212,6 @@ int main(int argc, char **argv)
     glutKeyboardFunc(keyboard);
     glutSpecialFunc(specialKeyboard);
     glutReshapeFunc(reshape);
-
     printf("%s\n%s\n\n",glGetString(GL_RENDERER),glGetString(GL_VERSION));
 
     /* MD settings */
@@ -187,6 +219,7 @@ int main(int argc, char **argv)
     rho = 0.5;
     L = pow(N/rho, 1.0f/DIMENSION);
     rc = 2.5;
+    rm = rc + 0.3;
     runtime = 0.0;
     dt = 0.001;
 
@@ -195,11 +228,11 @@ int main(int argc, char **argv)
     neighbour = create_table(neighbour,N);
 
 
-    init_pos(particle,N,L,0.5);         /* square lattice        */
+    init_pos(particle,N,0.5);           /* square lattice        */
     init_mom(particle,N);               /* flat distribution     */
     reset_mom(particle,N,1.19/T);       /* set temperature       */
     compute_table(particle,neighbour,N);/* table of neighbours   */
-    get_acc(particle,N);                /* compute accelerations */
+    get_acc(particle,neighbour,N);      /* compute accelerations */
 
     printf("# N = %d rho = %f dt = %f\n\n",N,rho,dt);
 
