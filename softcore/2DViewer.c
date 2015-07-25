@@ -15,9 +15,7 @@ int SINGLE_PARTICLE = 0;
 int WHICH_PARTICLE = 0;
 int SHOW_TABLE = 0;
 
-int N;
 int steps;
-double rho;
 
 obj *particle = NULL;
 int **neighbour = NULL;
@@ -26,23 +24,18 @@ void initSC()
 {
     /* MD settings */
     N = 100;
-    rho = 0.5;
+    rho = 0.7;
     L = pow(N/rho, 1.0f/DIMENSION);
-    rc = 2.5;
-    rm = rc + 0.3;
-    dF = -24*(2/pow(rc,13)-1/pow(rc,7));
-    Uc = 4*(1/(pow(rc,12))-1/(pow(rc,6)));
     steps = 0;
-    dt = 0.001;
 
     particle = (obj*)malloc(N*sizeof(obj));
-    neighbour = create_table(neighbour,N);
+    neighbour = create_table(neighbour);
 
-    init_pos(particle,N,0.5);           /* square lattice        */
-    init_mom(particle,N);               /* flat distribution     */
-    reset_mom(particle,N,1.19/T);       /* set temperature       */
-    compute_table(particle,neighbour,N);/* table of neighbours   */
-    get_acc(particle,neighbour,N);      /* compute accelerations */
+    init_pos(particle,N,0.5);         /* square lattice        */
+    init_mom(particle);               /* flat distribution     */
+    reset_mom(particle,0.01/T);       /* set temperature       */
+    compute_table(particle,neighbour);/* table of neighbours   */
+    get_acc(particle,neighbour);      /* compute accelerations */
 
     printf("# N = %d rho = %f dt = %f\n\n",N,rho,dt);
 }
@@ -50,8 +43,8 @@ void initSC()
 void idle(void)
 {
     if(ACTIVE){
-        if(!(steps%10)) compute_table(particle,neighbour,N);
-        integrate(particle,neighbour,N);
+        if(!(steps%10)) compute_table(particle,neighbour);
+        integrate(particle,neighbour);
         steps++;
     }
     glutPostRedisplay();
@@ -84,7 +77,7 @@ void keyboard(unsigned char key, int x, int y)
             glutFullScreenToggle();
             break;
         case 'q': case 'Q': case 27:
-            destroy_table(neighbour,N);
+            destroy_table(neighbour);
             free(particle);
             exit(0);
             break;
@@ -116,23 +109,23 @@ void specialKeyboard(int key, int x, int y)
             rho /= 1.1;
             L = pow(N/rho, 1.0f/DIMENSION);
             init_pos(particle,N,0.5);
-            compute_table(particle,neighbour,N);
+            compute_table(particle,neighbour);
             break;
         case GLUT_KEY_RIGHT:
             rho *= 1.1;
             L = pow(N/rho, 1.0f/DIMENSION);
             init_pos(particle,N,0.5);
-            compute_table(particle,neighbour,N);
+            compute_table(particle,neighbour);
             break;
     }
 }
 
 void initGL()
 {
-    wleft =  0.0 - FRAME;
-    wright =  1.0 + FRAME;
+    wleft   =  0.0 - FRAME;
+    wright  =  1.0 + FRAME;
     wbottom =  0.0 - FRAME;
-    wtop =  1.0 + FRAME;
+    wtop    =  1.0 + FRAME;
 
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
