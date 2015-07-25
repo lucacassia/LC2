@@ -207,15 +207,15 @@
   <math|L=4,8,16,32,64>.
 
   <\big-figure>
-    <image|../potts/observables/img/4SW1.eps|0.5par|||><image|../potts/observables/img/4SW2.eps|0.5par|||>
+    <image|../potts/observables/img/4SW1.eps|0.4par|||><image|../potts/observables/img/4SW2.eps|0.4par|||>
 
-    <image|../potts/observables/img/8SW1.eps|0.5par|||><image|../potts/observables/img/8SW2.eps|0.5par|||>
+    <image|../potts/observables/img/8SW1.eps|0.4par|||><image|../potts/observables/img/8SW2.eps|0.4par|||>
 
-    <image|../potts/observables/img/16SW1.eps|0.5par|||><image|../potts/observables/img/16SW2.eps|0.5par|||>
+    <image|../potts/observables/img/16SW1.eps|0.4par|||><image|../potts/observables/img/16SW2.eps|0.4par|||>
 
-    <image|../potts/observables/img/32SW1.eps|0.5par|||><image|../potts/observables/img/32SW2.eps|0.5par|||>
+    <image|../potts/observables/img/32SW1.eps|0.4par|||><image|../potts/observables/img/32SW2.eps|0.4par|||>
 
-    <image|../potts/observables/img/64SW1.eps|0.5par|||><image|../potts/observables/img/64SW2.eps|0.5par|||>
+    <image|../potts/observables/img/64SW1.eps|0.4par|||><image|../potts/observables/img/64SW2.eps|0.4par|||>
   </big-figure|Fit of the heat capacity and susceptibility peaks.>
 
   <big-table|<block|<tformat|<cwith|1|-1|1|-1|cell-halign|c>|<table|<row|<cell|<math|L>>|<cell|<math|\<beta\><rsub|max><around*|(|C|)>>>|<cell|<math|\<beta\><rsub|max><around*|(|\<chi\>|)>>>>|<row|<cell|<math|4>>|<cell|<math|0.93530\<pm\>0.00181>>|<cell|<math|0.85303\<pm\>0.00198>>>|<row|<cell|<math|8>>|<cell|<math|0.96457\<pm\>0.00168>>|<cell|<math|0.93607\<pm\>0.00078>>>|<row|<cell|<math|16>>|<cell|<math|0.98577\<pm\>0.00133>>|<cell|<math|0.97245\<pm\>0.00123>>>|<row|<cell|<math|32>>|<cell|<math|0.99651\<pm\>0.00048>>|<cell|<math|0.99079\<pm\>0.00053>>>|<row|<cell|64>|<cell|<math|1.00092\<pm\>0.00045>>|<cell|<math|0.99917\<pm\>0.00016>>>>>>|Pseudocritical
@@ -436,7 +436,7 @@
   <\collection>
     <associate|page-even-footer|>
     <associate|page-even-header|>
-    <associate|page-medium|papyrus>
+    <associate|page-medium|paper>
     <associate|page-odd-footer|>
     <associate|page-odd-header|>
     <associate|page-screen-margin|false>
@@ -484,7 +484,7 @@
     <associate|auto-8|<tuple|4|4>>
     <associate|auto-9|<tuple|5|4>>
     <associate|eq:MC|<tuple|2|?>>
-    <associate|eq:betac|<tuple|7|?>>
+    <associate|eq:betac|<tuple|7|2>>
     <associate|eq:cosh|<tuple|22|10>>
     <associate|eq:scalingtau|<tuple|6|4>>
     <associate|eq:tint|<tuple|7|3>>
@@ -540,7 +540,7 @@
 
       <tuple|normal|Left: energy density <with|mode|<quote|math>|e> as a
       function of <with|mode|<quote|math>|\<beta\>>. Right: magnetization
-      module <with|mode|<quote|math>|m>. The various colors represent
+      modulus <with|mode|<quote|math>|m>. The various colors represent
       different lattice sizes: <with|mode|<quote|math>|L=4,8,16,32>.|<pageref|auto-8>>
 
       <tuple|normal|Left: heat capacity as a function of
