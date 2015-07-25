@@ -97,7 +97,6 @@ void idle(void)
     if(ACTIVE){
         if(!(steps%10)) compute_table(particle,neighbour,N);
         integrate(particle,neighbour,N);
-        reset_mom(particle,N,1.19/T);
         steps++;
     }
     glutPostRedisplay();
