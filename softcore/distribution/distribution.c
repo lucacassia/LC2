@@ -41,7 +41,7 @@ int main(int argc, char *argv[])
 
     /* simulation run */
     FILE *f = fopen("data/distribution.dat","w");
-    for(i = 0; i < 1e6; i++){
+    for(i = 0; i < 1e5; i++){
         if(i%10==0) compute_table(particle,neighbour);
         integrate(particle,neighbour);
         if(!(i%100)) for(j=0;j<N;j++) fprintf(f,"%e\t%e\t%e\t%e\n",modulus(particle[j].mom),particle[j].mom[0],particle[j].mom[1],particle[j].mom[2]);
