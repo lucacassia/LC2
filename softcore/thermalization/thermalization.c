@@ -1,52 +1,59 @@
 /*
- *  usage: ./thermalization > output
+ *  usage: ./thermalization N > output
  */
 
 #define DIMENSION 3
 
 #include"softcore.h"
 
-int main()
+int main(int argc, char *argv[])
 {
     /* MD settings */
-    int N = 108;                                /* number of particles         */
-    double rho = 0.7;                           /* density rho=(N*sigma^d)/L^d */
-    L = pow(N/rho, 1.0f/DIMENSION);             /* box size                    */
-    rc = 2.5;                                   /* cutoff radius               */
-    rm = rc + 0.3;                              /* list cutoff radius          */
-    dF = -24*(2/pow(rc,13)-1/pow(rc,7));        /* force at the cutoff         */
-    Uc = 4*(1/(pow(rc,12))-1/(pow(rc,6)));      /* potential at the cutoff     */
+    if(argc == 2) N = atoi(argv[1]);
+    else return 1;
 
-    int total_steps = 5e4;                      /* toral number of time steps  */
-    dt = 0.001;                                 /* time step length            */
+    rho = 0.7;
+    L = pow(N/rho, 1.0f/DIMENSION);
+
+    int total_steps = 11e4;
 
     /* allocate memory */
     obj *particle = (obj*)malloc(N*sizeof(obj));
     int **neighbour = NULL;
-    neighbour = create_table(neighbour,N);
+    neighbour = create_table(neighbour);
 
-    init_pos(particle,N/2,0.0);          /* BCC lattice           */
+    init_pos(particle,N/2,0.0);
     init_pos(&particle[N/2],N-N/2,0.5);
 
-    init_mom(particle,N);                /* initialize momenta    */
-    reset_mom(particle,N,1.19/T);        /* set temperature T     */
-    compute_table(particle,neighbour,N); /* table of neighbours   */
-    get_acc(particle,neighbour,N);       /* compute accelerations */
+    init_mom(particle);
+    reset_mom(particle,1.19/T);
+    compute_table(particle,neighbour);
+    get_acc(particle,neighbour);
 
     /* print header */
     printf("#N=%d rho=%f L=%f T=%f dt=%f\n", N, rho, L, T, dt);
+    printf("#\tt\tH\tU\tK\tT\t<U>\t<(U-<U>)²>\n");
+
+    double sumU = 0.0f;
+    double sumU2 = 0.0f;
 
     /* simulation run */
-    int i;
+    int i, count = 0;
     for(i = 0; i < total_steps; i++){
-        if(!(i%10)) compute_table(particle,neighbour,N);    /* update table every 10 steps           */
-        integrate(particle,neighbour,N);                    /* verlet velocity                       */
-        if(i*dt<10) reset_mom(particle,N,1.19/T);           /* keep resetting T until thermalization */
-        printf("%e %e %e %e %e\n", i*dt, H/N, U/N, K/N, T);
+        if(!(i%10)) compute_table(particle,neighbour);
+        integrate(particle,neighbour);
+        if((i*dt<10)&&(i%10==0)) reset_mom(particle,1.19/T);
+        if((i*dt>10)&&(i%100==0)){
+            sumU += U;
+            sumU2 += U*U;
+            count++;
+        }
+        printf("%e %e %e %e %e\n", i*dt, H/N, U/N, K/N, T );
     }
+    printf("# <U/N>=%e\tsqrt[<(U/N-<U/N>)²>]=%e\n", (sumU/count)/N, sqrt(sumU2/count-(sumU/count)*(sumU/count))/N );
 
     /* exit */
     free(particle);
-    destroy_table(neighbour,N);
+    destroy_table(neighbour);
     return 0;
 }
