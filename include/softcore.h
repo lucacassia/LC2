@@ -7,7 +7,7 @@
 #include<time.h>
 
 int N;
-double H,K,U,T;
+double H,K,U,T,P = 0.0f;
 double rho,L;
 double rc = 2.5f;
 double rm = 2.8f;
@@ -147,7 +147,7 @@ double PBC(double x)
     while(x <= 0) x += L;
     return x;
 }
-
+/*
 void compute_full_table(obj list[], int **table)
 {
     int i,j,k;
@@ -228,6 +228,7 @@ void get_acc(obj list[], int **table)
             }
             if(FOUND_FLAG){
                 modr = sqrt(r2);
+                P += force(modr)*modr;
                 U += potential(modr);
                 for(k = 0; k < DIMENSION; k++){
                     r[k] *= force(modr)/modr;
@@ -238,7 +239,7 @@ void get_acc(obj list[], int **table)
         }
     }
 }
-/*
+*/
 double distPBC(double x)
 {
     while(x >= 0.5 * L) x -= L;
@@ -315,7 +316,7 @@ void get_acc(obj list[], int **table)
         }
     }
 }
-*/
+
 void integrate(obj list[],int **table)
 {
     int i,j;
