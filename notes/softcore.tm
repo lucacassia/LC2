@@ -348,30 +348,55 @@
   therefore its fluctuations are proportional to those of the kinetic energy.
 
   <\equation>
-    <around*|\<langle\>|u|\<rangle\>>=-3.022142,<space|2em>\<sigma\><around*|(|u|)>=0.068021
+    <around*|\<langle\>|u|\<rangle\>>=-2.979756,<space|2em>\<sigma\><rsub|std><around*|(|u|)>=0.075043
   </equation>
 
   <\equation>
-    <around*|\<langle\>|k*T|\<rangle\>>=1.155584<space|2em>\<sigma\><around*|(|k*T|)>=0.045345
+    <around*|\<langle\>|k*T|\<rangle\>>=1.247323<space|2em>\<sigma\><rsub|std><around*|(|k*T|)>=0.050026
   </equation>
 
   \;
 
   Finally we measure the pressure:
 
-  <big-figure|<image|../softcore/pressure/img/obsP.eps|0.75par|||>|Pressure
+  <big-figure|<image|../softcore/pressure/img/obsP.eps|0.75par|||>|<label|fig:pressure>Pressure
   as a function of time for <math|N=108,\<rho\>=0.6> and initial temperature
   <math|k*T=1.22>.>
 
   <\equation>
-    <frac|P*V|N*k*T>-1 =\<pm\>
+    <frac|P*V|N*k*T>-1 =-0.609228\<pm\>0.029351
   </equation>
 
-  \;
-
-  \;
+  As we can see from (Fig.<reference|fig:pressure>), the average pressure
+  value is very close to zero, which is what we expect being the L-J gas a
+  good approximation of an ideal gas.
 
   <subsection|Mean Squared Displacement>
+
+  The computation of the MSD is done in the same way as for the case of the
+  hard-core gas in <math|3d>. The system taken in consideration is a L-J gas
+  of <math|N=250> particles at <math|\<rho\>=0.9> first at initial
+  temperature <math|k*T=0.8> and then at <math|k*T=1.087>:
+
+  <big-figure|<image|../softcore/msd/img/MSD.eps|0.75par|||>|MSD for a system
+  with <math|N=250,\<rho\>=0.9> at temperatures <math|k*T=0.8,1.087>. The
+  measurements were taken every 100 evolution steps for a total time of
+  <math|t=300> after a thermalization phase of <math|t<rsub|them>=10>. The
+  points with <math|\<Delta\>t\<gtr\>200> are discarded because of the lower
+  statistics.>
+
+  Both systems display an initial diffusive behavior given by the typical
+  linear form of the MSD of diffusive processes, but for higher time
+  intervals they converge to the constant value <math|1/4> because of the
+  finite size of the system and of the PBC. The rate of diffusion decreases
+  as the temperature is lowered until the system undergoes a liquid-solid
+  phase transition.
+
+  <big-figure|<image|../softcore/img.ppm|0.5par|||>|Example of solidification
+  of a <math|2d> L-J system of 1000 particles at <math|\<rho\>=0.3> at
+  <math|k*T=0.1>. Because of the cut-off in the potential, the solid regions
+  do not interact with each other. Each of those regions act as an isolated
+  system.>
 
   <subsection|Thermodynamic Limit>
 
@@ -399,9 +424,9 @@
     <associate|auto-12|<tuple|7|8>>
     <associate|auto-13|<tuple|8|8>>
     <associate|auto-14|<tuple|1.5|9>>
-    <associate|auto-15|<tuple|1.6|9>>
+    <associate|auto-15|<tuple|9|9>>
     <associate|auto-16|<tuple|10|9>>
-    <associate|auto-17|<tuple|11|11>>
+    <associate|auto-17|<tuple|1.6|11>>
     <associate|auto-18|<tuple|12|12>>
     <associate|auto-19|<tuple|13|12>>
     <associate|auto-2|<tuple|1|2>>
@@ -429,7 +454,7 @@
     <associate|auto-7|<tuple|1.3|4>>
     <associate|auto-8|<tuple|4|5>>
     <associate|auto-9|<tuple|1.4|6>>
-    <associate|cwos|<tuple|3|?>>
+    <associate|cwos|<tuple|15|?>>
     <associate|diffusion|<tuple|11|?>>
     <associate|eq:MC|<tuple|2|?>>
     <associate|eq:betac|<tuple|7|?>>
@@ -461,6 +486,7 @@
     <associate|fig:packing|<tuple|1|2>>
     <associate|fig:pdfMH|<tuple|9|8>>
     <associate|fig:pdfSW|<tuple|13|7>>
+    <associate|fig:pressure|<tuple|8|?>>
     <associate|fig:susceptibility|<tuple|5|4>>
     <associate|fig:termalization|<tuple|1|2>>
     <associate|fig:termalizationMH|<tuple|1|?>>

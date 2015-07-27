@@ -7,7 +7,8 @@
 #include<time.h>
 
 int N;
-double H,K,U,T,P = 0.0f;
+double H,K,U,T;
+double work = 0.0f;
 double rho,L;
 double rc = 2.5f;
 double rm = 2.8f;
@@ -307,6 +308,7 @@ void get_acc(obj list[], int **table)
             if(tmp < rc*rc){
                 tmp = sqrt(tmp);
                 U += potential(tmp);
+                work += 2*force(tmp)*tmp;
                 tmp = force(tmp)/tmp;
                 for(k = 0; k < DIMENSION; k++){
                     list[i].acc[k] -= tmp*r[k];

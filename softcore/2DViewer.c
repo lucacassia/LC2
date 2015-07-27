@@ -16,7 +16,8 @@ int WHICH_PARTICLE = 0;
 int SHOW_TABLE = 0;
 
 int steps;
-double TEMP = 1.19;
+double runtime;
+double TEMP = 0.1;
 
 obj *particle = NULL;
 int **neighbour = NULL;
@@ -29,6 +30,7 @@ void initSC()
     rho = 0.3;
     L = pow(N/rho, 1.0f/DIMENSION);
     steps = 0;
+    runtime = 0;
 
     particle = (obj*)malloc(N*sizeof(obj));
     neighbour = create_table(neighbour);
@@ -54,6 +56,7 @@ void idle(void)
         }
         integrate(particle,neighbour);
         steps++;
+        runtime += dt;
     }
     glutPostRedisplay();
 }
@@ -61,7 +64,7 @@ void idle(void)
 void savePPM()
 {
     char filename[50];
-    sprintf(filename, "softcore2d%d_%f.ppm", N, rho);
+    sprintf(filename, "softcore2d%d_%.2f_%.2f.4.ppm", N, rho, runtime);
     FILE *f = fopen(filename,"wb");
     fprintf(f, "P6\n%d %d\n255\n", WIDTH, HEIGHT);
     unsigned char *snapshot = (unsigned char*)malloc(3*WIDTH*HEIGHT*sizeof(unsigned char));
@@ -87,20 +90,6 @@ void keyboard(unsigned char key, int x, int y)
         case 't':
             TEMP /= 1.1;
             reset_mom(particle,TEMP/T); 
-            break;
-        case '9':
-            rho /= 1.1;
-            L = pow(N/rho, TEMP/DIMENSION);
-            init_pos(particle,N,0.5);
-            compute_table(particle,neighbour);
-            compute_full_table(particle,full_neighbour);
-            break;
-        case '0':
-            rho *= 1.1;
-            L = pow(N/rho, TEMP/DIMENSION);
-            init_pos(particle,N,0.5);
-            compute_table(particle,neighbour);
-            compute_full_table(particle,full_neighbour);
             break;
         case 'p': case 'P':
             printf("t = %f H = %f K = %f U = %f T = %f\n",steps*dt,H,K,U,T);
