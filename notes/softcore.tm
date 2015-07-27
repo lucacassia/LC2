@@ -302,6 +302,75 @@
 
   <subsection|Energy, Temperature and Pressure>
 
+  Another quantity of interest for a soft-core interecting gas is the
+  pressure, defined using the <strong|virial theorem>:
+
+  <\equation>
+    <frac|P*V|N*k*T>=<frac|P*\<sigma\><rsup|3>|\<rho\>*k*T>=1+<frac|1|d*N*k*T>*<big|sum><rsub|i\<less\>j>*<around*|\<langle\>|<wide|r|\<vect\>><rsub|i*j>\<cdot\><wide|F|\<vect\>><rsub|i*i>|\<rangle\>>
+  </equation>
+
+  where the sum ranges over all the pairs of particles and
+  <math|<around*|\<langle\>| |\<rangle\>>> represents the time average. If
+  the system had the properties of an ideal gas, then the previous formula
+  would yield zero because there would not be any interaction between
+  particles. In the case of a L-J potential we can use the measurement of the
+  pressure as an indicator of the deviation from the ideal gas behavior.
+
+  \;
+
+  In this section we consider a system of <math|N=108> particles at
+  <math|\<rho\>=0.6> and temperature <math|k*T=1.22>. We simulate for a total
+  time <math|t=110> with <math|\<Delta\>t=0.001> and with the first
+  <math|10<rsup|4>> timesteps (<math|t=10>) dedicated to the thermalization
+  of the system during which the temperature is reset every 10 steps.
+
+  The averages and standard deviations on the observables are computed with
+  data collected every 100 steps, in order to reduce autocorrelation effects.
+
+  <big-figure|<image|../softcore/pressure/img/obsT.eps|0.75par|||>|Temperature
+  as a function of time for <math|N=108,\<rho\>=0.6> and initial temperature
+  <math|k*T=1.22>.>
+
+  <big-figure|<image|../softcore/pressure/img/obsU.eps|0.75par|||>|Potential
+  energy as a function of time for <math|N=108,\<rho\>=0.6> and initial
+  temperature <math|k*T=1.22>.>
+
+  <big-figure|<image|../softcore/pressure/img/obsA.eps|0.75par|||>|We plot,
+  from the top, the kinetic energy <math|<frac|K|N>>, the instantaneous
+  temperature <math|k*T>, the mechanical energy <math|<frac|H|N>> and the
+  potential energy <math|<frac|U|N>> for <math|N=108,\<rho\>=0.6> and initial
+  temperature <math|1.22>.>
+
+  We note that, because of the approximate conservation of the mechanical
+  energy, the potential energy <math|U> and the kinetic energy <math|K> have
+  opposite fluctuations around their respective expectation values. On the
+  other hand the temperature <math|T> is simply proportional to <math|K> and
+  therefore its fluctuations are proportional to those of the kinetic energy.
+
+  <\equation>
+    <around*|\<langle\>|u|\<rangle\>>=-3.022142,<space|2em>\<sigma\><around*|(|u|)>=0.068021
+  </equation>
+
+  <\equation>
+    <around*|\<langle\>|k*T|\<rangle\>>=1.155584<space|2em>\<sigma\><around*|(|k*T|)>=0.045345
+  </equation>
+
+  \;
+
+  Finally we measure the pressure:
+
+  <big-figure|<image|../softcore/pressure/img/obsP.eps|0.75par|||>|Pressure
+  as a function of time for <math|N=108,\<rho\>=0.6> and initial temperature
+  <math|k*T=1.22>.>
+
+  <\equation>
+    <frac|P*V|N*k*T>-1 =\<pm\>
+  </equation>
+
+  \;
+
+  \;
+
   <subsection|Mean Squared Displacement>
 
   <subsection|Thermodynamic Limit>
@@ -325,12 +394,12 @@
 <\references>
   <\collection>
     <associate|auto-1|<tuple|1|1>>
-    <associate|auto-10|<tuple|1.5|6>>
-    <associate|auto-11|<tuple|1.6|6>>
-    <associate|auto-12|<tuple|6|8>>
-    <associate|auto-13|<tuple|7|8>>
-    <associate|auto-14|<tuple|8|9>>
-    <associate|auto-15|<tuple|9|9>>
+    <associate|auto-10|<tuple|5|6>>
+    <associate|auto-11|<tuple|6|6>>
+    <associate|auto-12|<tuple|7|8>>
+    <associate|auto-13|<tuple|8|8>>
+    <associate|auto-14|<tuple|1.5|9>>
+    <associate|auto-15|<tuple|1.6|9>>
     <associate|auto-16|<tuple|10|9>>
     <associate|auto-17|<tuple|11|11>>
     <associate|auto-18|<tuple|12|12>>
