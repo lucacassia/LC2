@@ -30,12 +30,13 @@ plot "data/output" u 1:5 w l lc 3 lw 2 t 'N = 108'
 ##pressure
 set title 'Pressure'
 
-set ylabel 'P/{/Symbol r}kT-1'
+set ylabel 'PV/NkT-1'
 set xlabel 'time'
 
 set xrange[10:110]
+set yrange[-4:4]
 set output 'img/obsP.eps'
-plot "data/output" u 1:6 w l lc 3 lw 2 t 'N = 108'
+plot "data/pressure.dat" w l lc 3 lw 2 t 'N = 108'
 
 
 ##all

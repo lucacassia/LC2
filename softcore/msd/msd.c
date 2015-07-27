@@ -5,7 +5,7 @@
 double TEMPERATURE;
 
 double ***buffer = NULL;
-int buffer_size = 1000;
+int buffer_size = 3000;
 int idx = 0;
 
 double get_MSD(double **list0, double **list1)
@@ -37,7 +37,7 @@ void print_MSD(char *filename)
         }
         mean /= count;
         error = sqrt( (error / count - mean * mean)/count );
-        fprintf(f,"%e\t%e\t%e\t%e\n", rho, 100 * shift * dt, mean, error );
+        fprintf(f,"%e\t%e\t%e\t%e\n", rho, shift * 100 * dt, mean, error );
     }
     fclose(f);
 }
@@ -67,13 +67,15 @@ int main (int argc, char *argv[])
 
     /* print header */
     printf("# DIMENSION = %d\n\n", DIMENSION );
+    printf("# N=%d rho=%f L=%f T=%f dt=%f\n", N, rho, L, T, dt);
 
     /* allocate buffer */
     int i,j,k;
     buffer = (double***)malloc(buffer_size*sizeof(double**));
-    for(k=0;k<buffer_size;k++){
+    for(k = 0; k < buffer_size; k++){
         buffer[k] = (double**)malloc(N*sizeof(double*));
-        for(j=0;j<N;j++) buffer[k][j]=(double*)malloc(DIMENSION*sizeof(double));
+        for(j = 0; j < N; j++)
+            buffer[k][j]=(double*)malloc(DIMENSION*sizeof(double));
     }
 
     /* thermalization */
@@ -83,10 +85,10 @@ int main (int argc, char *argv[])
         if(!(i%10)) reset_mom(particle,TEMPERATURE/T);
     }
     printf("# Thermalized\n");
-    printf("# N=%d rho=%f L=%f T=%f dt=%f\n", N, rho, L, T, dt);
 
+    /* data gathering */
     for(idx = 0; idx < buffer_size;idx++){
-        for(i=0;i<100;i++){
+        for(i = 0; i < 100; i++){
             if(!(i%10)) compute_table(particle,neighbour);
             integrate(particle,neighbour);
         }
@@ -96,6 +98,7 @@ int main (int argc, char *argv[])
     }
     printf("Data gathered\n");
 
+    /* compute MSD */
     char filename[64];
     sprintf(filename,"data/%d_%.3f_%.3f_msd.dat",N,rho,TEMPERATURE);
     print_MSD(filename);

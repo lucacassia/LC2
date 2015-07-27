@@ -40,6 +40,7 @@ int main(int argc, char *argv[])
     double sumP = 0.0f;
     double sumP2 = 0.0f;
 
+    FILE *f = fopen("data/pressure.dat","w");
     /* simulation run */
     int i, count = 0;
     for(i = 0; i < total_steps; i++){
@@ -51,12 +52,20 @@ int main(int argc, char *argv[])
             sumU2 += U*U;
             sumT += T;
             sumT2 += T*T;
-            sumP += P/(DIMENSION*N*T*i)-1;
-            sumP2 += (P/(DIMENSION*N*T*i)-1)*(P/(DIMENSION*N*T*i)-1);
+
+            /* pressure */
+            work = work/(DIMENSION*100*N*T)-1;
+            sumP += work;
+            sumP2 += work*work;
+            fprintf(f,"%e\t%e\n",i*dt,work);
+            work = 0.0f;
+
             count++;
         }
-        printf("%e %e %e %e %e %e\n", i*dt, H/N, U/N, K/N, T, P/(DIMENSION*rho*T*i) );
+        
+        printf("%e %e %e %e %e\n", i*dt, H/N, U/N, K/N, T );
     }
+    fclose(f);
     printf("# <U/N>=%e\tsqrt[<(U/N-<U/N>)²>]=%e\n", (sumU/count)/N, sqrt(sumU2/count-(sumU/count)*(sumU/count))/N );
     printf("# <T>=%e\tsqrt[<(T-<T>)²>]=%e\n", (sumT/count), sqrt(sumT2/count-(sumT/count)*(sumT/count)) );
     printf("# <P>=%e\tsqrt[<(P-<P>)²>]=%e\n", (sumP/count), sqrt(sumP2/count-(sumP/count)*(sumP/count)) );
