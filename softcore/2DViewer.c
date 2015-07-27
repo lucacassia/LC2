@@ -16,6 +16,7 @@ int WHICH_PARTICLE = 0;
 int SHOW_TABLE = 0;
 
 int steps;
+double TEMP = 1.19;
 
 obj *particle = NULL;
 int **neighbour = NULL;
@@ -24,8 +25,8 @@ int **full_neighbour = NULL;
 void initSC()
 {
     /* MD settings */
-    N = 100;
-    rho = 0.7;
+    N = 1000;
+    rho = 0.3;
     L = pow(N/rho, 1.0f/DIMENSION);
     steps = 0;
 
@@ -35,7 +36,7 @@ void initSC()
 
     init_pos(particle,N,0.5);         /* square lattice        */
     init_mom(particle);               /* flat distribution     */
-    reset_mom(particle,0.01/T);       /* set temperature       */
+    reset_mom(particle,TEMP/T);       /* set temperature       */
     compute_table(particle,neighbour);/* table of neighbours   */
     compute_full_table(particle,full_neighbour);
     get_acc(particle,neighbour);      /* compute accelerations */
@@ -73,6 +74,34 @@ void savePPM()
 void keyboard(unsigned char key, int x, int y)
 {
     switch(key){
+        case '+':
+            dt *= 1.1;
+            break;
+        case '-':
+            dt /= 1.1;
+            break;
+        case 'T':
+            TEMP *= 1.1;
+            reset_mom(particle,TEMP/T); 
+            break;
+        case 't':
+            TEMP /= 1.1;
+            reset_mom(particle,TEMP/T); 
+            break;
+        case '9':
+            rho /= 1.1;
+            L = pow(N/rho, TEMP/DIMENSION);
+            init_pos(particle,N,0.5);
+            compute_table(particle,neighbour);
+            compute_full_table(particle,full_neighbour);
+            break;
+        case '0':
+            rho *= 1.1;
+            L = pow(N/rho, TEMP/DIMENSION);
+            init_pos(particle,N,0.5);
+            compute_table(particle,neighbour);
+            compute_full_table(particle,full_neighbour);
+            break;
         case 'p': case 'P':
             printf("t = %f H = %f K = %f U = %f T = %f\n",steps*dt,H,K,U,T);
             savePPM();
@@ -94,6 +123,7 @@ void keyboard(unsigned char key, int x, int y)
 
 void specialKeyboard(int key, int x, int y)
 {
+    int i; 
     switch(key){
         case GLUT_KEY_F1:
             SINGLE_PARTICLE = !SINGLE_PARTICLE;
@@ -108,24 +138,16 @@ void specialKeyboard(int key, int x, int y)
             glutFullScreenToggle();
             break;
         case GLUT_KEY_UP:
-            dt *= 1.1;
+            for(i = 0; i < N; i++) particle[i].pos[1]=PBC(particle[i].pos[1]-L/100);
             break;
         case GLUT_KEY_DOWN:
-            dt /= 1.1;
+            for(i = 0; i < N; i++) particle[i].pos[1]=PBC(particle[i].pos[1]+L/100);
             break;
         case GLUT_KEY_LEFT:
-            rho /= 1.1;
-            L = pow(N/rho, 1.0f/DIMENSION);
-            init_pos(particle,N,0.5);
-            compute_table(particle,neighbour);
-            compute_full_table(particle,full_neighbour);
+            for(i = 0; i < N; i++) particle[i].pos[0]=PBC(particle[i].pos[0]+L/100);
             break;
         case GLUT_KEY_RIGHT:
-            rho *= 1.1;
-            L = pow(N/rho, 1.0f/DIMENSION);
-            init_pos(particle,N,0.5);
-            compute_table(particle,neighbour);
-            compute_full_table(particle,full_neighbour);
+            for(i = 0; i < N; i++) particle[i].pos[0]=PBC(particle[i].pos[0]-L/100);
             break;
     }
 }
