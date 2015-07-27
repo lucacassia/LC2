@@ -426,13 +426,17 @@
   so that by fitting the data obtained at different <math|N> we can
   extrapolate the thermodynamic limit of those observables.
 
-  <big-figure|<image|../softcore/thermo_limit/img/limitU.eps|0.5par|||><image|../softcore/thermo_limit/img/limitT.eps|0.5par|||>|Plot
-  of the potential energy (left) and of the temperature (right) as functions
-  of the parameter <math|1/N> with <math|N=100,150,250,500,800,1000>. Each
-  point is obtained as the averege over a simulation run of time <math|t=100>
-  with samples taken once every 100 steps <math|\<Delta\>t=0.001>. The
-  errorbars are computed as the standard errors on the mean values. The
-  thermalization time is <math|t<rsub|therm>=10>.>
+  <\big-figure>
+    <image|../softcore/thermo_limit/img/limitU.eps|0.75par|||>
+
+    <image|../softcore/thermo_limit/img/limitT.eps|0.75par|||>
+  </big-figure|Plot of the potential energy (top) and of the temperature
+  (bottom) as functions of the parameter <math|1/N> with
+  <math|N=100,150,250,500,800,1000>. Each point is obtained as the averege
+  over a simulation run of time <math|t=100> with samples taken once every
+  100 steps <math|\<Delta\>t=0.001>. The errorbars are computed as the
+  standard errors on the mean values. The thermalization time is
+  <math|t<rsub|therm>=10>.>
 
   <\big-figure|<image|../softcore/thermo_limit/img/sigmaU.eps|0.5par|||><image|../softcore/thermo_limit/img/sigmaT.eps|0.5par|||>>
     Plot of the standard deviation of the potential energy (left) and of the
@@ -498,8 +502,8 @@
     <associate|auto-15|<tuple|9|8>>
     <associate|auto-16|<tuple|10|9>>
     <associate|auto-17|<tuple|1.6|9>>
-    <associate|auto-18|<tuple|11|12>>
-    <associate|auto-19|<tuple|12|12>>
+    <associate|auto-18|<tuple|11|10>>
+    <associate|auto-19|<tuple|12|10>>
     <associate|auto-2|<tuple|1|2>>
     <associate|auto-20|<tuple|14|11>>
     <associate|auto-21|<tuple|15|11>>
@@ -570,9 +574,9 @@
     <associate|fig:toruseffect|<tuple|1|3>>
     <associate|fig:trajectory|<tuple|3|12>>
     <associate|fig:trajectory2|<tuple|4|?>>
-    <associate|footnote-1|<tuple|1|11>>
+    <associate|footnote-1|<tuple|1|9>>
     <associate|footnote-2|<tuple|2|?>>
-    <associate|footnr-1|<tuple|1|11>>
+    <associate|footnr-1|<tuple|1|9>>
     <associate|footnr-2|<tuple|2|?>>
     <associate|result_box|<tuple|8|?>>
     <associate|sec:betafss|<tuple|1.4|4>>
@@ -658,6 +662,21 @@
       <with|mode|<quote|math>|k*T=0.1>. Because of the cut-off in the
       potential, the solid regions do not interact with each other. Each of
       those regions act as an isolated system.|<pageref|auto-16>>
+
+      <tuple|normal|Plot of the potential energy (left) and of the
+      temperature (right) as functions of the parameter
+      <with|mode|<quote|math>|1/N> with <with|mode|<quote|math>|N=100,150,250,500,800,1000>.
+      Each point is obtained as the averege over a simulation run of time
+      <with|mode|<quote|math>|t=100> with samples taken once every 100 steps
+      <with|mode|<quote|math>|\<Delta\>t=0.001>. The errorbars are computed
+      as the standard errors on the mean values. The thermalization time is
+      <with|mode|<quote|math>|t<rsub|therm>=10>.|<pageref|auto-18>>
+
+      <\tuple|normal>
+        Plot of the standard deviation of the potential energy (left) and of
+        the temperature (right) as funtions of the parameter
+        <with|mode|<quote|math>|1/N> for <with|mode|<quote|math>|N=100,150,250,500,800,1000>.
+      </tuple|<pageref|auto-19>>
     </associate>
     <\associate|toc>
       <vspace*|1fn><with|font-series|<quote|bold>|math-font-series|<quote|bold>|1<space|2spc>Soft-Core
