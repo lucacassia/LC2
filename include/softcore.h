@@ -147,7 +147,7 @@ double PBC(double x)
     while(x <= 0) x += L;
     return x;
 }
-/*
+
 void compute_full_table(obj list[], int **table)
 {
     int i,j,k;
@@ -238,7 +238,7 @@ void get_acc(obj list[], int **table)
         }
     }
 }
-*/
+/*
 double distPBC(double x)
 {
     while(x >= 0.5 * L) x -= L;
@@ -315,7 +315,7 @@ void get_acc(obj list[], int **table)
         }
     }
 }
-
+*/
 void integrate(obj list[],int **table)
 {
     int i,j;
