@@ -400,7 +400,78 @@
 
   <subsection|Thermodynamic Limit>
 
+  Finally we study the thermodynamic limit extrapolation of the temperature
+  and of the potential energy for systems at fixed density <math|\<rho\>=0.7>
+  and varying number of particles <math|N><\footnote>
+    The thermodynamic limit consists, in fact, in sending <math|N> and
+    <math|V=L<rsup|d>> to infinity while keeping the ratio <math|N/V>
+    constant.
+  </footnote>. We also fix the mechanical energy to the value
+  <math|H/N=-2.98> and express every quantity in terms of the parameter
+  <math|1/N>.
+
   \;
+
+  We assume that for large <math|N>, both the temperature and the potential
+  energy have a linear functional form in the variable <math|1/N>:
+
+  <\equation>
+    u=u<rsub|\<infty\>>+m\<cdot\><frac|1|N>
+  </equation>
+
+  <\equation>
+    T=T<rsub|\<infty\>>+m\<cdot\><frac|1|N>
+  </equation>
+
+  so that by fitting the data obtained at different <math|N> we can
+  extrapolate the thermodynamic limit of those observables.
+
+  <big-figure|<image|../softcore/thermo_limit/img/limitU.eps|0.5par|||><image|../softcore/thermo_limit/img/limitT.eps|0.5par|||>|Plot
+  of the potential energy (left) and of the temperature (right) as functions
+  of the parameter <math|1/N> with <math|N=100,150,250,500,800,1000>. Each
+  point is obtained as the averege over a simulation run of time <math|t=100>
+  with samples taken once every 100 steps <math|\<Delta\>t=0.001>. The
+  errorbars are computed as the standard errors on the mean values. The
+  thermalization time is <math|t<rsub|therm>=10>.>
+
+  <\big-figure|<image|../softcore/thermo_limit/img/sigmaU.eps|0.5par|||><image|../softcore/thermo_limit/img/sigmaT.eps|0.5par|||>>
+    Plot of the standard deviation of the potential energy (left) and of the
+    temperature (right) as funtions of the parameter <math|1/N> for
+    <math|N=100,150,250,500,800,1000>.
+  </big-figure>
+
+  The results are:
+
+  <\equation>
+    u<rsub|fit> =-3.9149\<pm\>0.0016
+  </equation>
+
+  <\equation>
+    T<rsub|fit>=0.6233\<pm\>0.0011
+  </equation>
+
+  \;
+
+  \;
+
+  <with|font-shape|italic|Remark:> since the mechanical energy is constant,
+  <math|T> and <math|U> are related by:
+
+  <\equation>
+    <frac|H|N>=<frac|d|2*>*T+u=-2.98
+  </equation>
+
+  and follows that the fluctuations of the two quantities must cancel out:
+
+  <\equation>
+    \<Rightarrow\><space|1em><frac|3|2>*\<sigma\><rsub|T>=\<sigma\><rsub|u>
+  </equation>
+
+  \;
+
+  \;
+
+  <center|<block*|<tformat|<table|<row|<cell|<math|\<sigma\><rsub|u>>>|<cell|<math|3.240926>>>|<row|<cell|<math|\<sigma\><rsub|T>>>|<cell|<math|2.160617>>>>>><space|3em><math|\<longrightarrow\>><space|3em><math|<frac|\<sigma\><rsub|u>|\<sigma\><rsub|T>>=1.5>>
 </body>
 
 <\initial>
@@ -420,15 +491,15 @@
   <\collection>
     <associate|auto-1|<tuple|1|1>>
     <associate|auto-10|<tuple|5|6>>
-    <associate|auto-11|<tuple|6|6>>
-    <associate|auto-12|<tuple|7|8>>
+    <associate|auto-11|<tuple|6|7>>
+    <associate|auto-12|<tuple|7|7>>
     <associate|auto-13|<tuple|8|8>>
-    <associate|auto-14|<tuple|1.5|9>>
-    <associate|auto-15|<tuple|9|9>>
+    <associate|auto-14|<tuple|1.5|8>>
+    <associate|auto-15|<tuple|9|8>>
     <associate|auto-16|<tuple|10|9>>
-    <associate|auto-17|<tuple|1.6|11>>
-    <associate|auto-18|<tuple|12|12>>
-    <associate|auto-19|<tuple|13|12>>
+    <associate|auto-17|<tuple|1.6|9>>
+    <associate|auto-18|<tuple|11|12>>
+    <associate|auto-19|<tuple|12|12>>
     <associate|auto-2|<tuple|1|2>>
     <associate|auto-20|<tuple|14|11>>
     <associate|auto-21|<tuple|15|11>>
@@ -449,7 +520,7 @@
     <associate|auto-35|<tuple|23|24>>
     <associate|auto-36|<tuple|24|?>>
     <associate|auto-4|<tuple|2|3>>
-    <associate|auto-5|<tuple|1.2|3>>
+    <associate|auto-5|<tuple|1.2|4>>
     <associate|auto-6|<tuple|3|4>>
     <associate|auto-7|<tuple|1.3|4>>
     <associate|auto-8|<tuple|4|5>>
@@ -486,7 +557,7 @@
     <associate|fig:packing|<tuple|1|2>>
     <associate|fig:pdfMH|<tuple|9|8>>
     <associate|fig:pdfSW|<tuple|13|7>>
-    <associate|fig:pressure|<tuple|8|?>>
+    <associate|fig:pressure|<tuple|8|8>>
     <associate|fig:susceptibility|<tuple|5|4>>
     <associate|fig:termalization|<tuple|1|2>>
     <associate|fig:termalizationMH|<tuple|1|?>>
@@ -551,6 +622,42 @@
       (<with|mode|<quote|math>|\<Delta\>t=0.001>). During the thermalization
       phase the momenta were rescaled every 10 steps in order to fix the
       temperature to the desired value.|<pageref|auto-8>>
+
+      <tuple|normal|Temperature as a function of time for
+      <with|mode|<quote|math>|N=108,\<rho\>=0.6> and initial temperature
+      <with|mode|<quote|math>|k*T=1.22>.|<pageref|auto-10>>
+
+      <tuple|normal|Potential energy as a function of time for
+      <with|mode|<quote|math>|N=108,\<rho\>=0.6> and initial temperature
+      <with|mode|<quote|math>|k*T=1.22>.|<pageref|auto-11>>
+
+      <tuple|normal|We plot, from the top, the kinetic energy
+      <with|mode|<quote|math>|<frac|K|N>>, the instantaneous temperature
+      <with|mode|<quote|math>|k*T>, the mechanical energy
+      <with|mode|<quote|math>|<frac|H|N>> and the potential energy
+      <with|mode|<quote|math>|<frac|U|N>> for
+      <with|mode|<quote|math>|N=108,\<rho\>=0.6> and initial temperature
+      <with|mode|<quote|math>|1.22>.|<pageref|auto-12>>
+
+      <tuple|normal|Pressure as a function of time for
+      <with|mode|<quote|math>|N=108,\<rho\>=0.6> and initial temperature
+      <with|mode|<quote|math>|k*T=1.22>.|<pageref|auto-13>>
+
+      <tuple|normal|MSD for a system with
+      <with|mode|<quote|math>|N=250,\<rho\>=0.9> at temperatures
+      <with|mode|<quote|math>|k*T=0.8,1.087>. The measurements were taken
+      every 100 evolution steps for a total time of
+      <with|mode|<quote|math>|t=300> after a thermalization phase of
+      <with|mode|<quote|math>|t<rsub|them>=10>. The points with
+      <with|mode|<quote|math>|\<Delta\>t\<gtr\>200> are discarded because of
+      the lower statistics.|<pageref|auto-15>>
+
+      <tuple|normal|Example of solidification of a
+      <with|mode|<quote|math>|2d> L-J system of 1000 particles at
+      <with|mode|<quote|math>|\<rho\>=0.3> at
+      <with|mode|<quote|math>|k*T=0.1>. Because of the cut-off in the
+      potential, the solid regions do not interact with each other. Each of
+      those regions act as an isolated system.|<pageref|auto-16>>
     </associate>
     <\associate|toc>
       <vspace*|1fn><with|font-series|<quote|bold>|math-font-series|<quote|bold>|1<space|2spc>Soft-Core
@@ -576,11 +683,11 @@
 
       <with|par-left|<quote|1tab>|1.5<space|2spc>Mean Squared Displacement
       <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
-      <no-break><pageref|auto-10>>
+      <no-break><pageref|auto-14>>
 
       <with|par-left|<quote|1tab>|1.6<space|2spc>Thermodynamic Limit
       <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
-      <no-break><pageref|auto-11>>
+      <no-break><pageref|auto-17>>
     </associate>
   </collection>
 </auxiliary>
