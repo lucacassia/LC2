@@ -1,4 +1,4 @@
-LC
+LC2
 ==
 
-Laboratorio di Calcolo
+Laboratorio di Calcolo II by Pepe
