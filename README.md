@@ -15,8 +15,8 @@ Make sure to install these first.
 ---
 
 ## Screenshots
-![Image](/img/Screenshot1.png?raw=true "HardCore") ![Image](/img/Screenshot2.png?raw=true "SoftCore")
-![Image](/img/Screenshot3.png?raw=true "Ising") ![Image](/img/Screenshot4.png?raw=true "Potts")
+![Image](/img/Screenshot1.png?raw=true "Softcore & HardCore")
+![Image](/img/Screenshot2.png?raw=true "Ising & Potts")
 
 ### Compile
 Once you installed all dependencies you need to compile and run the applications: 

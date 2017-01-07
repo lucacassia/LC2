@@ -7,7 +7,7 @@
 #define PI 3.1415926535897932384626433832795
  
 int WIDTH  = 1024;
-int HEIGHT = 768;
+int HEIGHT = 1024;
 double FRAME = 0.025;
 double wleft,wright,wbottom,wtop;
 int ACTIVE = 0;
