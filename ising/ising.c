@@ -103,7 +103,7 @@ void keyboardF(unsigned char key, int mouseX, int mouseY)
 
 int main(int argc, char *argv[])
 {
-    SIZE = 128;
+    SIZE = 256;
 
     glutInit(&argc, argv);
     glutInitWindowSize(zoom*SIZE, zoom*SIZE); 
